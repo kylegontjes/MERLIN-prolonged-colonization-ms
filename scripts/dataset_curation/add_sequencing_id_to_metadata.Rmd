@@ -1,0 +1,376 @@
+---
+title: "Platemap Harmonization with Metadata"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
+```
+
+# Environment
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse")   
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load metdadata
+```{r}
+metadata <- readRDS("./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.RDS")
+paste0("Number of entries in curated mettadata from PENN: ",nrow(metadata))
+```
+
+# Load sequencing sample lookup
+## Load lookup from MERLIN and IMPALA
+```{r}
+sequencing_MERLIN_plates <- read.delim("../../Sequence_data/metadata/sample_lookup/2023-08-24_MERLIN_genome_sample_lookup.txt")  
+sequencing_MERLIN_plates$Sequencing.plate <- gsub("Sequencing plate ","Sequencing plate MERLIN ",sequencing_MERLIN_plates$Sequencing.plate)  
+sequencing_IMPALA_plate <- read.delim("../../Sequence_data/metadata/sample_lookup/2024-06-12_IMPALA_BC_genome_sample_lookup.txt")%>% subset(grepl('MERLIN',Genome.ID) ==T) 
+sequencing_IMPALA_plate$Sequencing.plate <- gsub("Sequencing plate ","Sequencing plate IMPALA ",sequencing_IMPALA_plate$Sequencing.plate)  
+```
+
+# Fix one bad entry in IMPALA plate
+```{r}
+sequencing_IMPALA_plate$Sample.ID <- ifelse(sequencing_IMPALA_plate$Sample.ID == '118H V2 B1 C1 ','118H V2 B1 C1',sequencing_IMPALA_plate$Sample.ID)
+```
+
+# Merge sequencing data
+```{r}
+sequencing <- rbind(sequencing_MERLIN_plates,sequencing_IMPALA_plate )
+paste0("Initial number of sequenced genomes: ",nrow(sequencing))
+```
+
+# Load original and new platemaps
+## Function
+```{r}
+load_plate_map <- function(path,sheet,name){
+   readxl::read_xlsx(path,sheet = sheet, col_names = FALSE) %>% as.data.frame %>% `rownames<-`(eight)%>% `colnames<-`(c(1:ncol(.)))
+}
+```
+
+## Paths
+```{r}
+eight <- c("A","B","C","D","E","F","G","H") 
+
+# Original Maps
+original_path <- "~/Desktop/gl_merlin/Analysis/data/MERLIN_original_plate_maps.xlsx"
+platemap_original_1 <- load_plate_map(original_path,1,eight)
+platemap_original_2 <- load_plate_map(original_path,2,eight)
+platemap_original_3 <- load_plate_map(original_path,3,eight)
+platemap_original_4 <- load_plate_map(original_path,4,eight)
+platemap_original_5 <- load_plate_map(original_path,5,eight)
+
+# Consolidated Maps
+consolidated_path <- "~/Desktop/gl_merlin/Analysis/data/MERLIN_consolodated_plate_maps.xlsx"
+platemap_consolidated_1 <- load_plate_map(consolidated_path,1,eight)
+platemap_consolidated_2 <- load_plate_map(consolidated_path,2,eight)
+platemap_consolidated_3 <- load_plate_map(consolidated_path,3,eight)
+platemap_consolidated_4 <- load_plate_map(consolidated_path,4,eight)
+```
+# Parse platemaps
+```{r}
+parse_map <- function(map,num){
+  name <- c()
+  col <- c()
+  ro <- c()
+  plate <- c()
+  for(column in colnames(map)){
+    for(row in 1:nrow(map)){
+      name <- c(name,map[row,column]) %>% unlist
+      col <- c(col,column)%>% unlist
+      rowname <- rownames(map[row,])
+      ro <- c(ro,rowname)%>% unlist
+      plate <- c(plate,num)%>% unlist
+      position <- paste0(ro,col)
+    }
+  }
+  dataframe <- cbind.data.frame(name,col,ro,plate,position) %>% `colnames<-`(c("map_name","column","row","plate","position"))  %>% subset(map_name != "POS")
+  return(dataframe)
+}
+```
+## Old maps 
+```{r}
+# Old Map
+old_map_sum_1 <- parse_map(platemap_original_1,"1")
+old_map_sum_2 <- parse_map(platemap_original_2,"2")
+old_map_sum_3 <- parse_map(platemap_original_3,"3")
+old_map_sum_4 <- parse_map(platemap_original_4,"4")
+old_map_sum_5 <- parse_map(platemap_original_5,"5")
+
+oldmap <- rbind(old_map_sum_1,old_map_sum_2,old_map_sum_3,old_map_sum_4,old_map_sum_5)
+oldmap$map_name <- trimws(oldmap$map_name,"both")
+oldmap <- oldmap
+
+oldmap$map_name <- ifelse(oldmap$map_name == "MER 210  (345H) V1 WM","MER 210 (345H) V1 WM",oldmap$map_name)
+```
+
+## New platemap parsing
+
+```{r}
+new_map_sum_1 <- parse_map(platemap_consolidated_1,"1")
+new_map_sum_2 <- parse_map(platemap_consolidated_2,"2")
+
+# Clean platemap three by removing special characters and spaces
+for(r in 1:nrow(platemap_consolidated_3)){
+  for(c in 1:ncol(platemap_consolidated_3)){
+  platemap_consolidated_3[r,c] <- gsub("^.*:", "",platemap_consolidated_3[r,c])
+  platemap_consolidated_3[r,c] <- gsub("^ ", "",platemap_consolidated_3[r,c])
+  }
+} 
+new_map_sum_3 <- parse_map(platemap_consolidated_3,"3") 
+new_map_sum_4 <- parse_map(platemap_consolidated_4,"4")
+newmap <- rbind(new_map_sum_1,new_map_sum_2,new_map_sum_3,new_map_sum_4) 
+
+newmap$map_name <- trimws(newmap$map_name,"both")
+```
+
+
+# Parse Evan's sequencing map dataframe generated from the lookup tables
+```{r}
+parse_sequencing_map <- function(string){
+  split <- str_split(string,",",simplify = T)
+  batch <- split[,1] %>% str_split(.," ",simplify=T) %>% .[,3]
+  num <- split[,1] %>% str_split(.," ",simplify=T) %>% .[,4]%>% as.numeric 
+  ro <- split[,2] %>% str_split(.,"-",simplify = T) %>% .[,1] %>% trimws(.,"both")
+  col <-split[,2] %>% str_split(.,"-",simplify = T) %>% .[,2] %>% trimws(.,"both")%>% as.numeric
+  dataframe <- cbind(Sequencing.plate = string,batch = batch,num_fin=num,col_fin=col,ro_fin=ro) %>% as.data.frame
+  return(dataframe)
+}
+
+sequencing_plate_data <- lapply(sequencing$Sequencing.plate,FUN=parse_sequencing_map) %>% do.call(rbind,.) %>% as.data.frame
+
+sequencing <- left_join(sequencing,sequencing_plate_data)  
+sequencing$Sample.ID <- trimws(sequencing$Sample.ID,"both")
+sequencing$map_name <- sequencing$Sample.ID
+```
+
+# Clean Evan's Consolidated Map w/ Sequencing List
+```{r}
+newmap_not_same_sequencing <- newmap$map_name[!newmap$map_name %in% sequencing$Sample.ID]
+
+paste0("Strains not in Evan's consolidated map & the sequencing metadata list")
+newmap_not_same_sequencing
+
+newmap$map_name <- ifelse(newmap$map_name == "MER 210  (345H) V1 WM","MER 210 (345H) V1 WM",newmap$map_name)
+
+paste0("This fix harmonized the consolidated map with the sequencing map: ")
+newmap$map_name[!newmap$map_name %in% sequencing$Sample.ID]  %>% length
+```
+
+# Edit Evan's platemap info to match stragglers
+```{r}
+# Merge PS 2A -> PS2A
+newmap$map_name <- ifelse(newmap$map_name == "126H V3 PS 2A C1 (00837)","126H V3 PS2A C1 (00837)",newmap$map_name)
+# 118H* V1 B1 C1 -> 
+##Remove the *
+newmap$map_name <-  ifelse(newmap$map_name == "118H* V1 B1 C1","118H V1 B1 C1",newmap$map_name)  
+oldmap$map_name <- ifelse(oldmap$map_name == "118H* V1 B1 C1","118H V1 B1 C1",oldmap$map_name)  
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "118H* V1 B1 C1","118H V1 B1 C1",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "118H* V1 B1 C1","118H V1 B1 C1",sequencing$map_name)  
+## As both are same merge the findings
+newmap$map_name <-  ifelse(newmap$map_name == "118H V1 B1 C1 06090","118H V1 B1 C1",newmap$map_name)  
+oldmap$map_name <- ifelse(oldmap$map_name == "118H V1 B1 C1 06090","118H V1 B1 C1",oldmap$map_name)  
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "118H V1 B1 C1 06090","118H V1 B1 C1",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "118H V1 B1 C1 06090","118H V1 B1 C1",sequencing$map_name)  
+
+# MER 216 (370H) V3 PN 1A C1
+## Remove MER 216 from metadata entry
+oldmap$map_name <- ifelse(oldmap$map_name=="MER 216 (370H) V3 PN 1A C1","370H V3 PN 1A C1 blue",oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=="MER 216 (370H) V3 PN 1A C1","370H V3 PN 1A C1 blue",newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "MER 216 (370H) V3 PN 1A C1","370H V3 PN 1A C1 blue",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "MER 216 (370H) V3 PN 1A C1","370H V3 PN 1A C1 blue",sequencing$map_name)  
+
+# MER 209 (320H) V1 PN1AC1
+## Change MER 209 (320H) V1 PN 2A C1 -> MER 209 (320H) V1 PN1AC1
+oldmap$map_name <- ifelse(oldmap$map_name=="MER 209 (320H) V1 PN 2A C1","MER 209 (320H) V1 PN1AC1",oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=="MER 209 (320H) V1 PN 2A C1","MER 209 (320H) V1 PN1AC1",newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "MER 209 (320H) V1 PN 2A C1","MER 209 (320H) V1 PN1AC1",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "MER 209 (320H) V1 PN 2A C1","MER 209 (320H) V1 PN1AC1",sequencing$map_name)  
+
+# 91H V2 PN 1A C1 03281 - multiple isolates w/ name, remove the barcode callout
+## 91H V2 PN1A C1 (00522) - > 91H V2 PN1A C1
+oldmap$map_name <- ifelse(oldmap$map_name=="91H V2 PN1A C1 (00522)","91H V2 PN1A C1",oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=="91H V2 PN1A C1 (00522)","91H V2 PN1A C1",newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "91H V2 PN1A C1 (00522)","91H V2 PN1A C1",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "91H V2 PN1A C1 (00522)","91H V2 PN1A C1",sequencing$map_name)  
+## 91H V2 PN 1A C1 03281 -> 91H V2 PN1A C1
+oldmap$map_name <- ifelse(oldmap$map_name=="91H V2 PN 1A C1 03281","91H V2 PN1A C1",oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=="91H V2 PN 1A C1 03281","91H V2 PN1A C1",newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "91H V2 PN 1A C1 03281","91H V2 PN1A C1",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "91H V2 PN 1A C1 03281","91H V2 PN1A C1",sequencing$map_name)  
+
+# 445H V3 S1A C2 - multiple colonies sequenced, I'm merging to permit analysis as no double metadata entry exists
+## 445H V3 S1A C1 - > 445H V3 S1A
+oldmap$map_name <- ifelse(oldmap$map_name=="445H V3 S1A C1","445H V3 S1A",oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=="445H V3 S1A C1","445H V3 S1A",newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "445H V3 S1A C1","445H V3 S1A",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "445H V3 S1A C1","445H V3 S1A",sequencing$map_name)  
+## 445H V3 S1A C2 -> 445H V3 S1A
+oldmap$map_name <- ifelse(oldmap$map_name=="445H V3 S1A C2","445H V3 S1A",oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=="445H V3 S1A C2","445H V3 S1A",newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "445H V3 S1A C2","445H V3 S1A",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "445H V3 S1A C2","445H V3 S1A",sequencing$map_name)  
+
+#  345H V3 S1A C1
+## Change plate location from G9 to G8
+metadata$position <-  ifelse(metadata$position=="G9" & metadata$plate=="5" & metadata$household_number =="370H","G8",metadata$position) 
+
+# 238H V1 B1 C1
+## Change plate location from D6 to D7 
+metadata$position <-  ifelse(metadata$position=="D6" & metadata$plate=="1" & metadata$household_number =="238H","D7",metadata$position) 
+
+# 238H V1 K C1 (00843) - Two multiple entries in platemap with different barcode, but same sample info
+## 238H V1 K C1 (00843) - > 238H V1 K C1
+oldmap$map_name <- ifelse(oldmap$map_name=="238H V1 K C1 (00843)","238H V1 K C1",oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=="238H V1 K C1 (00843)","238H V1 K C1",newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "238H V1 K C1 (00843)","238H V1 K C1",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "238H V1 K C1 (00843)","238H V1 K C1",sequencing$map_name)  
+## 238H V1 K C1 (01240) - > 238H V1 K C1
+oldmap$map_name <- ifelse(oldmap$map_name=="238H V1 K C1 (01240)","238H V1 K C1",oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=="238H V1 K C1 (01240)","238H V1 K C1",newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "238H V1 K C1 (01240)","238H V1 K C1",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "238H V1 K C1 (01240)","238H V1 K C1",sequencing$map_name)  
+
+# 293H V3 B1 C2 - Two multiple entries in platemap, but only one in metadata
+## 293H V3 B1 C1 - > 293H V3 B1
+oldmap$map_name <- ifelse(oldmap$map_name=="293H V3 B1 C1","293H V3 B1",oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=="293H V3 B1 C1","293H V3 B1",newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "293H V3 B1 C1","293H V3 B1",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "293H V3 B1 C1","293H V3 B1",sequencing$map_name)  
+## 293H V3 B1 C2 - > 293H V3 B1
+oldmap$map_name <- ifelse(oldmap$map_name=="293H V3 B1 C2","293H V3 B1",oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=="293H V3 B1 C2","293H V3 B1",newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "293H V3 B1 C2","293H V3 B1",sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == "293H V3 B1 C2","293H V3 B1",sequencing$map_name) 
+
+## 182H Stool 1A C1 (01238)
+oldmap$map_name <- ifelse(oldmap$map_name =='182H V2 S1A C1 (01238)','182H V2 S1A C1',oldmap$map_name)
+newmap$map_name <- ifelse(newmap$map_name=='182H V2 S1A C1 (01238)','182H V2 S1A C1',newmap$map_name)
+sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == '182H V2 S1A C1 (01238)','182H V2 S1A C1',sequencing$Sample.ID)  
+sequencing$map_name <- ifelse(sequencing$map_name == '182H V2 S1A C1 (01238)','182H V2 S1A C1',sequencing$map_name) 
+```
+
+# Merge with impala data
+```{r}
+get_impala_info <- function(sequencing_IMPALA_plate_row){ 
+  map_name <- sequencing_IMPALA_plate_row[['Sample.ID']]
+  string <- sequencing_IMPALA_plate_row[['Sequencing.plate']]
+  string_split <-  str_split(string," ",simplify = T)
+  plate <-paste0(string_split[,3]," ",string_split[,4]) %>% gsub(",","",.)
+  position <- string_split[,5] %>% gsub("-","",.)
+  column <- str_split(position,"",simplify=T) %>% .[,1]
+  row <-  str_split(position,"",simplify=T) %>% .[,2]
+  return(cbind.data.frame(map_name,column,row,plate,position))
+}
+
+# Impala isolates
+IMPALA_map <- apply(sequencing_IMPALA_plate,1,get_impala_info) %>% do.call(rbind,.) 
+```
+
+# Add impala data to old map 
+```{r}
+# Merge with metadata
+oldmap <- rbind(oldmap,IMPALA_map)
+```
+
+# Merge Evan's Consolidated Map w/ Sequencing List
+```{r}
+newmap <- rbind(newmap,IMPALA_map)
+newmap$Sequencing.plate <- paste0("Sequencing plate MERLIN ",newmap$plate,", ",newmap$row,"-",newmap$column)
+
+sequencing_fin <- left_join(sequencing,newmap) 
+paste0("How sequencing list looks like...")
+head(sequencing_fin,n = 3)
+```
+
+# Merge Initial Platemap w/ Barcode Data
+```{r}
+metadata <- left_join(metadata,oldmap)
+metadata$no_correct_platemap <- ifelse(is.na(metadata$map_name) == T,T,F)
+
+no_correct_platemap <- subset(metadata,no_correct_platemap==T)
+paste0(nrow(no_correct_platemap)," isolates w/o genotyping data due to sequencing not run yet") 
+
+table(no_correct_platemap$plate,useNA = 'ifany') 
+ 
+# Edit platemap
+paste0("One of them had an issue w/ their naming. ")
+metadata$map_name <- ifelse(metadata$household_number=="126H" & metadata$visit == 3 & metadata$isolate_id =='Pet Stool 2A C1' & metadata$lab_vantage_s_number == "S-220606-00837",'126H V3 PS 2A C1 (00837)',metadata$map_name)
+
+# 345H V3 S1A C1 - ALso found on P5 C9 in original map
+metadata$map_name <- ifelse(metadata$household_number=="345H" & metadata$visit == 3 & metadata$isolate_id == "Stool 1A C1","345H V3 S1A C1",metadata$map_name)
+``` 
+
+# Merge w metadata with sequencing data
+```{r}
+# Merge duplicates
+simple_sequencing_tag <- aggregate(Genome.ID ~ map_name,sequencing_fin,paste,collapse=";") 
+paste0("Number of map names: ",nrow(simple_sequencing_tag))
+paste0("Number of map names with duplicate sequencing runs: ",simple_sequencing_tag$Genome.ID %>% grepl (";",.)  %>% sum)
+
+# Join data
+metadata_w_genomic_id <- left_join(metadata,simple_sequencing_tag)
+
+# Metdaata without genomic id
+metadata_wo_genomic_id <- subset(metadata_w_genomic_id,is.na(Genome.ID) == T)
+paste0("Number of metadata entries without genomic id: ",nrow(metadata_wo_genomic_id))
+```
+
+# QC Passing genomes
+```{r}
+qcd <- readRDS("./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS")
+
+get_qc_flag <- function(ID,QC_data){
+  ID_split <- str_split(ID,";") %>% unlist
+  get_qc_flag_isolate <- function(ID,QC_data){
+    QC_subset <- QC_data %>% subset(genomic_id %in% ID )  
+    sequencing_runs_num <- nrow(QC_subset)
+    QC_status <- QC_subset$qc_pass %>% paste0(collapse=';') 
+    Genome.ID_qc_passing <- ifelse(sum(QC_subset$qc_pass)>0,ID,"") 
+    return(data.frame(Genome.ID = ID,qc_pass = QC_status,sequencing_runs_num=sequencing_runs_num,Genome.ID_qc_passing=Genome.ID_qc_passing))
+  }
+  
+  qc_data <- lapply(ID_split,get_qc_flag_isolate,QC_data=QC_data) %>% do.call(rbind,.)    
+  qc_data_df <- qc_data %>% summarise(Genome.ID = paste0(Genome.ID,collapse=";"),WGS_qc_pass = paste0(qc_pass,collapse=";"),Genome.ID_qc_pass = paste0(subset(Genome.ID_qc_passing,Genome.ID_qc_passing != ''),collapse=";"))
+  return(qc_data_df)
+}
+ 
+qc_summary <- lapply(metadata_w_genomic_id$Genome.ID,FUN=get_qc_flag,QC_data=qcd) %>% do.call(rbind,.) %>% distinct
+
+paste0("Number of metadata entires: ", nrow(qc_summary))
+
+qc_summary$WGS_qc_pass_runs_num <- sapply(qc_summary$WGS_qc_pass,FUN=function(x){
+  str_split(string = x,pattern = ';') %>% unlist %>% subset(.,.==TRUE) %>% length
+})
+qc_summary$WGS_qc_pass_ids_num <- sapply(qc_summary$Genome.ID_qc_pass,FUN=function(x){
+  str_split(string = x,pattern = ';') %>% unlist %>% subset(.!= "") %>% length
+})  
+
+metadata_w_genomic_id_qc_status <- left_join(metadata_w_genomic_id,qc_summary)
+
+paste0("Number metadata entries with qc passing genome: ", sum(metadata_w_genomic_id_qc_status$WGS_qc_pass_runs_num>0))
+paste0("Proportion of metadata entries with qc passing genome: ",  round(sum(metadata_w_genomic_id_qc_status$WGS_qc_pass_runs_num>0) / nrow(metadata_w_genomic_id_qc_status),2))
+
+paste0("Duplicates: ")
+paste0("Number metadata entries with >1 qc passing genome: ", sum(metadata_w_genomic_id_qc_status$WGS_qc_pass_runs_num>1))
+```
+
+# Save curated maps
+```{r}
+saveRDS(sequencing_fin,'./MERLIN-prolonged-colonization-ms/data/QCD/sequencing_lookup_curated.RDS')
+```
+
+# Save metadata with genomic ID
+```{r}
+saveRDS(metadata_w_genomic_id_qc_status,"./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id.RDS")
+```

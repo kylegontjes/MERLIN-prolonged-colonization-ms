@@ -1,0 +1,38 @@
+#!/bin/sh
+# Job name
+#SBATCH --job-name=amrfinder
+# User info
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,END
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --output=./amrfinder.out
+#SBATCH --nodes=1  --ntasks=1 --cpus-per-task=20 --mem=100g --time=5:00:00
+
+IFS=$'\n'       # make newlines the only separator
+set -f          # disable globbing
+
+cd /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/amrfinder
+amrfinder --version
+
+isolates=`ls /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/assembly/illumina/spades/ |sort`
+
+# Initiate a list of commands
+command_list_array=()
+
+# Run for loop, where it generates isolate command for each of the forward end files.
+
+for isolate in $isolates
+do
+        # Echo isolate name
+        echo $isolate
+        # Create current command
+        curr_cmd="amrfinder -n  /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/assembly/illumina/spades/$isolate/$isolate\_contigs_l1000.fasta --plus -o $isolate\_amrfinder.out"
+        echo $curr_cmd
+        # Add the amrfinder command to list
+        command_list_array+=("$curr_cmd")
+done
+
+# Run convict commands using the unix parallel command.
+parallel ::: "${command_list_array[@]}"

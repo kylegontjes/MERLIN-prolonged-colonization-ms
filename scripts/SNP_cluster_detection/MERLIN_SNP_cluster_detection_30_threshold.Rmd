@@ -1,0 +1,115 @@
+---
+title: "MERLIN_SNP_cluster_detection_30_threshold"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/')
+```
+ 
+# Environment
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse",'ggraph','igraph') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+```{r}  
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") %>% subset(escre==T & qc_pass==T)
+overall_pair_types <- readRDS('./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_pairs_dataset.RDS')
+SNP_distance_matrices <- readRDS('./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_matrices.RDS')
+``` 
+
+# Cluster calculation
+## Impure (i.e., any edge under threhold)
+```{r}
+get_clusters_under <- function(dataframe,pair_types,threshold){
+  pair_types_under_t <- subset(pair_types,pairwise_dist <=threshold)
+  vertices_info <- subset(dataframe,genomic_id %in% c(unique(c(pair_types_under_t$isolate1,pair_types_under_t$isolate2)))) %>% select(genomic_id)  
+  ig <- graph_from_data_frame(pair_types_under_t %>% select(isolate1,isolate2),vertices = vertices_info)  
+  options(ggrepel.max.overlaps = Inf)
+
+  clusters <- components(ig)
+
+  # Calculate the size of each cluster
+  cluster_sizes <- table(clusters$membership)
+  ordered_cluster_ids <- order(cluster_sizes, decreasing = TRUE)
+  clusters$membership_ordered <- factor(clusters$membership, levels = names(cluster_sizes)[ordered_cluster_ids]) 
+  
+clusters <- components(ig)$membership
+genomic_id <- names(clusters)
+cluster <- clusters
+cluster_call <- cbind.data.frame(genomic_id,cluster)
+
+get_cluster_membership <- function(isolate,clustering){
+  if(isolate %in% names(clustering)){
+    cluster <- subset(clustering,names(clustering) == isolate)
+    
+  }
+  if(!isolate %in% names(clustering)){
+    cluster <- ""
+  }
+  return(cluster)
+}
+cluster <- lapply(dataframe$genomic_id,FUN=get_cluster_membership,clusters) %>% unlist %>% `names<-`(dataframe$genomic_id)
+
+data_list <- list(clustering_graph=ig,cluster=cluster)
+return(data_list)
+
+} 
+
+cluster_30_SNPs <- get_clusters_under(df,overall_pair_types,threshold=30)
+```
+
+
+# Merge clustering with metadata
+```{r}
+cluster_data <- cbind.data.frame(genomic_id = cluster_30_SNPs$cluster %>% names,cluster = cluster_30_SNPs$cluster)  
+cluster_data$cluster <- ifelse(cluster_data$cluster=='','singleton',cluster_data$cluster)
+cluster_df <- left_join(cluster_data,df %>% select(Species,ST,Species_ST,genomic_id))
+
+table(cluster_df$cluster)
+```
+
+## Get Species + ST + Clusters 
+```{r} 
+ST_list <- cluster_df$Species_ST %>% unique %>% sort
+
+recode_ST_data <- function(ST,metadata){
+  ST_df <- metadata[ metadata$Species_ST == ST,]  
+  clusters <-table( ST_df$cluster %>% subset(.!= "singleton")) %>% sort(decreasing=T) %>% subset(. >0) %>% names
+  # Recode clusters
+  if(length(clusters)>0){
+  new_name <- 1:length(clusters) %>% as.character
+  names(new_name) <-clusters  
+  ST_df$clusters_recode <- recode(ST_df$cluster,!!!new_name)
+  }
+  if(length(clusters)==0){
+  ST_df$clusters_recode <- ST_df$cluster
+  }
+  # Create species ST cluster dataframe
+  ST_df$Species_ST_cluster <- ifelse(ST_df$clusters_recode=="singleton",paste0(ST_df$Species_ST," Singleton"), paste0(ST_df$Species_ST," Cluster ",ST_df$clusters_recode)) 
+  
+  ST_df <- ST_df %>% select(-clusters_recode)
+  return(ST_df)
+}
+
+ST_df <- lapply(ST_list,recode_ST_data,cluster_df) %>% do.call(rbind,.)
+```
+
+```{r} 
+saveRDS(ST_df,"./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_30_SNP_clusters.RDS")
+``` 

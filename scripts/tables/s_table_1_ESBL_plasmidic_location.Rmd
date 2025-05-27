@@ -1,0 +1,60 @@
+---
+title: "s_table_1_plasmidic_location"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse",'kableExtra') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+```{r cars} 
+df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
+plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_beta_lactam_presence_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
+amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
+```
+
+```{r}
+amrfinder_ESBL <- amrfinder %>% subset(grepl("CTX|OXA|TEM|SHV|PER|VEB|GES|TLA|BES",element_symbol))
+ESBL_genes <- amrfinder_ESBL$element_symbol %>% unique %>% sort
+```
+
+```{r}
+analyze_frequency_on_plasmid <- function(ESBL,plasmid_data){
+  chromosome_ESBL <- str_split(string = plasmid_data$ESBL_chromosome_genes,';') %>% unlist %>% subset(.==ESBL)
+  plasmid_ESBSL <- str_split(string = plasmid_data$ESBL_plasmid_genes,';') %>% unlist %>% subset(.==ESBL)
+  n_chromosome <- length(chromosome_ESBL)
+  n_plasmid <- length(plasmid_ESBSL)
+  prop_plasmid <-  round(n_plasmid / (n_chromosome + n_plasmid) * 100 , 2)
+  results <- cbind.data.frame(ESBL,n_chromosome,n_plasmid,prop_plasmid)
+  return(results)
+}
+
+ESBL_prop_data <- lapply(ESBL_genes,analyze_frequency_on_plasmid,plasmid_data) %>% do.call(rbind,.) %>% arrange(prop_plasmid,n_plasmid)
+colnames(ESBL_prop_data) <- c("ESBL","No. chromosomal","No. plasmidic","Proportion plasmidic")
+
+ESBL_prop_data %>% gontjesr::favorite_kable() 
+```
+
+```{r}
+saveRDS(ESBL_prop_data,"./tables/s_table_1_ESBL_proportion_plasmidic.RDS")
+write_csv(ESBL_prop_data,"./tables/s_table_1_ESBL_proportion_plasmidic.csv")
+```
+

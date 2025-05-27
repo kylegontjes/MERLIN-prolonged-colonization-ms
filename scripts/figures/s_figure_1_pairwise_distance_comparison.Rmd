@@ -1,0 +1,73 @@
+---
+title: "s_figure_1_pairwise_distance_comparison"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+ 
+# Environment
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse",'ggplot2','gridExtra') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Scripts
+source("./lib/consistent_themes.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+``` 
+
+```{r}
+df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")
+overall_pair_types <- readRDS("./data/SNP_distance/MERLIN_SNP_distance_pairs_dataset.RDS") 
+```
+
+# Update pairtypes with the following questions
+```{r}
+update_pair_types_df_w_questions <- function(pair_types_df){
+  index_cases <- ifelse(pair_types_df$visit1==0 & pair_types_df$visit2==0,T,F)
+  same_household <- ifelse(pair_types_df$household1==pair_types_df$household2,T,F)
+  same_household_visit <- ifelse(pair_types_df$household1==pair_types_df$household2 & pair_types_df$visit1==pair_types_df$visit2,T,F)
+  same_specimen <- ifelse(pair_types_df$specimen1==pair_types_df$specimen2,T,F)
+  same_individual <- ifelse(pair_types_df$individual_id1==pair_types_df$individual_id2,T,F)
+  ST_pair <- ifelse(pair_types_df$Species_ST1==pair_types_df$Species_ST2,T,F)
+  same_specimen_category <- ifelse(pair_types_df$specimen_category1 ==pair_types_df$specimen_category2,T,F)
+  both_human <- ifelse(pair_types_df$specimen_category1 == "Human" & pair_types_df$specimen_category2 == "Human",T,F)
+  both_pet <- ifelse(pair_types_df$specimen_category1 == "Pet" & pair_types_df$specimen_category2 == "Pet",T,F)
+  both_env <- ifelse(pair_types_df$specimen_category1 == "Environment" & pair_types_df$specimen_category2 == "Environment",T,F)  
+  
+  dataset <- cbind(pair_types_df,index_cases=index_cases,same_household=same_household,same_household_visit=same_household_visit,same_specimen=same_specimen,ST_pair=ST_pair,same_specimen_category=same_specimen_category,same_individual=same_individual,both_human=both_human,both_pet=both_pet,both_env=both_env)
+  return(dataset)
+}
+```
+
+```{r,fig.width=10,fig.height=6}
+overall_pair_types <- overall_pair_types %>% update_pair_types_df_w_questions
+overall_pair_types_index <- subset(overall_pair_types,individual_id1 %in%  df_index$individual_id & individual_id2 %in% df_index$individual_id )
+
+overall_pair_types_index <- as.data.frame(overall_pair_types_index)
+overall_pair_types_index$pairwise_dist <- as.numeric(overall_pair_types_index$pairwise_dist)
+s_figure_1 <- ggplot(data=overall_pair_types_index,aes(x=pairwise_dist,fill=same_household)) + geom_histogram(bins=100)+ xlab("Pairwise SNP distance")+ ylab("Number of pairs") + theme_bw_me + pairtype_fill  + s_figure_1_format
+s_figure_1_inlet <- ggplot(data=overall_pair_types_index %>% subset(pairwise_dist <500),aes(x=pairwise_dist,fill=same_household)) + geom_histogram(bins=100) + theme_bw_me + xlab("") + ylab("") + pairtype_fill + geom_vline(xintercept = 30,colour = 'red',linetype = 2) + s_figure_1_inset_format
+
+s_figure_1 <- s_figure_1 +  annotation_custom(ggplotGrob(s_figure_1_inlet), xmin = 65000, xmax = 150000, ymin = 150, ymax = 600)
+ s_figure_1
+```
+
+```{r}
+ggsave(plot = s_figure_1,filename = './figures/s_figure_1_pairwise_SNP_distance.png',dpi = 600,width = 10,height = 6)
+```
+

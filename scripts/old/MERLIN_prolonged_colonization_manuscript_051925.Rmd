@@ -1,0 +1,620 @@
+---
+title: "MERLIN Prolonged Colonization Analyses Using WGS Data"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission')
+```
+
+# Notes:
+
+1.  **Analysis:** Evaluated prolonged colonization of ESCrE traits (e.g., ESCrE strain and/or ESBL genes) in index participants (e.g., humans contributing clinical specimen)
+2.  **Definition of prolonged colonization:**
+    1.  Sharing same ESCrE trait (i.e., strain and/or plasmidic ESBL gene) found in the clinical isolate on 1 or 2 month sample collection.
+    2.  Did not present data on alternative metrics, but happy to share them!
+3.  **Population:** Only focused on the isolates contributed by the index patients.
+    1.  Thus, novel strain acquisition and prolonged colonization in the household, irespective of individual, were not evaluated.
+    2.  Of 37 households in the dataset, the prolonged colonization analysis focused on the 31 patients with an ESCrE clinical specimen.
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra','ComplexHeatmap','gontjesr') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+```{r, include=F}
+theme_bw_me <- theme(panel.background = element_rect(fill = "white",colour = NA), panel.grid = element_blank(), 
+            strip.background = element_rect(fill = "white",colour = "black"),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+             axis.line = element_line(colour = "black"),legend.position = "bottom")  
+```
+
+# Data
+
+1.  Successfully merged the 263 metadata entries with our WGS data
+2.  One metadata entry had \>1 strain (multiple colonies were sequenced) and thus were split into two separate metadata entries
+
+```{r}
+df <- readRDS("./2025-04-18_final_metadata/MERLIN_species_genomic_metadata_041825.RDS")    %>% subset(QC.Check=="PASS" & escre==T)
+```
+
+```{r}
+paste0("Number of QC-passing, ESCrE genomes: ",nrow(df))
+paste0("Number of households w/ QC-passing ESCrE genomes: ",length(unique(df$household))) 
+```
+
+# Sampling summary for index cases
+
+```{r}
+df_index <- subset(df,index==TRUE)
+df_index$isolate_name <- paste0(df_index$household,"_",df_index$visit,"_",df_index$specimen)
+```
+
+1.  Of 34 participants in metadata, only 31 had an ESCrE index case
+2.  Of the 34 participants:
+    1.  27 contributed \>1 sample
+    2.  28 (83%) had \>=1 follow up specimen
+    3.  23 (67.6%) had only 1 ESCrE strain detected
+
+```{r}
+paste0("Number of index participants in metadata: ",length(unique(df_index$household)))  
+paste0("Number of index participants w QC-passing ESCrE index isolate: ",df_index %>% subset(visit==0 & escre==TRUE) %>% nrow)  
+paste0("Number of QC-passing ESCrE genomes from index patients: ",df_index %>% subset(escre==TRUE) %>% nrow)
+ 
+patient_summmary <- df_index %>% group_by(household) %>% summarise(total_samples = n(), 
+                                                                   total_follow_up_samples = sum(visit!=0),
+                                                                   total_escre_samples = sum(escre=="TRUE"), 
+                                                                   total_follow_up_samples_escre = sum(escre=="TRUE" & visit!=0),total_escre_strains = length(unique(Species_ST_cluster)))
+
+gontjesr::convert_tableone_into_df(patient_summmary,vars=c('total_escre_samples',"total_follow_up_samples_escre","total_escre_strains"),factorVars =c('total_escre_samples',"total_follow_up_samples_escre","total_escre_strains")) %>% favorite_kable()
+
+A <- ggplot(data=patient_summmary,aes(x=total_escre_samples)) + geom_histogram(fill = 'black') + theme_bw_me + xlab("Total ESCrE samples") + ylab("No. households")   + ylim(NA,12) + xlim(NA,7)
+B <- ggplot(data=patient_summmary,aes(x=total_follow_up_samples_escre)) + geom_histogram(fill = 'black') + theme_bw_me + xlab("Total follow-up ESCrE samples") + ylab("No. households")   + ylim(NA,12) + xlim(NA,7)
+C <- ggplot(data=patient_summmary,aes(x=total_escre_strains)) + geom_histogram(fill = 'black') + theme_bw_me + xlab("Total ESCrE strains") + ylab("No. households")     + xlim(NA,7)
+
+cowplot::plot_grid(A,B,C,labels = "AUTO",ncol=2)
+```
+
+# Evaluation of prolonged colonization using the 'any ESCrE' metric
+
+Notes:
+
+-   **Population:** index participants that contributed an ESCrE+ clinical specimen
+
+-   **Method:** Used the presence of an ESCrE+ specimen at follow-up specimens.
+
+## 1. What are the initial strains of these patients
+
+```{r}
+df_index_first_isolate <- df_index %>% subset(escre==TRUE & visit==0) 
+```
+
+### a. Specimen source
+
+1.  Virtually all (n=28;90.3%) were urine isolates
+
+```{r}
+gontjesr::convert_tableone_into_df(df_index_first_isolate,vars="type_of_specimen") 
+```
+
+### b. Species Data
+
+1.  Most (61%) were E. coli
+
+```{r}
+gontjesr::convert_tableone_into_df(df_index_first_isolate,vars="Species")   %>% favorite_kable()
+
+ggplot(df_index_first_isolate,aes(x=forcats::fct_infreq(Species))) + geom_histogram(stat='count',fill='black') +theme_bw_me + xlab("Species") + ylab("No. specimens") + theme(axis.text = element_text(angle=90)) + ylim(NA,20)
+```
+
+### c. Sequence type data
+
+1.  Lots of E. coli ST 131 (29.0%)
+2.  Two other sequence types had \>1 index isolate (E. hormaechei ST45 & E. coli ST69)
+
+```{r}
+gontjesr::convert_tableone_into_df(df_index_first_isolate,vars="Species_ST")  %>% favorite_kable()
+
+ggplot(df_index_first_isolate,aes(x=fct_infreq((Species_ST)))) + geom_histogram(stat='count',fill='black') +theme_bw_me + xlab("Species + Sequence type") + ylab("No. specimens") + theme(axis.text.x = element_text(angle = 90)) + ylim(NA,10)
+```
+
+### d. Sequence type + clustering using pairwise SNP distance
+
+1.  We used a SNP threshold of \<= 30 SNPs
+2.  Only one episode where two index isolates found in a cluster w/i 30 SNPs: E. coli St 131 cluster 2
+3.  Many of these index isolates belonged to a cluster.
+4.  **Interpretation:** This could be indicative of prolonged colonization AND/OR strain transfer among household members
+
+```{r}
+gontjesr::convert_tableone_into_df(df_index_first_isolate,vars="Species_ST_cluster")    %>% favorite_kable()
+```
+
+## 2. Following 31 index participants with clinical ESCrE+ specimen over time revealed persistent ESCrE detection on follow-up visits
+
+### a. Number of subjects with positive ESCrE on a follow-up
+
+-   Note that 101cases had \>1 ESCrE strain
+-   Of 31 patients, 25 had \>=1 ESCrE specimen at visits 1, 2, or 3.
+
+```{r,fig.width=8,fig.height=8}
+ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & escre==T) %>% .$household
+ESCRE_index_patient_summmary <- df_index %>% subset(household %in% ESCrE_index_positive_households) %>% group_by(household) %>% summarise(total_samples = n(), 
+                                                                   total_follow_up_samples = sum(visit!=0),
+                                                                   total_escre_samples = sum(escre=="TRUE"), 
+                                                                   total_follow_up_samples_escre = sum(escre=="TRUE" & visit!=0),
+                                                                   total_escre_species = length(unique(Species_ST)),
+                                                                   total_escre_strains = length(unique(Species_ST_cluster)))
+ 
+A <- ggplot(data=ESCRE_index_patient_summmary,aes(x=total_escre_samples)) + geom_histogram(fill = 'black') + theme_bw_me + xlab("Total ESCrE samples") + ylab("No. cases")   + ylim(NA,12) + xlim(NA,7)
+B <- ggplot(data=ESCRE_index_patient_summmary,aes(x=total_follow_up_samples_escre)) + geom_histogram(fill = 'black') + theme_bw_me + xlab("Total follow-up ESCrE samples") + ylab("No. cases")   + ylim(NA,12) + xlim(NA,7)
+C <- ggplot(data=ESCRE_index_patient_summmary,aes(x=total_escre_species)) + geom_histogram(fill = 'black') + theme_bw_me + xlab("Total ESCrE species") + ylab("No. cases")   + ylim(NA,22) + xlim(NA,7)  
+
+cowplot::plot_grid(A,B,C,labels = "AUTO",ncol=2)
+```
+
+### b. ESCrE positivity at follow-up visits
+
+1.  Many (25/31) participants were positive with ESCrE at a follow-up visit
+2.  Positivity at specific visits:
+    1.  Baseline: 18/31
+    2.  1 month: 20/31
+    3.  2 month: 19/31
+3.  Extending prolonged colonization to visit 1 and/or 2 may better capture prolonged colonization, as not all individuals were positive at both visit 1 and 2...
+
+```{r,fig.height=8}
+no_positive_follow_up <- sum(ESCRE_index_patient_summmary$total_follow_up_samples_escre>=1)
+
+paste0("Number of specimens with an ESCrE+ fecal sample w/ WGS QC-passing ESCrE+ genome during follow-up: ", no_positive_follow_up, " (", round(no_positive_follow_up / length(ESCrE_index_positive_households),2)*100,"%)")
+
+
+ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & escre==T) %>% .$household
+ESCRE_index_patient_summmary_longitudinal <- df_index %>% subset(household %in% ESCrE_index_positive_households) %>% group_by(household) %>% 
+  summarise(samples = n(), 
+            ESCRE = sum(escre=="TRUE",na.rm = T),
+            ESCRE_index_ct = sum(escre=="TRUE" & visit==0),
+            ESCRE_index_any = ifelse(ESCRE_index_ct>0,1,0),
+            ESCRE_follow_up_ct = sum(escre=="TRUE" & visit!=0),
+            ESCRE_follow_up_any =  ifelse(ESCRE_follow_up_ct>0,1,0), 
+            ESCRE_baseline_ct = sum(escre=="TRUE" & visit==1),
+            ESCRE_baseline_any = ifelse(ESCRE_baseline_ct>0,1,0), 
+            ESCRE_1_month_ct = sum(escre=="TRUE"& visit==2),
+            ESCRE_1_month_any = ifelse(ESCRE_1_month_ct>0,1,0), 
+            ESCRE_2_month_ct = sum(escre=="TRUE"& visit==3), 
+            ESCRE_2_month_any = ifelse(ESCRE_2_month_ct>0,1,0),
+            ESCRE_at_1_and_or_2 = ifelse(ESCRE_1_month_any==1 | ESCRE_2_month_any==1,1,0))
+          
+# Any plot  
+ESCRE_index_patient_any <- ESCRE_index_patient_summmary_longitudinal %>% select(household,ESCRE_index_any,ESCRE_follow_up_any,ESCRE_at_1_and_or_2,ESCRE_baseline_any,ESCRE_1_month_any,ESCRE_2_month_any)
+
+ESCRE_index_patient_any_melt <- reshape2::melt(ESCRE_index_patient_any,id.vars="household")
+ESCRE_index_patient_any_melt$value <- factor(ESCRE_index_patient_any_melt$value,levels = c(0,1))
+ESCRE_index_patient_any_melt$variable <- recode(ESCRE_index_patient_any_melt$variable,'ESCRE_index_any'='Index sample','ESCRE_follow_up_any'='Any Follow-up sample','ESCRE_at_1_and_or_2' = 'Month 1 and/or 2' ,'ESCRE_baseline_any'='Baseline visit','ESCRE_1_month_any'='Month 1 visit','ESCRE_2_month_any'='Month 2 visit')
+
+ggplot(data=ESCRE_index_patient_any_melt) + geom_bar(aes(x=variable,fill=value))     + xlab("ESCrE Status at sampling period") + ylab("Count") + scale_fill_manual(breaks = c(0,1),values = c("gray","black"),labels = c("Absent","Present"),name="ESCrE Status")
+
+paste0("Number of isolates with colonization at month 1 and/or 2 visit: ",sum(ESCRE_index_patient_summmary_longitudinal$ESCRE_at_1_and_or_2), " (", round(sum(ESCRE_index_patient_summmary_longitudinal$ESCRE_at_1_and_or_2) / length(ESCrE_index_positive_households),2)*100,"%)")
+
+paste0("Heatmap of specimens")
+ESCRE_index_patient_any %>% as.data.frame %>% `rownames<-`(.$household) %>%  select(-ESCRE_index_any,-household,-ESCRE_follow_up_any,-ESCRE_at_1_and_or_2) %>% mutate_all(as.factor) %>% Heatmap(col=c("white","black") %>% `names<-`(c(0,1)),name="ESCrE Presence",cluster_columns = F,cluster_rows = T,show_row_names = T)
+```
+
+# Evaluation of prolonged colonization using molecular data
+
+-   Prolonged colonization compares the index clinical specimen (i.e., visit =0) to the specimens collected during one- and two-month follow up visits
+
+## 1. Prolonged colonization across different definitions
+
+1.  Any
+2.  Species
+3.  Species + ST
+4.  Species + ST + Cluster (30 SNP threshold)
+
+**Finding:** \~17/31 (54.8%) index participants were colonized with same strain at month 1 and/or 2!
+
+-   Large number of prolonged colonization.
+
+```{r}
+overall_pair_types <- readRDS("~/Desktop/gl_merlin/Analysis/Household_transmission/2025-04-17_SNPKIT_SNP_distance/results/MERLIN_SNP_pair_df_041725.RDS")
+SNP_distance_matrices <- readRDS("~/Desktop/gl_merlin/Analysis/Household_transmission/2025-04-17_SNPKIT_SNP_distance/results/MERLIN_SNP_distance_matrices_041725.RDS")
+
+```
+
+# Update pairtypes with the following questions
+```{r}
+update_pair_types_df_w_questions <- function(pair_types_df){
+  index_cases <- ifelse(pair_types_df$visit1==0 & pair_types_df$visit2==0,T,F)
+  same_household <- ifelse(pair_types_df$household1==pair_types_df$household2,T,F)
+  same_household_visit <- ifelse(pair_types_df$household1==pair_types_df$household2 & pair_types_df$visit1==pair_types_df$visit2,T,F)
+  same_specimen <- ifelse(pair_types_df$specimen1==pair_types_df$specimen2,T,F)
+  same_individual <- ifelse(pair_types_df$individual_id1==pair_types_df$individual_id2,T,F)
+  ST_pair <- ifelse(pair_types_df$Species_ST1==pair_types_df$Species_ST2,T,F)
+  same_specimen_category <- ifelse(pair_types_df$specimen_category1 ==pair_types_df$specimen_category2,T,F)
+  both_human <- ifelse(pair_types_df$specimen_category1 == "Human" & pair_types_df$specimen_category2 == "Human",T,F)
+  both_pet <- ifelse(pair_types_df$specimen_category1 == "Pet" & pair_types_df$specimen_category2 == "Pet",T,F)
+  both_env <- ifelse(pair_types_df$specimen_category1 == "Environment" & pair_types_df$specimen_category2 == "Environment",T,F)  
+  
+  dataset <- cbind(pair_types_df,index_cases=index_cases,same_household=same_household,same_household_visit=same_household_visit,same_specimen=same_specimen,ST_pair=ST_pair,same_specimen_category=same_specimen_category,same_individual=same_individual,both_human=both_human,both_pet=both_pet,both_env=both_env)
+  return(dataset)
+}
+
+### Baseline theme
+theme_bw_me <- theme(panel.background = element_rect(fill = "white",colour = NA), panel.grid = element_blank(), 
+                     strip.background = element_rect(fill = "white",colour = "black"),
+                     panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(),
+                     axis.line = element_line(colour = "black"),legend.position = "bottom") 
+ 
+pairtype_fill <- scale_fill_manual(breaks=c(T,F),values = c('#FFCB05','#00274C'),labels = c("Intra-patient",'Inter-patient'), name="Type", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
+
+```
+
+```{r}
+library(ggplot2)
+library(gridExtra)
+overall_pair_types <- overall_pair_types %>% update_pair_types_df_w_questions
+overall_pair_types_index <- subset(overall_pair_types,individual_id1 %in%  df_index$individual_id & individual_id2 %in% df_index$individual_id )
+
+overall_pair_types_index <- as.data.frame(overall_pair_types_index)
+overall_pair_types_index$pairwise_dist <- as.numeric(overall_pair_types_index$pairwise_dist)
+s_figure_1 <- ggplot(data=overall_pair_types_index,aes(x=pairwise_dist,fill=same_household)) + geom_histogram(bins=100)+ xlab("Pairwise SNP distance")+ ylab("No. pairs") + theme_bw_me + pairtype_fill 
+s_figure_1_inlet <- ggplot(data=overall_pair_types_index %>% subset(pairwise_dist <500),aes(x=pairwise_dist,fill=same_household)) + geom_histogram(bins=100) + theme_bw_me + xlab("") + ylab("") + theme(legend.position = 'none') +pairtype_fill + geom_vline(xintercept = 30,colour = 'red',linetype = 2)
+
+s_figure_1 <- s_figure_1 +  annotation_custom(ggplotGrob(s_figure_1_inlet), xmin = 65000, xmax = 150000, ymin = 150, ymax = 600)
+s_figure_1 + theme(legend.position = 'bottom') 
+
+```
+
+
+```{r}
+get_prolonged_colonization <- function(isolate,metadata,variable){
+  isolate_df <- subset(metadata,household==isolate)
+  isolate_index <- subset(isolate_df,visit==0) %>% .[[variable]]
+  isolate_follow_up <- subset(isolate_df,visit>0)
+  isolate_follow_up_same_any <- ifelse(sum(isolate_follow_up[[variable]] == isolate_index)>0,1,0)
+  isolate_baseline <- subset(isolate_df,visit==1)
+  isolate_baseline_same <- ifelse(sum(isolate_baseline[[variable]] == isolate_index)>0,1,0)
+  isolate_one_month <- subset(isolate_df,visit==2)
+  isolate_one_month_same <- ifelse(sum(isolate_one_month[[variable]] == isolate_index)>0,1,0)
+  isolate_two_month <- subset(isolate_df,visit==3)
+  isolate_two_month_same <- ifelse(sum(isolate_two_month[[variable]] == isolate_index)>0,1,0)
+  index_at_1_and_or_2 = ifelse(isolate_one_month_same==1 | isolate_two_month_same==1,1,0)
+   
+  results <- cbind.data.frame(household=isolate,isolate_baseline_same,isolate_one_month_same,isolate_two_month_same,index_at_1_and_or_2)
+  colnames(results) <- c("household",paste0(colnames(results)[-1],"_",variable))
+  return(results)
+}
+
+any_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='escre') %>% do.call(rbind,.)
+species_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species') %>% do.call(rbind,.)
+species_ST_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species_ST') %>% do.call(rbind,.)
+species_ST_cluster_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species_ST_cluster') %>% do.call(rbind,.)
+
+prolonged_df <- left_join(any_prolonged,species_prolonged) %>% left_join(.,species_ST_prolonged) %>% left_join(.,species_ST_cluster_prolonged)
+```
+
+```{r}
+prolonged_melt <- reshape2::melt(prolonged_df %>% select(household,index_at_1_and_or_2_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster),id.vars="household")
+prolonged_melt$value <- factor(prolonged_melt$value,levels = c(0,1))
+prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Species + ST','index_at_1_and_or_2_Species_ST_cluster'='Species + ST + Cluster')
+
+prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value)) %>% favorite_kable()
+
+ggplot(data=prolonged_melt) + geom_bar(aes(x=variable,fill=value))     + xlab("Prolonged colonization across molecular criteria") + ylab("Count") + scale_fill_manual(breaks = c(0,1),values = c("gray","black"),labels = c("Absent","Present"),name="ESCrE Status")
+```
+
+## 2. Specificity & True predictive value of any ESCrE vs. molecular taxonomical classifications
+
+1.  This analysis compares 'any ESCrE' metric, used as a simple surveillance tool, to the taxonomy-informed measurements of prolonged colonization like having same species, sequence type, and SNP-level strain.
+2.  We see moderate true predictive value, specificity, and an accuracy hovering around 75%!
+    1.  Supports the indication that the detection of any ESCrE in a household may be indicative of household transmission or persistence...
+
+```{r,fig.height=9,fig.width=8}
+get_marginal_stats <- function(feature,outcome){ 
+  if(class(outcome) != "numeric"){
+    stop("Outcome is not numeric")
+  }
+  if(class(feature) != "numeric"){
+    stop("Feature is not numeric")
+  }
+  
+  n <- length(outcome)
+  phenotype_count = sum(outcome)
+  phenotype_freq = phenotype_count / n
+  feature_count = sum(feature)
+  feature_freq = feature_count / n
+  
+  # Cells
+  tp = sum(outcome==1 & feature==1)
+  fp = sum(outcome==0 & feature==1)
+  tn = sum(outcome==0 & feature==0)
+  fn = sum(outcome==1 & feature==0)
+  # Summary stats
+  sens = round((tp / c(tp + fn)),3)
+  spec = round((tn / c(tn + fp)),3)
+  ppv = round((tp / c(tp + fp)),3)
+  npv = round((tn / c(tn + fn)),3)
+  accuracy =  round(((tp+tn)/n),3)
+  
+  data <- as.data.frame(cbind(phenotype = colnames(outcome),phenotype_count,phenotype_freq,feature_count,feature_freq,tp,fp,fn,tn,sens,spec,ppv,npv,accuracy))
+  rownames(data) <- colnames(feature)
+  data$name <-colnames(feature)
+  return(data)
+}
+
+outcomes <- c('index_at_1_and_or_2_Species_ST','index_at_1_and_or_2_Species_ST_cluster')
+comparison_of_any_ESCRE_to_WGS_outcomes <- lapply(outcomes,FUN=function(x){
+  get_marginal_stats(prolonged_df$index_at_1_and_or_2_Species,prolonged_df[[x]])
+}) %>% do.call(rbind,.) %>% mutate(outcome = outcomes) 
+
+comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- gsub("index_at_1_and_or_2_","",comparison_of_any_ESCRE_to_WGS_outcomes$outcome) %>% recode(.,'Species_ST'='Species + ST','Species_ST_cluster' = 'Species + ST + cluster (strain)','ESBL_plasmidic_genes' = 'Plasmidic ESBLs', 'Species_ST_cluster_ESBL_plasmidic_genes'='Strain + plasmidic ESBLs')  %>% factor(.,levels = c("Species","Species + ST","Species + ST + cluster (strain)","Plasmidic ESBLs",'Strain + plasmidic ESBLs'))
+
+A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=sens)) + geom_bar(stat='identity',fill="black") + ylab("Sensitivity") + xlab("Molecular Category")+ theme_bw_me + ylim(NA,1.01)  + theme(axis.text.x = element_text(angle=90))
+B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=ppv)) + geom_bar(stat='identity',fill="black") + ylab("True predictive value") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.01)  + theme(axis.text.x = element_text(angle=90))
+C <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.01)  + theme(axis.text.x = element_text(angle=90))
+D <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=npv)) + geom_bar(stat='identity',fill="black") + ylab("Negative predictive value") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.01)  + theme(axis.text.x = element_text(angle=90))
+E <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.01) + theme(axis.text.x = element_text(angle=90))
+
+cowplot::plot_grid(A,B,C,D,E,labels = "AUTO",ncol=3)
+```
+
+## 3. Incorporation of ESBL gene sharing identified one additional unexplained case of prolonged colonization
+
+**Hypothesis:** ESBL gene sharing could account for unexplained prolonged colonization cases
+
+```{r}
+amrfinder_mat <- readRDS("./2025-03-07_amrfinder/results/amrfinder_matrix_041425.RDS") %>% subset(rownames(.) %in% df_index$genomic_id) %>% select_if(colSums(.)>0)
+amrfinder <- readRDS("./2025-03-07_amrfinder/results/amrfinder_cleaned_041425.RDS")  %>% subset(element_symbol %in% colnames(amrfinder_mat))
+mobsuite_gene_pres <- readRDS("./2025-04-14_amrfinder_plasmid_curation/results/amrfinder_mobsuite_gene_presence_041425.RDS") %>% subset(genomic_id %in% df_index$genomic_id) 
+ESBL_plasmid_clusters <- readRDS("./2025-04-14_amrfinder_plasmid_curation/results/amrfinder_beta_lactam_plasmid_matrix_041425.RDS") %>% subset(rownames(.) %in% df_index$genomic_id) %>% select_if(colSums(.)>0)
+```
+
+```{r}
+df_index <- left_join(df_index,amrfinder_mat %>% mutate(genomic_id = rownames(.))) %>% left_join(ESBL_plasmid_clusters %>% mutate(genomic_id=rownames(.)))
+```
+
+### a. ESBL gene presence
+
+**Current list of ESBL genes (<https://www.sciencedirect.com/science/article/pii/S1198743X14640490>) :** TEM - SHV - CTX-M - PER - VEB - GES - TLA - BES - OXA
+
+Notice the clustering of specimens with the same ESBL profile. Could be indicative of prolonged colonization or species sharing ESBL genes!
+
+```{r,}
+amrfinder_blactam <- amrfinder %>% subset(class == "BETA-LACTAM")
+bla_genes <- amrfinder_blactam$element_symbol%>% unique %>% sort
+paste0("Number of beta-lactamase genes identified: " , length(amrfinder_blactam$element_symbol %>% unique))
+table(amrfinder_blactam$element_symbol,amrfinder_blactam$subclass)
+
+amrfinder_ESBL <- amrfinder %>% subset(grepl("CTX|OXA|TEM|SHV|PER|VEB|GES|TLA|BES",element_symbol))
+ESBL_genes <- amrfinder_ESBL$element_symbol %>% unique %>% sort
+df_index$visit_recode <- recode(df_index$visit,
+                                '0' ='Index',
+                                '1' = 'Baseline',
+                                '2' = '1 month',
+                                '3' = '2 month')
+                                
+                                
+row_ha <- rowAnnotation(index = df_index$household,
+  annotation_legend_param = list(
+    index = list(
+      title = "Participant",
+      ncol = 4  # <-- multiple columns in the legend!
+    )
+  ) ,
+  Sample = df_index$visit_recode)
+
+df_index <- df_index %>% arrange(household)
+ComplexHeatmap::Heatmap(df_index %>% select(amrfinder_ESBL$element_symbol) %>% mutate_all(as.factor) %>% {ifelse(.==1,"Present","Absent")} ,col = c("white","black"),name = "ESBL",cluster_rows = F,cluster_columns = T,show_row_names = F,right_annotation = row_ha)
+```
+
+### b. ESBL gene presence on plasmids
+
+1.  Some ESBL genes can be found exclusively on the chromosome.
+2.  Presence of these ESBL genes may not truly reflect prolonged colonization and instead acquisition of a circulating strain with same chromosomally encoded ESBL...
+3.  In turn, we chose to focus on ESBL genes identified on \>=1 plasmid-associated contig using mobsuite
+
+```{r,fig.width=10}
+get_ESBL_data <- function(isolate,mobsuite_gene_pres,bla_genes,ESBL_genes){
+  mobsuite_df <- subset(mobsuite_gene_pres,genomic_id == isolate)
+  plasmids_str <- mobsuite_df$type %>% subset(. != 'chromosome')  %>% paste0(collapse=';')  %>% {ifelse(is_empty(.)==T,"",.)}  
+  bla_genes_str <- mobsuite_df %>% select(bla_genes) %>% select_if(colSums(.)==1) %>% colnames() %>% paste0(collapse=';')
+  ESBL_genes_str <- mobsuite_df %>% select(ESBL_genes) %>% select_if(colSums(.)==1) %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
+  bla_chromosome_genes <-  mobsuite_df %>% subset(type=='chromosome') %>% select(bla_genes) %>% select_if(colSums(.)==1)  %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
+  ESBL_chromosome_genes <-  mobsuite_df %>% subset(type=='chromosome') %>% select(ESBL_genes) %>% select_if(colSums(.)==1)  %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
+  ESBL_plasmid_genes <- mobsuite_df %>% subset(type!='chromosome') %>% select(ESBL_genes) %>% select_if(colSums(.)==1)  %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
+  bla_plasmids <- subset(mobsuite_df,BETA_LACTAM_contig ==1) %>% .$type %>% subset(. != 'chromosome') %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
+  ESBL_plasmids <- subset(mobsuite_df,ESBL_contig ==1) %>% .$type %>% subset(. != 'chromosome') %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
+     
+  results <- cbind.data.frame(genomic_id = isolate,plasmids=plasmids_str,bla_genes=bla_genes_str,ESBL_genes=ESBL_genes_str,bla_chromosome_genes=bla_chromosome_genes,ESBL_chromosome_genes=ESBL_chromosome_genes,ESBL_plasmid_genes=ESBL_plasmid_genes,bla_plasmids=bla_plasmids,ESBL_plasmids = ESBL_plasmids)
+  return(results)
+}
+
+plasmid_data <- lapply(df_index$genomic_id,get_ESBL_data,mobsuite_gene_pres,bla_genes,ESBL_genes) %>% do.call(rbind,.)
+
+df_index <- left_join(df_index,plasmid_data)
+```
+
+```{r}
+analyze_frequency_on_plasmid <- function(ESBL,plasmid_data){
+  chromosome_ESBL <- str_split(string = plasmid_data$ESBL_chromosome_genes,';') %>% unlist %>% subset(.==ESBL)
+  plasmid_ESBSL <- str_split(string = plasmid_data$ESBL_plasmid_genes,';') %>% unlist %>% subset(.==ESBL)
+  n_chromosome <- length(chromosome_ESBL)
+  n_plasmid <- length(plasmid_ESBSL)
+  prop_plasmid <-  n_plasmid / (n_chromosome + n_plasmid)
+  results <- cbind.data.frame(ESBL,n_chromosome,n_plasmid,prop_plasmid)
+  return(results)
+}
+
+ESBL_prop_data <- lapply(ESBL_genes,analyze_frequency_on_plasmid,plasmid_data) %>% do.call(rbind,.)
+
+ESBL_prop_data %>% arrange(prop_plasmid) %>% gontjesr::favorite_kable()
+plasmidic_ESBLs <- subset(ESBL_prop_data,prop_plasmid>0) %>% .$ESBL %>% sort
+
+get_plasmidic_ESBSL <-  function(isolate,mobsuite_gene_pres,ESBL_plasmidic_genes){
+  mobsuite_df <- subset(mobsuite_gene_pres,genomic_id == isolate)
+  ESBL_plasmidic_genes_str <- mobsuite_df %>% select(ESBL_plasmidic_genes) %>% select_if(colSums(.)==1) %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)} 
+     
+  results <- cbind.data.frame(genomic_id = isolate,ESBL_plasmidic_genes=ESBL_plasmidic_genes_str)
+  return(results)
+}
+
+ESBL_plasmidic_presence <- lapply(df_index$genomic_id,get_plasmidic_ESBSL,mobsuite_gene_pres,plasmidic_ESBLs) %>% do.call(rbind,.)
+
+paste0("Number of isolates w/ plasmidic ESBL: ", ESBL_plasmidic_presence$ESBL_plasmidic_genes %>% subset(.!='') %>% length)
+
+df_index <- left_join(df_index,ESBL_plasmidic_presence)
+```
+
+### c. Application of plasmid-associated genes to characterization of prolonged colonization
+
+1.  We do see decent detection of prolonged colonization at 1 and 2 month visit using ESBL genes
+    1.  Sharing of ESBL plasmids was not useful, this may be a limitation of using short-read data to identify plasmids.
+2.  Addition of plasmidic genes minimally increases our detection of prolonged colonization!
+
+```{r}
+get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split){
+  isolate_df <- subset(metadata,household==isolate)
+  isolate_index <- subset(isolate_df,visit==0) %>% .[[variable]] %>% str_split(.,split) %>% unlist %>% subset(is.na(.)==F & .!='')
+  
+  if(length(isolate_index)==0){
+    isolate_follow_up_same_any=0
+    isolate_baseline_same=0
+    isolate_one_month_same=0
+    isolate_two_month_same=0
+    index_at_1_and_or_2=0 
+    } else{
+     isolate_follow_up <- subset(isolate_df,visit>0) %>% .[[variable]]  %>% str_split(.,split) %>% unlist  
+  isolate_follow_up_same_any <- ifelse(sum(isolate_follow_up %in% isolate_index)>0,1,0)
+  isolate_baseline <- subset(isolate_df,visit==1)%>% .[[variable]]  %>% str_split(.,split) %>% unlist
+  isolate_baseline_same <- ifelse(sum(isolate_baseline %in% isolate_index)>0,1,0)
+  isolate_one_month <- subset(isolate_df,visit==2) %>% .[[variable]]  %>% str_split(.,split) %>% unlist
+  isolate_one_month_same <- ifelse(sum(isolate_one_month %in% isolate_index)>0,1,0)
+  isolate_two_month <- subset(isolate_df,visit==3) %>% .[[variable]]  %>% str_split(.,split) %>% unlist 
+  isolate_two_month_same <- ifelse(sum(isolate_two_month %in% isolate_index)>0,1,0)
+  index_at_1_and_or_2 = ifelse(isolate_one_month_same==1 | isolate_two_month_same==1,1,0)
+   
+    
+  }
+ 
+  results <- cbind.data.frame(household=isolate,isolate_follow_up_same_any,isolate_baseline_same,isolate_one_month_same,isolate_two_month_same,index_at_1_and_or_2)
+  colnames(results) <- c("household",paste0(colnames(results)[-1],"_",variable))
+  return(results)
+}
+
+ESBL_plasmid_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESBL_plasmids',split=";") %>% do.call(rbind,.)
+
+ESBL_genes_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESBL_genes',split=";") %>% do.call(rbind,.)
+
+ESBL_plasmidic_gene_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESBL_plasmidic_genes',split=";") %>% do.call(rbind,.)
+
+prolonged_df <- left_join(prolonged_df,ESBL_plasmid_sharing) %>% left_join(.,ESBL_plasmidic_gene_sharing) %>% left_join(.,ESBL_genes_sharing) 
+
+# Create new merged datapoints
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESBL_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESBL_genes ==1,1,0)
+
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESBL_plasmidic_genes ==1,1,0)
+
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmids <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESBL_plasmids ==1,1,0)
+
+prolonged_melt <- reshape2::melt(prolonged_df %>% select(household,index_at_1_and_or_2_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster,index_at_1_and_or_2_ESBL_genes,index_at_1_and_or_2_ESBL_plasmidic_genes,index_at_1_and_or_2_ESBL_plasmids,index_at_1_and_or_2_Species_ST_cluster_ESBL_genes,index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes,index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmids),id.vars="household")
+prolonged_melt$value <- factor(prolonged_melt$value,levels = c(0,1))
+prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Species + ST','index_at_1_and_or_2_Species_ST_cluster'='Species + ST + Cluster (Strain)','index_at_1_and_or_2_ESBL_genes'='ESBL gene','index_at_1_and_or_2_ESBL_plasmidic_genes'= 'Plasmidic ESBL','index_at_1_and_or_2_ESBL_plasmids'= 'ESBL plasmid',
+  'index_at_1_and_or_2_Species_ST_cluster_ESBL_genes'='Strain +/- ESBL',
+  'index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes'='Strain +/- plasmidic ESBL',
+  'index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmids'='Strain +/- ESBL plasmid')
+
+prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value)) %>% favorite_kable()
+```
+
+```{r,fig.width=7.5,fig.height=7}
+
+ggplot(data=prolonged_melt) + geom_bar(aes(x=variable,fill=value))     + xlab("") + ylab("Count") + scale_fill_manual(breaks = c(1,0),values = c("#00274C","#FFCB05"),labels = c("Present","Absent"),name="Prolonged Colonization") + theme(axis.text.x = element_text(angle=90)) + theme_bw_me
+```
+
+#### i. Two case patients had episode of shraing ESBL plasmidic genes
+First, participant 1H had a case of persistence of blaCTX-M-15 gene. Initially present in an E. coli ST69, this  blaCTX-M-15 gene  was later observed in K. pneumoniae ST45 and E. coli ST6321 strains present at the baseline and first month follow-up visit. Secondly, participant 169H had a blaCTX-M-15 gene present on an E. coli ST131 genome on initial sampling. This ESBL gene was later found on a different E. coli ST131 strain at the first and second month sampling visit.
+ 
+
+```{r}
+paste0("Strain vs. Plasmid sharing")
+table(prolonged_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_df$index_at_1_and_or_2_ESBL_plasmidic_genes,dnn=c("Strain","Plasmidic ESBL"))  
+```
+
+```{r,results='asis'}
+same_ESBL_not_same_strain <- prolonged_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESBL_plasmidic_genes==1) %>% .$household
+
+lapply(same_ESBL_not_same_strain,FUN=function(x){
+  
+  df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESBL_genes,ESBL_plasmidic_genes,  bla_chromosome_genes,ESBL_chromosome_genes,ESBL_plasmid_genes,bla_plasmids,ESBL_plasmids) %>% arrange(visit)   
+}) %>% lapply(.,gontjesr::favorite_kable)
+```
+
+#### ii. Two case patients had no episode of sharing ESBL plasmidic genes, but had prolonged colonization of the same ESCrE strain
+
+1.  387H had no ESBL genes, but were identified as ESCrE on phenotypic assay
+2.  49H had a possible loss of an ESBL plasmid.
+    1.  AB714 had CTX-M-15 at visit 0. This was lost at visit 1 & 2.
+    2.  AA176 had blaTEM-214 at visit 0. While this plasmid was found at the baseline visit (i.e., visit 1), the gene was not detected.\
+
+```{r,results='asis'}
+same_strain_not_same_ESBL <- prolonged_df %>% subset(index_at_1_and_or_2_Species_ST==1 & index_at_1_and_or_2_ESBL_plasmidic_genes==0) %>% .$household
+
+lapply(same_strain_not_same_ESBL,FUN=function(x){
+  
+  df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESBL_genes,ESBL_plasmidic_genes,  bla_chromosome_genes,ESBL_chromosome_genes,ESBL_plasmid_genes,bla_plasmids,ESBL_plasmids) %>% arrange(visit)   
+}) %>% lapply(.,gontjesr::favorite_kable)
+```
+
+## 4. Specificity & True predictive value of 'any ESCrE' vs. molecular taxonomical classifications + plasmid-associated ESBL genes
+
+1.  Addition of plasmid-associated ESBL genes increases the accuracy of the 'any ESCrE' metric from 77% to 84%!
+2.  Final predictive statistics for any ESCrE of prolonged colonization:
+    1.  Sensitivity: 100 %
+    2.  Specificity: 61.5%
+    3.  PPV: 78.3%
+    4.  NPV: 100%
+    5.  Accuracy: 83.9%
+
+```{r,fig.height=9,fig.width=8}
+outcomes <- c('index_at_1_and_or_2_Species_ST','index_at_1_and_or_2_Species_ST_cluster','index_at_1_and_or_2_ESBL_plasmidic_genes','index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes')
+
+comparison_of_any_ESCRE_to_WGS_outcomes <- lapply(outcomes,FUN=function(x){
+  get_marginal_stats(prolonged_df$index_at_1_and_or_2_Species,prolonged_df[[x]])
+}) %>% do.call(rbind,.) %>% mutate(outcome = outcomes) 
+
+comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- gsub("index_at_1_and_or_2_","",comparison_of_any_ESCRE_to_WGS_outcomes$outcome) %>% recode(.,'Species_ST'='Species + ST','Species_ST_cluster' = 'Species + ST + cluster (strain)','ESBL_plasmidic_genes' = 'Plasmidic ESBLs', 'Species_ST_cluster_ESBL_plasmidic_genes'='Strain + plasmidic ESBLs')  %>% factor(.,levels = c("Species","Species + ST","Species + ST + cluster (strain)","Plasmidic ESBLs",'Strain + plasmidic ESBLs'))
+
+comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()
+
+A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=sens)) + geom_bar(stat='identity',fill="black") + ylab("Sensitivity") + xlab("Molecular Category")+ theme_bw_me + ylim(NA,1.01)  + theme(axis.text.x = element_text(angle=90)) +
+    geom_text(aes(label=sens), vjust=0) 
+B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=ppv)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.01)  + theme(axis.text.x = element_text(angle=90))  +
+    geom_text(aes(label=ppv), vjust=0) 
+C <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.01)  + theme(axis.text.x = element_text(angle=90))  +
+    geom_text(aes(label=spec), vjust=0) 
+D <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=npv)) + geom_bar(stat='identity',fill="black") + ylab("Negative predictive value") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.01)  + theme(axis.text.x = element_text(angle=90))  +
+    geom_text(aes(label=npv), vjust=0) 
+E <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.01) + theme(axis.text.x = element_text(angle=90))  +
+    geom_text(aes(label=accuracy), vjust=0) 
+
+cowplot::plot_grid(A,B,C,D,E,labels = "AUTO",ncol=3)
+```
+
+# Table
+```{r}
+df_index %>% arrange(household,visit) %>% select(household,visit,Species_ST_cluster,plasmids,ESBL_genes,ESBL_chromosome_genes,ESBL_plasmidic_genes,ESBL_plasmids) %>% mutate(plasmids = gsub(";",", ",plasmids),ESBL_genes = gsub(";",", ",ESBL_genes),ESBL_chromosome_genes = gsub(";",", ",ESBL_chromosome_genes),ESBL_plasmidic_genes = gsub(";",", ",ESBL_plasmidic_genes),ESBL_plasmids = gsub(";",", ",ESBL_plasmids)) %>%  `colnames<-`(c("Household","Visit","Strain","Plasmids","ESBL genes",'Chromosomal ESBLs','Plasmidic ESBLs','ESBL plasmid')) %>% gontjesr::favorite_kable()
+```
+

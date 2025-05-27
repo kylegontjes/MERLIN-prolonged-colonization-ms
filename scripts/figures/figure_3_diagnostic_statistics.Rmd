@@ -1,0 +1,96 @@
+---
+title: "diagnostic_statistics"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra','ComplexHeatmap','gontjesr') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Source library
+source("./lib/consistent_themes.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load data
+```{r } 
+prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS")
+```
+
+```{r}
+
+get_marginal_stats <- function(feature,outcome){ 
+  if(class(outcome) != "numeric"){
+    stop("Outcome is not numeric")
+  }
+  if(class(feature) != "numeric"){
+    stop("Feature is not numeric")
+  }
+  
+  n <- length(outcome)
+  phenotype_count = sum(outcome)
+  phenotype_freq = phenotype_count / n
+  feature_count = sum(feature)
+  feature_freq = feature_count / n
+  
+  # Cells
+  tp = sum(outcome==1 & feature==1)
+  fp = sum(outcome==0 & feature==1)
+  tn = sum(outcome==0 & feature==0)
+  fn = sum(outcome==1 & feature==0)
+  # Summary stats
+  sens = round((tp / c(tp + fn)),3)
+  spec = round((tn / c(tn + fp)),3)
+  ppv = round((tp / c(tp + fp)),3)
+  npv = round((tn / c(tn + fn)),3)
+  accuracy =  round(((tp+tn)/n),3)
+  
+  data <- as.data.frame(cbind(phenotype = colnames(outcome),phenotype_count,phenotype_freq,feature_count,feature_freq,tp,fp,fn,tn,sens,spec,ppv,npv,accuracy))
+  rownames(data) <- colnames(feature)
+  data$name <-colnames(feature)
+  return(data)
+}
+```
+
+```{r,fig.height=9,fig.width=8}
+outcomes <- c('index_at_1_and_or_2_Species_ST','index_at_1_and_or_2_Species_ST_cluster','index_at_1_and_or_2_ESBL_plasmidic_genes','index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes')
+
+comparison_of_any_ESCRE_to_WGS_outcomes <- lapply(outcomes,FUN=function(x){
+  get_marginal_stats(prolonged_colonization_df$index_at_1_and_or_2_Species,prolonged_colonization_df[[x]])
+}) %>% do.call(rbind,.) %>% mutate(outcome = outcomes) 
+
+comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- gsub("index_at_1_and_or_2_","",comparison_of_any_ESCRE_to_WGS_outcomes$outcome) %>% recode(.,'Species_ST'='Species + ST','Species_ST_cluster' = 'Species + ST + cluster (strain)','ESBL_plasmidic_genes' = 'Plasmidic ESBLs', 'Species_ST_cluster_ESBL_plasmidic_genes'='Strain + plasmidic ESBLs')  %>% factor(.,levels = c("Species","Species + ST","Species + ST + cluster (strain)","Plasmidic ESBLs",'Strain + plasmidic ESBLs'))
+
+comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()
+
+A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=sens)) + geom_bar(stat='identity',fill="black") + ylab("Sensitivity") + xlab("Molecular Category")+ theme_bw_me + ylim(NA,1.01)  + figure_3_format +   geom_text(aes(label=sens), vjust=0) 
+B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=ppv)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.01)  + figure_3_format  +  geom_text(aes(label=ppv), vjust=0) 
+C <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.01)  + figure_3_format  +   geom_text(aes(label=spec), vjust=0) 
+D <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=npv)) + geom_bar(stat='identity',fill="black") + ylab("Negative predictive value") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.01)  + figure_3_format  +  geom_text(aes(label=npv), vjust=0) 
+E <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.01) + figure_3_format + geom_text(aes(label=accuracy), vjust=0) 
+
+figure_3 <- cowplot::plot_grid(A,B,C,D,E,labels = "AUTO",ncol=3)
+figure_3
+```
+
+
+```{r}
+ggsave(plot = figure_3,filename = './figures/figure_3_diagnostic_statistics_species_prolonged_colonization.png',dpi = 600,width = 8,height = 9)
+```

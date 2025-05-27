@@ -1,0 +1,69 @@
+---
+title: "MERLIN_SNPKIT_matrices"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/')
+```
+ 
+# Environment
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+```{r} 
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") %>% subset(escre==T & qc_pass==T)
+``` 
+
+```{r}
+# Load
+setwd("~/Desktop/gl_merlin/Sequence_data/variant_calling/2025-04-15_SNPKIT/")
+
+species <- table(df$Species) %>% subset(.>1) %>% names %>% str_split(" ",simplify = T) %>% apply(.,1,FUN=function(x){
+  genus <- x[1] %>% substr(.,1,1)  %>% tolower()
+  species <- x[2]
+  paste0(genus,species)
+})  
+
+dist_matrix <- pbmcapply::pbmclapply(species,FUN=function(x){ 
+  if(x %in% c('cportucalensis','sliquefaciens')){
+    name <- paste0(x,'_var_sites.fa')
+    path <- paste0("./",x,"/snpkit_rfmt_results/phylo_analysis/IQtree/",name)
+  } else {
+  name <- paste0(x,"_gubbins_masked_var_sites.fa")
+  path <- paste0("./",x,"/snpkit_rfmt_results/phylo_analysis/gubbins_masked/",name)
+  }
+  dna <- read.dna(path,format = 'fasta')
+  dna_matrix <- ape::dist.dna(x = dna, # DNAbin object as read in above
+                       as.matrix = TRUE, # return as matrix
+                       model = "N", # count pairwise distances
+                       pairwise.deletion = TRUE # delete sites with missing data in a pairwise way
+) %>%  as.data.frame 
+  if(x == "ecoli"){
+    dna_matrix <- dna_matrix %>% select(-'NZ_UFZF01000006.1') %>% subset(rownames(.) != 'NZ_UFZF01000006.1')
+  } 
+  return(dna_matrix)
+},mc.cores=6) %>% `names<-`(species)
+```
+
+```{r}
+setwd('~/Desktop/gl_merlin/')
+saveRDS(dist_matrix,'./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_matrices.RDS')
+```
+

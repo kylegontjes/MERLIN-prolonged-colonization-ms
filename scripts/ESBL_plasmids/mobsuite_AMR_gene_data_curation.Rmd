@@ -1,0 +1,129 @@
+---
+title: "mobsuite_AMR_gene_data_curation"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = TRUE,warning = FALSE, message = FALSE) 
+rm(list = ls())
+opts_knit$set(root.dir='~/Desktop/gl_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+# Load data
+
+```{r cars} 
+library(tidyverse)
+df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS")  %>% subset(escre == TRUE & qc_pass == TRUE) 
+isolates <- df$genomic_id
+
+amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS")
+amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.txt") 
+ 
+mobsuite_contigs <- readRDS("./data/mobsuite/mobsuite_contigs.RDS") 
+mobtyper <- readRDS("./data/mobsuite/mobtyper.RDS")
+``` 
+
+
+```{r} 
+amrfinder_qc_pass <- subset(amrfinder,genomic_id %in% df$genomic_id)
+amrfinder_mat_qc_passe <- subset(amrfinder_mat,rownames(amrfinder_mat) %in% amrfinder_qc_pass$genomic_id)
+  
+genes <- amrfinder_qc_pass$element_symbol %>% unique %>% sort
+
+annotate_contigs <- function(gene,amrfinder_df,mobsuite_contig_df){
+  amrfinder_w_gene <- amrfinder_df %>% subset(element_symbol == gene)
+  contigs_w_gene <- amrfinder_w_gene$contig_id %>% sort %>% unique
+  pres <- ifelse(mobsuite_contig_df$contig_id %in% contigs_w_gene,1,0)
+  row <- cbind.data.frame(pres) %>% `colnames<-`(c(gene)) 
+  return(row)
+}
+
+gene_pres <- lapply(genes,FUN=annotate_contigs,amrfinder_df = amrfinder_qc_pass,mobsuite_contig_df = mobsuite_contigs) %>% do.call(cbind,.) %>% mutate(contig_id = mobsuite_contigs$contig_id)
+
+mobsuite_contigs <- left_join(mobsuite_contigs,gene_pres)
+```
+
+```{r}
+mobsuite_contigs$chromosome <- ifelse(mobsuite_contigs$molecule_type == "chromosome", 1, 0)
+mobsuite_contigs$plasmid <- ifelse(mobsuite_contigs$molecule_type == "plasmid", 1, 0) 
+```
+
+
+# Contig data
+```{r}
+count_chromosome <- function(isolate,genes,isolate_contigs){
+  chromosome <- subset(isolate_contigs,molecule_type =="chromosome")
+  chromosome_sum <- chromosome %>% select(genes) %>% summarise_all(sum)
+  chromosome_sum_row <- cbind(genomic_id = isolate,type="chromosome",chromosome_sum)
+  return(chromosome_sum_row)
+}
+
+count_plasmid <- function(cluster,isolate,genes,isolate_contigs){
+  plasmid <- subset(isolate_contigs,primary_cluster_id ==cluster)
+  plasmid_sum <- plasmid %>% select(genes) %>%summarise_all(sum)
+  plasmid_sum_row <- cbind(genomic_id = isolate,type = cluster,plasmid_sum)
+  return(plasmid_sum_row)
+}
+
+count_genes_mobsuite <- function(isolate,genes,mobsuite_contigs){
+  isolate_contigs <- mobsuite_contigs %>% subset(genomic_id == isolate)
+  # Chromsome
+  chromosome_info <- count_chromosome(isolate,genes,isolate_contigs)
+  # Plasmids
+  plasmids <- isolate_contigs$primary_cluster_id %>% unique %>% subset(. !="-") %>% sort
+  plasmid_info <- lapply(plasmids,FUN=count_plasmid,isolate=isolate,genes =genes,isolate_contigs=isolate_contigs) %>% do.call(rbind,.)
+  # Overall info
+  data <- rbind(chromosome_info,plasmid_info)
+  return(data)
+} 
+qc_genomes <- amrfinder_qc_pass$genomic_id %>% unique %>% sort
+
+mobsuite_gene_pres <- lapply(qc_genomes,FUN=count_genes_mobsuite,genes=genes,mobsuite_contigs=mobsuite_contigs) %>% do.call(rbind,.)
+```
+
+# Annotate w/ AMR + Blactam categories
+```{r}
+AMR_genes <- amrfinder %>% subset(type =="AMR") %>% .$element_symbol %>% unique %>% sort 
+BLA_genes <- amrfinder %>% subset(class =="BETA-LACTAM") %>% .$element_symbol %>% unique %>% sort 
+BLA_carbapenem_genes <- amrfinder %>% subset(class =="BETA-LACTAM" & subclass=="CARBAPENEM") %>% .$element_symbol %>% unique %>% sort 
+BLA_ceph_genes <- amrfinder %>% subset(class =="BETA-LACTAM" & subclass %in% c("CEPHALOSPORIN","CEFIDEROCOL/CEPHALOSPORIN")) %>% .$element_symbol %>% unique %>% sort 
+ESBL_genes <- subset(amrfinder,class=="BETA-LACTAM") %>% .$element_symbol %>% unique %>% subset(.,grepl("CTX|OXA|TEM|SHV|CMY|NDM|PER|VEB|GES|TLA|BES",.))
+
+mobsuite_gene_pres$AMR_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(AMR_genes)) %>% rowSums()>0,1,0)
+mobsuite_gene_pres$BETA_LACTAM_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(BLA_genes)) %>% rowSums()>0,1,0)
+mobsuite_gene_pres$BETA_LACTAM_CARBAPENEM_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(BLA_carbapenem_genes)) %>% rowSums()>0,1,0)
+mobsuite_gene_pres$BETA_LACTAM_CEPHALOSPORIN_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(BLA_ceph_genes)) %>% rowSums()>0,1,0)
+mobsuite_gene_pres$ESBL_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(ESBL_genes)) %>% rowSums()>0,1,0)
+
+saveRDS(mobsuite_gene_pres,"./data/ESBL_plasmids/amrfinder_mobsuite_gene_presence.RDS")
+```
+
+# Get isolate's
+```{r} 
+plasmid_sum_info_blactam <- mobsuite_gene_pres %>% subset(BETA_LACTAM_contig ==1)
+plasmid_sum_info_ESBL <- mobsuite_gene_pres %>% subset(ESBL_contig ==1)
+
+get_mobtyper_cluster_from_amrfinder <- function (df, mobtyper) 
+{
+    plasmid_cluster <- mobtyper$type %>% unique
+    lapply(plasmid_cluster, FUN = function(x, df, mobtyper) {
+        isolates_with_plasmid <- subset(mobtyper, type == 
+            x) %>% select(genomic_id) %>% unlist
+        row <- assign(paste0(x), ifelse(df$genomic_id %in% isolates_with_plasmid, 
+            1, 0))
+        return(row)
+    }, df, mobtyper) %>% do.call(bind_cols, .) %>% as.data.frame %>% 
+        `colnames<-`(plasmid_cluster) %>% `rownames<-`(df$genomic_id)
+}
+
+blactam_plasmid_contigs <- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum_info_blactam)
+
+saveRDS(blactam_plasmid_contigs,"./data/ESBL_plasmids/amrfinder_beta_lactam_contig_matrix.RDS")
+
+ESBL_plasmid_contigs <- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum_info_blactam)
+
+saveRDS(ESBL_plasmid_contigs,"./data/ESBL_plasmids/amrfinder_ESBL_contig_matrix.RDS")
+```

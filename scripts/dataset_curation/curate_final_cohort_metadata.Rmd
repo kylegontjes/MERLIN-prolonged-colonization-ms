@@ -1,0 +1,44 @@
+---
+title: "Curate final metadata"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/')
+```
+ 
+# Environment
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse",'ggraph','igraph') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+```{r}  
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") 
+cluster_30_SNPs <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_30_SNP_clusters.RDS")
+``` 
+
+# Merge cluster data
+```{r}
+df <- left_join(df,cluster_30_SNPs)
+```
+
+# Save
+```{r}
+saveRDS(df,"/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS")
+write_csv(df,"/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.csv")
+```

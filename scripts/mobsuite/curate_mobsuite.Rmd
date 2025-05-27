@@ -1,0 +1,54 @@
+---
+title: "Plasmid curation"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+# Functions
+source("./scripts/mobsuite/mobsuite_functions.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+# Load data
+
+```{r cars} 
+df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS")  %>% subset(escre == TRUE & qc_pass == TRUE) 
+```
+
+# Curate mobsuite data
+
+```{r}
+# Mobtyper Results
+mobtyper <- read_mobtyper_results(path='./data/mobsuite/MERLIN_mobtyper_results.txt',df) 
+mobsuite_contigs <- read_mobtyper_results(path='./data/mobsuite/MERLIN_contig_report.txt',df)
+mobsuite_contigs$location <- ifelse(mobsuite_contigs$primary_cluster_id=="-","chromosome",mobsuite_contigs$primary_cluster_id)
+
+# save reports
+saveRDS(mobtyper,file="./data/mobsuite/mobtyper.RDS")
+saveRDS(mobsuite_contigs,file="./data/mobsuite/mobsuite_contigs.RDS") 
+
+# Convert Mobsuite Data into Binary Matrix
+mash_nn_matrix <- get_mobtyper_mash_nn_matrix(df,mobtyper)  
+cluster_matrix <- get_mobtyper_cluster_matrix(df,mobtyper) 
+
+# Save matrices
+saveRDS(mash_nn_matrix,file="./data/mobsuite/plasmid_mash_nn_matrix.RDS")
+saveRDS(cluster_matrix,file="./data/mobsuite/plasmid_cluster_matrix.RDS") 
+```
