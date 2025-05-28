@@ -1,5 +1,5 @@
 ---
-title: "Curate raw MERLIN metadata"
+title: "Data Cleaning Step 1 - Curate raw MERLIN metadata"
 output: html_document
 date: "`r Sys.Date()`"
 ---
@@ -17,7 +17,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
 ```
 
 # Environment
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse")   
 #Load Packages

@@ -1,5 +1,5 @@
 ---
-title: "Curate QCD data"
+title: "Data Cleaning Step 2 - Curate QCD data"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -12,7 +12,7 @@ opts_knit$set(root.dir='~/Desktop/gl_MERLIN/Analysis/Household_transmission/')
 ```
 
 # Environment
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse")   
 #Load Packages
@@ -73,7 +73,7 @@ master_qc$sequencing_run <- sapply(master_qc$Sample,get_sequencing_run,sequencin
 ```{r}
 # All
 saveRDS(master_qc,"./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS")
-# all
+# QC passing and not negative controls
 master_qc_passing <- subset(master_qc,qc_pass==T & grepl("NEG_CTL",genomic_id)==F)
 saveRDS(master_qc_passing,"./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_passing.RDS")
 ``` 

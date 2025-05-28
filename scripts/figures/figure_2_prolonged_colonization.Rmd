@@ -1,5 +1,5 @@
 ---
-title: "figure_2"
+title: "Figure 2: Prolonged colonization across molecular definitions"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -15,9 +15,9 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERL
 
 # Environment
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra','ComplexHeatmap','gontjesr') 
+packages <- c("tidyverse",'kableExtra') 
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
@@ -46,7 +46,6 @@ prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_W
 
 prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value)) %>% favorite_kable()
 ```
-
 
 ```{r,fig.width=7.5,fig.height=9.375}
 figure_2 <- ggplot(data=prolonged_melt) + geom_bar(aes(x=variable,fill=value)) + xlab("") + ylab("Count") + prolonged_colonization_scale + theme_bw_me + figure_2_format

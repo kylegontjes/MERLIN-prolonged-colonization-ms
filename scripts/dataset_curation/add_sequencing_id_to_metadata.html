@@ -13,7 +13,7 @@
 
 <meta name="date" content="2025-05-28" />
 
-<title>Platemap Harmonization with Metadata</title>
+<title>Data Cleaning Step 3- Platemap Harmonization with Metadata</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,20 +350,80 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Platemap Harmonization with Metadata</h1>
+<h1 class="title toc-ignore">Data Cleaning Step 3- Platemap
+Harmonization with Metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
 <h4 class="date">2025-05-28</h4>
 
 </div>
 
 
+<p>NOTE: Run scripts/QCD/curate_qcd_data.Rmd before running this
+step</p>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
+<pre class="r"><code>#Packages
+packages &lt;- c(&quot;tidyverse&quot;)   
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()</code></pre>
+<pre><code>##                                                                                             sysname 
+##                                                                                            &quot;Darwin&quot; 
+##                                                                                             release 
+##                                                                                            &quot;24.5.0&quot; 
+##                                                                                             version 
+## &quot;Darwin Kernel Version 24.5.0: Tue Apr 22 19:53:26 PDT 2025; root:xnu-11417.121.6~2/RELEASE_X86_64&quot; 
+##                                                                                            nodename 
+##                                                                                    &quot;msla0572.local&quot; 
+##                                                                                             machine 
+##                                                                                            &quot;x86_64&quot; 
+##                                                                                               login 
+##                                                                                              &quot;root&quot; 
+##                                                                                                user 
+##                                                                                          &quot;kgontjes&quot; 
+##                                                                                      effective_user 
+##                                                                                          &quot;kgontjes&quot;</code></pre>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.5.0 (2025-04-11)
+## Platform: x86_64-apple-darwin20
+## Running under: macOS Sequoia 15.5
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: America/Detroit
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+##  [5] purrr_1.0.4     readr_2.1.5     tidyr_1.3.1     tibble_3.2.1   
+##  [9] ggplot2_3.5.2   tidyverse_2.0.0 knitr_1.50     
+## 
+## loaded via a namespace (and not attached):
+##  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.0     tidyselect_1.2.1  
+##  [5] jquerylib_0.1.4    scales_1.4.0       yaml_2.3.10        fastmap_1.2.0     
+##  [9] R6_2.6.1           generics_0.1.4     bslib_0.9.0        pillar_1.10.2     
+## [13] RColorBrewer_1.1-3 tzdb_0.5.0         rlang_1.1.6        cachem_1.1.0      
+## [17] stringi_1.8.7      xfun_0.52          sass_0.4.10        timechange_0.3.0  
+## [21] cli_3.6.5          withr_3.0.2        magrittr_2.0.3     digest_0.6.37     
+## [25] grid_4.5.0         rstudioapi_0.17.1  hms_1.1.3          lifecycle_1.0.4   
+## [29] vctrs_0.6.5        evaluate_1.0.3     glue_1.8.0         farver_2.1.2      
+## [33] rmarkdown_2.29     tools_4.5.0        pkgconfig_2.0.3    htmltools_0.5.8.1</code></pre>
 </div>
 <div id="load-metdadata" class="section level1">
 <h1>Load metdadata</h1>
 <pre class="r"><code>metadata &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.RDS&quot;)
-paste0(&quot;Number of entries in curated mettadata from PENN: &quot;,nrow(metadata))</code></pre>
+paste0(&quot;Number of entries in curated mettadata from PENN: &quot;, nrow(metadata))</code></pre>
 <pre><code>## [1] &quot;Number of entries in curated mettadata from PENN: 263&quot;</code></pre>
 </div>
 <div id="load-sequencing-sample-lookup" class="section level1">
@@ -371,19 +431,19 @@ paste0(&quot;Number of entries in curated mettadata from PENN: &quot;,nrow(metad
 <div id="load-lookup-from-merlin-and-impala" class="section level2">
 <h2>Load lookup from MERLIN and IMPALA</h2>
 <pre class="r"><code>sequencing_MERLIN_plates &lt;- read.delim(&quot;../../Sequence_data/metadata/sample_lookup/2023-08-24_MERLIN_genome_sample_lookup.txt&quot;)  
-sequencing_MERLIN_plates$Sequencing.plate &lt;- gsub(&quot;Sequencing plate &quot;,&quot;Sequencing plate MERLIN &quot;,sequencing_MERLIN_plates$Sequencing.plate)  
-sequencing_IMPALA_plate &lt;- read.delim(&quot;../../Sequence_data/metadata/sample_lookup/2024-06-12_IMPALA_BC_genome_sample_lookup.txt&quot;)%&gt;% subset(grepl(&#39;MERLIN&#39;,Genome.ID) ==T) 
-sequencing_IMPALA_plate$Sequencing.plate &lt;- gsub(&quot;Sequencing plate &quot;,&quot;Sequencing plate IMPALA &quot;,sequencing_IMPALA_plate$Sequencing.plate)  </code></pre>
+sequencing_MERLIN_plates$Sequencing.plate &lt;- gsub(&quot;Sequencing plate &quot;,&quot;Sequencing plate MERLIN &quot;, sequencing_MERLIN_plates$Sequencing.plate)  
+sequencing_IMPALA_plate &lt;- read.delim(&quot;../../Sequence_data/metadata/sample_lookup/2024-06-12_IMPALA_BC_genome_sample_lookup.txt&quot;) %&gt;% subset(grepl(&#39;MERLIN&#39;,Genome.ID) ==T) 
+sequencing_IMPALA_plate$Sequencing.plate &lt;- gsub(&quot;Sequencing plate &quot;,&quot;Sequencing plate IMPALA &quot;, sequencing_IMPALA_plate$Sequencing.plate)  </code></pre>
 </div>
 </div>
 <div id="fix-one-bad-entry-in-impala-plate" class="section level1">
 <h1>Fix one bad entry in IMPALA plate</h1>
-<pre class="r"><code>sequencing_IMPALA_plate$Sample.ID &lt;- ifelse(sequencing_IMPALA_plate$Sample.ID == &#39;118H V2 B1 C1 &#39;,&#39;118H V2 B1 C1&#39;,sequencing_IMPALA_plate$Sample.ID)</code></pre>
+<pre class="r"><code>sequencing_IMPALA_plate$Sample.ID &lt;- ifelse(sequencing_IMPALA_plate$Sample.ID == &#39;118H V2 B1 C1 &#39;,&#39;118H V2 B1 C1&#39;, sequencing_IMPALA_plate$Sample.ID)</code></pre>
 </div>
 <div id="merge-sequencing-data" class="section level1">
 <h1>Merge sequencing data</h1>
-<pre class="r"><code>sequencing &lt;- rbind(sequencing_MERLIN_plates,sequencing_IMPALA_plate )
-paste0(&quot;Initial number of sequenced genomes: &quot;,nrow(sequencing))</code></pre>
+<pre class="r"><code>sequencing &lt;- rbind(sequencing_MERLIN_plates, sequencing_IMPALA_plate)
+paste0(&quot;Initial number of sequenced genomes: &quot;, nrow(sequencing))</code></pre>
 <pre><code>## [1] &quot;Initial number of sequenced genomes: 302&quot;</code></pre>
 </div>
 <div id="load-original-and-new-platemaps" class="section level1">
@@ -581,7 +641,7 @@ tables</h1>
   num &lt;- split[,1] %&gt;% str_split(.,&quot; &quot;,simplify=T) %&gt;% .[,4]%&gt;% as.numeric 
   ro &lt;- split[,2] %&gt;% str_split(.,&quot;-&quot;,simplify = T) %&gt;% .[,1] %&gt;% trimws(.,&quot;both&quot;)
   col &lt;-split[,2] %&gt;% str_split(.,&quot;-&quot;,simplify = T) %&gt;% .[,2] %&gt;% trimws(.,&quot;both&quot;)%&gt;% as.numeric
-  dataframe &lt;- cbind(Sequencing.plate = string,batch = batch,num_fin=num,col_fin=col,ro_fin=ro) %&gt;% as.data.frame
+  dataframe &lt;- cbind(Sequencing.plate = string,batch = batch,plate_final=num,column_final=col,row_final=ro) %&gt;% as.data.frame
   return(dataframe)
 }
 
@@ -735,14 +795,14 @@ paste0(&quot;How sequencing list looks like...&quot;)</code></pre>
 ## 1           126H V1 S1A C1  MERLIN_1 Sequencing plate MERLIN 1, A-1     Seqwell
 ## 2                  MER 203  MERLIN_2 Sequencing plate MERLIN 1, B-1     Seqwell
 ## 3 MER 209 (320H) V1 PN1AC1  MERLIN_3 Sequencing plate MERLIN 1, C-1     Seqwell
-##    batch num_fin col_fin ro_fin                 map_name column row plate
-## 1 MERLIN       1       1      A           126H V1 S1A C1      1   A     1
-## 2 MERLIN       1       1      B                  MER 203      1   B     1
-## 3 MERLIN       1       1      C MER 209 (320H) V1 PN1AC1      1   C     1
-##   position
-## 1       A1
-## 2       B1
-## 3       C1</code></pre>
+##    batch plate_final column_final row_final                 map_name column row
+## 1 MERLIN           1            1         A           126H V1 S1A C1      1   A
+## 2 MERLIN           1            1         B                  MER 203      1   B
+## 3 MERLIN           1            1         C MER 209 (320H) V1 PN1AC1      1   C
+##   plate position
+## 1     1       A1
+## 2     1       B1
+## 3     1       C1</code></pre>
 </div>
 <div id="merge-initial-platemap-w-barcode-data" class="section level1">
 <h1>Merge Initial Platemap w/ Barcode Data</h1>

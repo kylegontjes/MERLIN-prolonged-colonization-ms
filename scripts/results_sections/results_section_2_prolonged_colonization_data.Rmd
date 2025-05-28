@@ -13,10 +13,11 @@ opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
+# Environment
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra','ComplexHeatmap','gontjesr') 
+packages <- c("tidyverse",'gontjesr','kableExtra') 
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
@@ -52,4 +53,3 @@ prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_W
 
 prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value)) %>% favorite_kable()
 ```
-

@@ -12,10 +12,24 @@ rm(list = ls())
 opts_knit$set(root.dir='~/Desktop/gl_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
+# Environment
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T)) 
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
 # Load data
 
-```{r cars} 
-library(tidyverse)
+```{r}  
 df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS")  %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
 isolates <- df$genomic_id
 
@@ -26,6 +40,7 @@ mobsuite_contigs <- readRDS("./data/mobsuite/mobsuite_contigs.RDS")
 mobtyper <- readRDS("./data/mobsuite/mobtyper.RDS")
 ``` 
 
+# Annotate contigs with AMRFinder data
 
 ```{r} 
 amrfinder_qc_pass <- subset(amrfinder,genomic_id %in% df$genomic_id)

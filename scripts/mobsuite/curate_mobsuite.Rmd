@@ -12,7 +12,9 @@ opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+# Environment
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse") 
 
@@ -26,6 +28,7 @@ set.seed(45)
 Sys.info()
 sessionInfo()
 ```
+
 # Load data
 
 ```{r cars} 

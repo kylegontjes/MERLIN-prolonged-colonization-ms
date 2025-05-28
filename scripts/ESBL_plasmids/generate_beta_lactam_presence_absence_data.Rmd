@@ -14,7 +14,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERL
 
 # Environment
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse",'kableExtra') 
 
@@ -27,6 +27,7 @@ Sys.info()
 sessionInfo()
 ```
 
+# Load data
 ```{r}
 df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(qc_pass == "TRUE" & WGS_escre == TRUE)
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0)
@@ -39,6 +40,7 @@ ESBL_plasmid_clusters <- readRDS("./data/ESBL_plasmids/amrfinder_ESBL_contig_mat
 df <- left_join(df,amrfinder_mat %>% mutate(genomic_id = rownames(.))) %>% left_join(ESBL_plasmid_clusters %>% mutate(genomic_id=rownames(.)))
 ``` 
 
+# Get BLA and ESBL genes
 ```{r}
 amrfinder_blactam <- amrfinder %>% subset(class == "BETA-LACTAM")
 bla_genes <- amrfinder_blactam$element_symbol%>% unique %>% sort
@@ -49,7 +51,7 @@ amrfinder_ESBL <- amrfinder %>% subset(grepl("CTX|OXA|TEM|SHV|PER|VEB|GES|TLA|BE
 ESBL_genes <- amrfinder_ESBL$element_symbol %>% unique %>% sort
 ```
 
-
+# Get BLA and ESBL data on plasmids and chromosome
 ```{r,fig.width=10}
 get_ESBL_data <- function(isolate,mobsuite_gene_pres,bla_genes,ESBL_genes){
   mobsuite_df <- subset(mobsuite_gene_pres,genomic_id == isolate)
@@ -103,5 +105,3 @@ ESBL_plasmidic_presence <- lapply(df$genomic_id,get_plasmidic_ESBSL,mobsuite_gen
 plasmid_data <-  left_join(plasmid_data,ESBL_plasmidic_presence) 
 saveRDS(plasmid_data,"./data/ESBL_plasmids/MERLIN_beta_lactam_presence_location_data.RDS")
 ```
-
-

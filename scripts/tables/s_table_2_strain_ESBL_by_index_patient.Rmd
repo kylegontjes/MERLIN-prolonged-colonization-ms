@@ -13,12 +13,16 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERL
 ```
 
 # Environment
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra','ComplexHeatmap','gontjesr') 
+packages <- c("tidyverse",'kableExtra') 
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Functions
+source("./lib/consistent_themes.R")
 
 # Print environment
 set.seed(45) 
@@ -41,7 +45,7 @@ s_table_2 <- df_index %>% arrange(household,visit) %>% select(household,visit,Sp
 ```
 
 ```{r}
-gontjesr::favorite_kable(s_table_2)
+favorite_kable(s_table_2)
 ```
 
 ```{r}

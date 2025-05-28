@@ -12,8 +12,9 @@ opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
+# Environment
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra','ComplexHeatmap','gontjesr') 
 
@@ -27,7 +28,7 @@ sessionInfo()
 ```
 
 # Load data
-```{r } 
+```{r} 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
 plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_beta_lactam_presence_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
 
@@ -38,7 +39,6 @@ df_index <- left_join(df_index,plasmid_data)
 ```{r}
 ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & WGS_escre==T) %>% .$household
 ```
-
 
 # Species level
 

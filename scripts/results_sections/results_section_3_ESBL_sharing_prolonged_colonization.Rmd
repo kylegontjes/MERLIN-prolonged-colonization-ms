@@ -12,10 +12,11 @@ opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
+# Environment
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra','ComplexHeatmap','gontjesr') 
+packages <- c("tidyverse",'kableExtra','tableone','gontjesr')
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))

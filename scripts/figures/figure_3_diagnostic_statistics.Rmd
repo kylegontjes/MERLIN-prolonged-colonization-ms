@@ -1,5 +1,5 @@
 ---
-title: "diagnostic_statistics"
+title: "Figure 3: Accuracy of species-level evaluation of prolonged colonization"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -12,10 +12,11 @@ opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
-# Environment 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+# Environment
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra','ComplexHeatmap','gontjesr') 
+packages <- c("tidyverse",'kableExtra') 
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
@@ -34,7 +35,7 @@ sessionInfo()
 prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS")
 ```
 
-# Marginal stats
+# Diagnostic statistics for species-level definition of prolonged colonization 
 ```{r}
 get_marginal_stats <- function(feature,outcome){ 
   if(class(outcome) != "numeric"){
@@ -80,11 +81,11 @@ comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- gsub("index_at_1_and_o
 
 comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()
 
-A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=sens)) + geom_bar(stat='identity',fill="black") + ylab("Sensitivity") + xlab("Molecular Category")+ theme_bw_me + ylim(NA,1.01)  + figure_3_format +   geom_text(aes(label=sens), vjust=0) 
-B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=ppv)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.01)  + figure_3_format  +  geom_text(aes(label=ppv), vjust=0) 
-C <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.01)  + figure_3_format  +   geom_text(aes(label=spec), vjust=0) 
-D <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=npv)) + geom_bar(stat='identity',fill="black") + ylab("Negative predictive value") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.01)  + figure_3_format  +  geom_text(aes(label=npv), vjust=0) 
-E <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.01) + figure_3_format + geom_text(aes(label=accuracy), vjust=0) 
+A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=sens)) + geom_bar(stat='identity',fill="black") + ylab("Sensitivity") + xlab("Molecular Category")+ theme_bw_me + ylim(NA,1.001)  + figure_3_format +   geom_text(aes(label=sens), vjust=0) 
+B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=ppv)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.001)  + figure_3_format  +  geom_text(aes(label=ppv), vjust=0) 
+C <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.001)  + figure_3_format  +   geom_text(aes(label=spec), vjust=0) 
+D <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=npv)) + geom_bar(stat='identity',fill="black") + ylab("Negative predictive value") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.001)  + figure_3_format  +  geom_text(aes(label=npv), vjust=0) 
+E <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.001) + figure_3_format + geom_text(aes(label=accuracy), vjust=0) 
 
 figure_3 <- cowplot::plot_grid(A,B,C,D,E,labels = "AUTO",ncol=3)
 figure_3

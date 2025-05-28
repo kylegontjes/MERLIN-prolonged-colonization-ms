@@ -14,7 +14,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/')
  
 # Environment
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse",'ggraph','igraph') 
 

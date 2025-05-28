@@ -1,5 +1,5 @@
 ---
-title: "Curate final metadata"
+title: "Data Cleaning Step 6- Curate final metadata"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -12,11 +12,13 @@ opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/')
 ```
  
+NOTE: Run scripts in scripts/SNP_distance before completion!!!!
+
 # Environment
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'ggraph','igraph') 
+packages <- c("tidyverse") 
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))

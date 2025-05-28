@@ -5,7 +5,7 @@ theme_bw_me <- theme(panel.background = element_rect(fill = "white",colour = NA)
                      panel.grid.minor = element_blank(),
                      axis.line = element_line(colour = "black"),legend.position = "bottom") 
 # Figure 2
-prolonged_colonization_scale <- scale_fill_manual(breaks = c(1,0),values = c("#00274C","#FFCB05"),labels = c("Present","Absent"),name="Prolonged Colonization") 
+prolonged_colonization_scale <- scale_fill_manual(breaks = c(1,0),values = c("#00274C","#FFCB05"),labels = c("Yes","No"),name="Prolonged Colonization") 
 
 figure_2_format <- theme(legend.position = "bottom",
                            axis.text =   element_text(size=18, color="black"),
@@ -38,3 +38,10 @@ s_figure_1_inset_format <- theme(legend.position = "none",
                            axis.title = element_text(size = 14, color="black"),
                            legend.text =   element_text(size=20, color="black"),
                            legend.title = element_text(size = 22, color="black"))
+
+# Favorite kable
+favorite_kable <- function (x) {
+  x %>% kable(., format = "html", table.attr = "style='width:100%;'", 
+              row.names = F) %>% kable_styling(bootstrap_options = c("striped", 
+                                                                     "hover", "condensed", "responsive"))
+}

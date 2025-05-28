@@ -1,5 +1,5 @@
 ---
-title: "Curate final metadataset of specimens from index subjects"
+title: "Data Cleaning Step 7- Curate final metadataset of specimens from index subjects"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -15,7 +15,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/')
 
 # Environment
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse") 
 
@@ -30,7 +30,7 @@ sessionInfo()
 
 ```{r}  
 df <- readRDS("/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS")
-df_qc_passing <-  df %>% subset(qc_pass=="TRUE" & WGS_escre==T)
+df_qc_passing <-  df %>% subset(qc_pass=="TRUE" & WGS_escre==TRUE)
 df_index <- subset(df_qc_passing, index==TRUE)
 ```
 

@@ -1,5 +1,5 @@
 ---
-title: "s_figure_1_pairwise_distance_comparison"
+title: "Supplemental Figure 1: Pairwise distance comparisons by participant"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -14,7 +14,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERL
  
 # Environment
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse",'ggplot2','gridExtra') 
 
@@ -30,6 +30,7 @@ Sys.info()
 sessionInfo()
 ``` 
 
+# Load data
 ```{r}
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")
 overall_pair_types <- readRDS("./data/SNP_distance/MERLIN_SNP_distance_pairs_dataset.RDS") 

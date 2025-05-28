@@ -1,5 +1,5 @@
 ---
-title: "curate_amrfinder_results"
+title: "Curate the amrfinder results for these genomes"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -12,7 +12,9 @@ opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+# Environment
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse") 
 
@@ -25,13 +27,14 @@ Sys.info()
 sessionInfo()
 ```
 
+# Load data
 ```{r cars} 
 df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") 
 final_isolates <- subset(df,WGS_escre == TRUE & qc_pass == TRUE) %>% .$genomic_id 
 paste0("Number of final isolates that were ESCRE and QC passing: ", length(final_isolates))
 ```
 
-# create_master_amrfinder_script
+# Create master amrfinder script
 ```{bash}
 cd ./data/amrfinder/
 
@@ -43,7 +46,7 @@ tail -n +2 $isolate >> amrfinder_all.txt
 done
 ```
 
-# load in amrfinder dataset
+# Load and curate amrfinder dataset
 ```{r}
 amrfinder <- read.delim(file="./data/amrfinder/amrfinder_all.txt")
 

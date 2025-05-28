@@ -1,9 +1,11 @@
 ---
-title: "Platemap Harmonization with Metadata"
+title: "Data Cleaning Step 3- Platemap Harmonization with Metadata"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
 ---
+
+NOTE: Run scripts/QCD/curate_qcd_data.Rmd before running this step
 
 ```{r setup, include=FALSE}
 require(knitr)
@@ -12,7 +14,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
 ```
 
 # Environment
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse")   
 #Load Packages
@@ -27,27 +29,27 @@ sessionInfo()
 # Load metdadata
 ```{r}
 metadata <- readRDS("./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.RDS")
-paste0("Number of entries in curated mettadata from PENN: ",nrow(metadata))
+paste0("Number of entries in curated mettadata from PENN: ", nrow(metadata))
 ```
 
 # Load sequencing sample lookup
 ## Load lookup from MERLIN and IMPALA
 ```{r}
 sequencing_MERLIN_plates <- read.delim("../../Sequence_data/metadata/sample_lookup/2023-08-24_MERLIN_genome_sample_lookup.txt")  
-sequencing_MERLIN_plates$Sequencing.plate <- gsub("Sequencing plate ","Sequencing plate MERLIN ",sequencing_MERLIN_plates$Sequencing.plate)  
-sequencing_IMPALA_plate <- read.delim("../../Sequence_data/metadata/sample_lookup/2024-06-12_IMPALA_BC_genome_sample_lookup.txt")%>% subset(grepl('MERLIN',Genome.ID) ==T) 
-sequencing_IMPALA_plate$Sequencing.plate <- gsub("Sequencing plate ","Sequencing plate IMPALA ",sequencing_IMPALA_plate$Sequencing.plate)  
+sequencing_MERLIN_plates$Sequencing.plate <- gsub("Sequencing plate ","Sequencing plate MERLIN ", sequencing_MERLIN_plates$Sequencing.plate)  
+sequencing_IMPALA_plate <- read.delim("../../Sequence_data/metadata/sample_lookup/2024-06-12_IMPALA_BC_genome_sample_lookup.txt") %>% subset(grepl('MERLIN',Genome.ID) ==T) 
+sequencing_IMPALA_plate$Sequencing.plate <- gsub("Sequencing plate ","Sequencing plate IMPALA ", sequencing_IMPALA_plate$Sequencing.plate)  
 ```
 
 # Fix one bad entry in IMPALA plate
 ```{r}
-sequencing_IMPALA_plate$Sample.ID <- ifelse(sequencing_IMPALA_plate$Sample.ID == '118H V2 B1 C1 ','118H V2 B1 C1',sequencing_IMPALA_plate$Sample.ID)
+sequencing_IMPALA_plate$Sample.ID <- ifelse(sequencing_IMPALA_plate$Sample.ID == '118H V2 B1 C1 ','118H V2 B1 C1', sequencing_IMPALA_plate$Sample.ID)
 ```
 
 # Merge sequencing data
 ```{r}
-sequencing <- rbind(sequencing_MERLIN_plates,sequencing_IMPALA_plate )
-paste0("Initial number of sequenced genomes: ",nrow(sequencing))
+sequencing <- rbind(sequencing_MERLIN_plates, sequencing_IMPALA_plate)
+paste0("Initial number of sequenced genomes: ", nrow(sequencing))
 ```
 
 # Load original and new platemaps
@@ -143,7 +145,7 @@ parse_sequencing_map <- function(string){
   num <- split[,1] %>% str_split(.," ",simplify=T) %>% .[,4]%>% as.numeric 
   ro <- split[,2] %>% str_split(.,"-",simplify = T) %>% .[,1] %>% trimws(.,"both")
   col <-split[,2] %>% str_split(.,"-",simplify = T) %>% .[,2] %>% trimws(.,"both")%>% as.numeric
-  dataframe <- cbind(Sequencing.plate = string,batch = batch,num_fin=num,col_fin=col,ro_fin=ro) %>% as.data.frame
+  dataframe <- cbind(Sequencing.plate = string,batch = batch,plate_final=num,column_final=col,row_final=ro) %>% as.data.frame
   return(dataframe)
 }
 

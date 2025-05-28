@@ -1,5 +1,5 @@
 ---
-title: "MERLIN REMOVE DUPLICATES"
+title: "Data Cleaning Step 4- Remove duplicates"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -13,7 +13,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
 
 # Environment
 
-```{r environment, echo=F, message=FALSE, include=F, results=F}
+```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse",'ape','kableExtra')   
 #Load Packages
@@ -59,7 +59,7 @@ metadata$genomic_id <- metadata$genomic_id_qc_pass_escre
 ```{r}
 table(metadata$genomic_id_qc_pass_escre_num )
 metadata_duplicates <- subset(metadata,genomic_id_qc_pass_escre_num > 1)
-paste0("Number of duplicates: ",nrow(metadata_duplicates))
+paste0("Number of duplicates: ", nrow(metadata_duplicates))
 ```
 
 
