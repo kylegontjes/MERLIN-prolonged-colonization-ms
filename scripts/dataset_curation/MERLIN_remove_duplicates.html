@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-05-27" />
+<meta name="date" content="2025-05-28" />
 
 <title>MERLIN REMOVE DUPLICATES</title>
 
@@ -576,7 +576,7 @@ display: none;
 
 <h1 class="title toc-ignore">MERLIN REMOVE DUPLICATES</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-05-27</h4>
+<h4 class="date">2025-05-28</h4>
 
 </div>
 
@@ -594,31 +594,30 @@ sequencing_MERLIN_plates &lt;- read.delim(&quot;../../Sequence_data/metadata/sam
 <h1>Get ESCRE data</h1>
 <pre class="r"><code>get_escre_data &lt;- function(passing_genomes){
   genomes &lt;- str_split(passing_genomes,pattern = &quot;;&quot;) %&gt;% unlist %&gt;% as.vector()
-  qcd_sub &lt;- subset(qcd,Sample %in% genomes &amp; escre ==TRUE &amp; qc_pass==TRUE)
-  if(nrow(qcd_sub)&gt;0){
-    Genome.ID_qc_pass &lt;-passing_genomes
-    Genome.ID_qc_pass_escre &lt;-  qcd_sub %&gt;% .$Sample %&gt;% paste0(collapse=&quot;;&quot;)
+  qcd_sub &lt;- subset(qcd, Sample %in% genomes &amp; WGS_escre ==TRUE &amp; qc_pass==TRUE)
+  if(nrow(qcd_sub)&gt;0){ 
+    genomic_id_qc_pass_escre &lt;-  qcd_sub %&gt;% .$Sample %&gt;% paste0(collapse=&quot;;&quot;)
   } else {
-    Genome.ID_qc_pass =&quot;&quot;
-    Genome.ID_qc_pass_escre =&quot;&quot;
+    genomic_id_qc_pass =&quot;&quot; 
+    genomic_id_qc_pass_escre =&quot;&quot;
   }
-  cbind.data.frame(Genome.ID_qc_pass_escre)
+  cbind.data.frame(genomic_id_qc_pass_escre)
 }
 
-metadata$Genome.ID_qc_pass_escre &lt;- lapply(metadata$Genome.ID_qc_pass,get_escre_data) %&gt;% unlist
-metadata$Genome.ID_qc_pass_escre_num &lt;- sapply(metadata$Genome.ID_qc_pass_escre,FUN=function(x){
+metadata$genomic_id_qc_pass_escre &lt;- lapply(metadata$genomic_id_qc_pass,get_escre_data) %&gt;% unlist
+metadata$genomic_id_qc_pass_escre_num &lt;-  sapply(metadata$genomic_id_qc_pass_escre,FUN=function(x){
   str_split(x,&quot;;&quot;) %&gt;% unlist  %&gt;% subset(.!=&quot;&quot;) %&gt;% length
 })
 
-metadata$genomic_id &lt;- metadata$Genome.ID_qc_pass_escre</code></pre>
+metadata$genomic_id &lt;- metadata$genomic_id_qc_pass_escre</code></pre>
 </div>
-<div id="deal-with-the-14-duplicates" class="section level1">
-<h1>Deal with the 14 duplicates</h1>
-<pre class="r"><code>table(metadata$Genome.ID_qc_pass_escre_num )</code></pre>
+<div id="deal-with-the-16-duplicates" class="section level1">
+<h1>Deal with the 16 duplicates</h1>
+<pre class="r"><code>table(metadata$genomic_id_qc_pass_escre_num )</code></pre>
 <pre><code>## 
 ##   0   1   2   3 
 ##  93 154  15   1</code></pre>
-<pre class="r"><code>metadata_duplicates &lt;- subset(metadata,Genome.ID_qc_pass_escre_num&gt;1)
+<pre class="r"><code>metadata_duplicates &lt;- subset(metadata,genomic_id_qc_pass_escre_num &gt; 1)
 paste0(&quot;Number of duplicates: &quot;,nrow(metadata_duplicates))</code></pre>
 <pre><code>## [1] &quot;Number of duplicates: 16&quot;</code></pre>
 </div>
@@ -672,7 +671,8 @@ sliquefaciens_mat &lt;- dna_matrix(sliquefaciens_fa,&quot;MERLIN_259_reference&q
 </div>
 <div id="get-qc-data-for-those-genomes" class="section level1">
 <h1>Get qc data for those genomes</h1>
-<pre class="r"><code>duplicates &lt;- metadata_duplicates$Genome.ID_qc_pass_escre %&gt;% unique
+<pre class="r"><code>duplicates &lt;- metadata_duplicates$genomic_id_qc_pass_escre %&gt;% unique
+
 duplicates_qc &lt;- lapply(duplicates,FUN=function(x){
   genomic_ids &lt;- str_split(x,&quot;;&quot;) %&gt;% unlist
   qcd %&gt;% subset(Sample %in% genomic_ids) %&gt;% subset(qc_pass==T)  
@@ -694,7 +694,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_45           1         0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_128&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_128&quot;</code></pre>
-<pre class="r"><code>MERLIN_128_MERLIN_45 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_128_MERLIN_45 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -726,13 +726,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -744,7 +744,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -753,13 +753,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -786,10 +786,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -885,9 +882,6 @@ MERLIN_128
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Escherichia
 </td>
 <td style="text-align:left;">
 TRUE
@@ -986,9 +980,6 @@ MERLIN_45
 TRUE
 </td>
 <td style="text-align:left;">
-Escherichia
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1017,7 +1008,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_193          0          0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_193&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_193&quot;</code></pre>
-<pre class="r"><code>MERLIN_148_MERLIN_193 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_148_MERLIN_193 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -1049,13 +1040,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -1067,7 +1058,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -1076,13 +1067,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -1109,10 +1100,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -1208,9 +1196,6 @@ MERLIN_193
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Escherichia
 </td>
 <td style="text-align:left;">
 TRUE
@@ -1309,9 +1294,6 @@ MERLIN_148
 TRUE
 </td>
 <td style="text-align:left;">
-Escherichia
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1340,7 +1322,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_198          1          0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_210&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_210&quot;</code></pre>
-<pre class="r"><code>MERLIN_210_MERLIN_198 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_210_MERLIN_198 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -1372,13 +1354,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -1390,7 +1372,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -1399,13 +1381,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -1432,10 +1414,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -1531,9 +1510,6 @@ MERLIN_210
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Klebsiella
 </td>
 <td style="text-align:left;">
 TRUE
@@ -1632,9 +1608,6 @@ MERLIN_198
 TRUE
 </td>
 <td style="text-align:left;">
-Klebsiella
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1663,7 +1636,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_181          0          0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_265&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_265&quot;</code></pre>
-<pre class="r"><code>MERLIN_265_MERLIN_181 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_265_MERLIN_181 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -1695,13 +1668,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -1713,7 +1686,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -1722,13 +1695,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -1755,10 +1728,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -1854,9 +1824,6 @@ MERLIN_265
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Escherichia
 </td>
 <td style="text-align:left;">
 TRUE
@@ -1955,9 +1922,6 @@ MERLIN_181
 TRUE
 </td>
 <td style="text-align:left;">
-Escherichia
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1986,7 +1950,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_34         0         0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_34&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_34&quot;</code></pre>
-<pre class="r"><code>MERLIN_23_MERLIN_34 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_23_MERLIN_34 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -2018,13 +1982,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -2036,7 +2000,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -2045,13 +2009,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -2078,10 +2042,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -2178,9 +2139,6 @@ MERLIN_34
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Citrobacter
 </td>
 <td style="text-align:left;">
 TRUE
@@ -2280,9 +2238,6 @@ MERLIN_23
 TRUE
 </td>
 <td style="text-align:left;">
-Citrobacter
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -2316,7 +2271,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_273          5          0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_105&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_105&quot;</code></pre>
-<pre class="r"><code>MERLIN_105_MERLIN_273 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_105_MERLIN_273 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -2348,13 +2303,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -2366,7 +2321,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -2375,13 +2330,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -2408,10 +2363,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -2507,9 +2459,6 @@ MERLIN_105
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Klebsiella
 </td>
 <td style="text-align:left;">
 TRUE
@@ -2608,9 +2557,6 @@ MERLIN_273
 TRUE
 </td>
 <td style="text-align:left;">
-Klebsiella
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -2662,7 +2608,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_46         1         0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_46&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_46&quot;</code></pre>
-<pre class="r"><code>MERLIN_35_MERLIN_46 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_35_MERLIN_46 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -2694,13 +2640,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -2712,7 +2658,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -2721,13 +2667,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -2754,10 +2700,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -2853,9 +2796,6 @@ MERLIN_46
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Enterobacter
 </td>
 <td style="text-align:left;">
 TRUE
@@ -2954,9 +2894,6 @@ MERLIN_35
 TRUE
 </td>
 <td style="text-align:left;">
-Enterobacter
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -2985,7 +2922,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_289            0          0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_RE_3&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_RE_3&quot;</code></pre>
-<pre class="r"><code>MERLIN_RE_3_MERLIN_289 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_RE_3_MERLIN_289 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -3017,13 +2954,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -3035,7 +2972,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -3044,13 +2981,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -3077,10 +3014,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -3176,9 +3110,6 @@ MERLIN_RE_3
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Escherichia
 </td>
 <td style="text-align:left;">
 TRUE
@@ -3277,9 +3208,6 @@ MERLIN_289
 TRUE
 </td>
 <td style="text-align:left;">
-Escherichia
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -3310,9 +3238,9 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_246      84974          0</code></pre>
 <pre class="r"><code>paste0(&quot;Split metadata&quot;)</code></pre>
 <pre><code>## [1] &quot;Split metadata&quot;</code></pre>
-<pre class="r"><code>metadata_MERLIN_211_MERLIN_246&lt;- subset(metadata,Genome.ID_qc_pass %in% duplicates[10])  
+<pre class="r"><code>metadata_MERLIN_211_MERLIN_246&lt;- subset(metadata,genomic_id_qc_pass %in% duplicates[10])  
 metadata_split_MERLIN_211_MERLIN_246 &lt;- separate_rows(metadata_MERLIN_211_MERLIN_246,genomic_id,sep = &#39;;&#39;)  
-metadata &lt;- subset(metadata,!metadata$Genome.ID_qc_pass %in% duplicates[10]) %&gt;% bind_rows(.,metadata_split_MERLIN_211_MERLIN_246)</code></pre>
+metadata &lt;- subset(metadata,!metadata$genomic_id_qc_pass %in% duplicates[10]) %&gt;% bind_rows(.,metadata_split_MERLIN_211_MERLIN_246)</code></pre>
 </div>
 </div>
 <div id="merlin_234-merlin_233" class="section level1">
@@ -3331,7 +3259,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_233         25          0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_234&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_234&quot;</code></pre>
-<pre class="r"><code>MERLIN_234_MERLIN_233 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_234_MERLIN_233 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -3363,13 +3291,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -3381,7 +3309,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -3390,13 +3318,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -3423,10 +3351,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -3522,9 +3447,6 @@ MERLIN_234
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Klebsiella
 </td>
 <td style="text-align:left;">
 TRUE
@@ -3623,9 +3545,6 @@ MERLIN_233
 TRUE
 </td>
 <td style="text-align:left;">
-Klebsiella
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -3654,7 +3573,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_287          1          0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_287&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_287&quot;</code></pre>
-<pre class="r"><code>MERLIN_120_MERLIN_287 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_120_MERLIN_287 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -3686,13 +3605,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -3704,7 +3623,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -3713,13 +3632,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -3746,10 +3665,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -3845,9 +3761,6 @@ MERLIN_287
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Klebsiella
 </td>
 <td style="text-align:left;">
 TRUE
@@ -3946,9 +3859,6 @@ MERLIN_120
 TRUE
 </td>
 <td style="text-align:left;">
-Klebsiella
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -3977,7 +3887,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_87           1         0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_87&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_87&quot;</code></pre>
-<pre class="r"><code>MERLIN_118_MERLIN_87 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_118_MERLIN_87 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -4009,13 +3919,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -4027,7 +3937,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -4036,13 +3946,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -4069,10 +3979,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -4168,9 +4075,6 @@ MERLIN_87
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Klebsiella
 </td>
 <td style="text-align:left;">
 TRUE
@@ -4269,9 +4173,6 @@ MERLIN_118
 TRUE
 </td>
 <td style="text-align:left;">
-Klebsiella
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -4301,7 +4202,7 @@ paste0(&quot;Species: &quot;)</code></pre>
 ## MERLIN_61             2          1         0</code></pre>
 <pre class="r"><code>paste0(&quot;Keep MERLIN_61&quot;)</code></pre>
 <pre><code>## [1] &quot;Keep MERLIN_61&quot;</code></pre>
-<pre class="r"><code>MERLIN_RE_8_MERLIN_294_MERLIN_61 %&gt;% arrange(`Total...of.contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>MERLIN_RE_8_MERLIN_294_MERLIN_61 %&gt;% arrange(`Total_of_contigs`,-N50)  %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
@@ -4333,13 +4234,13 @@ After_trim_per_base_sequence_content
 After_trim_overrepresented_sequences
 </th>
 <th style="text-align:right;">
-After_trim_.GC
+After_trim__GC
 </th>
 <th style="text-align:left;">
-After_trim_Total.Bases
+After_trim_Total_Bases
 </th>
 <th style="text-align:right;">
-After_trim_Total.Sequences
+After_trim_Total_Sequences
 </th>
 <th style="text-align:right;">
 After_trim_median_sequence_length
@@ -4351,7 +4252,7 @@ After_trim_avg_sequence_length
 After_trim_total_deduplicated_percentage
 </th>
 <th style="text-align:left;">
-After_trim_Sequence.length
+After_trim_Sequence_length
 </th>
 <th style="text-align:left;">
 After_trim_adapter_content
@@ -4360,13 +4261,13 @@ After_trim_adapter_content
 N50
 </th>
 <th style="text-align:right;">
-Total.length
+Total_length
 </th>
 <th style="text-align:right;">
-Total…of.contigs
+Total_of_contigs
 </th>
 <th style="text-align:left;">
-QC.Check
+QC_Check
 </th>
 <th style="text-align:right;">
 ANI
@@ -4393,10 +4294,7 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
-Genus
-</th>
-<th style="text-align:left;">
-escre
+WGS_escre
 </th>
 <th style="text-align:left;">
 sequencing_run
@@ -4492,9 +4390,6 @@ MERLIN_61
 </td>
 <td style="text-align:left;">
 TRUE
-</td>
-<td style="text-align:left;">
-Citrobacter
 </td>
 <td style="text-align:left;">
 TRUE
@@ -4593,9 +4488,6 @@ MERLIN_294
 TRUE
 </td>
 <td style="text-align:left;">
-Citrobacter
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -4692,9 +4584,6 @@ MERLIN_RE_8
 TRUE
 </td>
 <td style="text-align:left;">
-Citrobacter
-</td>
-<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -4713,7 +4602,9 @@ TRUE
 <div id="edit-the-genomic-id" class="section level1">
 <h1>Edit the genomic id</h1>
 <pre class="r"><code>metadata$genomic_id &lt;- trimws(metadata$genomic_id,&#39;both&#39;,&quot;;&quot;)
-metadata$genomic_id &lt;- ifelse(metadata$genomic_id==&#39;&#39; &amp; metadata$WGS_qc_pass_ids_num &gt;0,metadata$Genome.ID_qc_pass,metadata$genomic_id)
+metadata$genomic_id &lt;- ifelse(metadata$genomic_id==&#39;&#39; &amp; metadata$WGS_qc_pass_ids_num &gt; 0,metadata$genomic_id_qc_pass,metadata$genomic_id)
+metadata$genomic_id &lt;- ifelse(metadata$genomic_id==&#39;&#39; &amp; metadata$WGS_qc_pass_ids_num == 0,metadata$Genome_ID,metadata$genomic_id)
+
 saveRDS(metadata,&quot;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed.RDS&quot;)</code></pre>
 </div>
 

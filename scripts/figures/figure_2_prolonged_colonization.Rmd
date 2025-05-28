@@ -13,6 +13,7 @@ opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
+# Environment
 
 ```{r environment, echo=F, message=FALSE, include=F, results=F}
 #Packages
@@ -36,9 +37,9 @@ prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolo
 ```
 
 ```{r}
-prolonged_melt <- reshape2::melt(prolonged_colonization_df %>% select(household,index_at_1_and_or_2_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster,index_at_1_and_or_2_ESBL_genes,index_at_1_and_or_2_ESBL_plasmidic_genes,index_at_1_and_or_2_ESBL_plasmids,index_at_1_and_or_2_Species_ST_cluster_ESBL_genes,index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes,index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmids),id.vars="household")
+prolonged_melt <- reshape2::melt(prolonged_colonization_df %>% select(household,index_at_1_and_or_2_WGS_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster,index_at_1_and_or_2_ESBL_genes,index_at_1_and_or_2_ESBL_plasmidic_genes,index_at_1_and_or_2_ESBL_plasmids,index_at_1_and_or_2_Species_ST_cluster_ESBL_genes,index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes,index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmids),id.vars="household")
 prolonged_melt$value <- factor(prolonged_melt$value,levels = c(0,1))
-prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Species + ST','index_at_1_and_or_2_Species_ST_cluster'='Species + ST + Cluster (Strain)','index_at_1_and_or_2_ESBL_genes'='ESBL gene','index_at_1_and_or_2_ESBL_plasmidic_genes'= 'Plasmidic ESBL','index_at_1_and_or_2_ESBL_plasmids'= 'ESBL plasmid',
+prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_WGS_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Species + ST','index_at_1_and_or_2_Species_ST_cluster'='Species + ST + Cluster (Strain)','index_at_1_and_or_2_ESBL_genes'='ESBL gene','index_at_1_and_or_2_ESBL_plasmidic_genes'= 'Plasmidic ESBL','index_at_1_and_or_2_ESBL_plasmids'= 'ESBL plasmid',
   'index_at_1_and_or_2_Species_ST_cluster_ESBL_genes'='Strain +/- ESBL',
   'index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes'='Strain +/- plasmidic ESBL',
   'index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmids'='Strain +/- ESBL plasmid')
@@ -48,7 +49,7 @@ prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summar
 
 
 ```{r,fig.width=7.5,fig.height=9.375}
-figure_2 <- ggplot(data=prolonged_melt) + geom_bar(aes(x=variable,fill=value))  + xlab("") + ylab("Count") + prolonged_colonization_scale + theme_bw_me + figure_2_format
+figure_2 <- ggplot(data=prolonged_melt) + geom_bar(aes(x=variable,fill=value)) + xlab("") + ylab("Count") + prolonged_colonization_scale + theme_bw_me + figure_2_format
 
 figure_2
 ```

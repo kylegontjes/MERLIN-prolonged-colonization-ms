@@ -55,37 +55,36 @@ metadata$isolate_id_recode <- gsub(pattern = "Petstool",replacement = "Pet Stool
 ## Household id (correct lowercase)
 ```{r}
 # Correct lowercase
-metadata$household_number <- recode(metadata$household_number,'49h' = '49H')
+metadata$household_number_recode <- recode(metadata$household_number,'49h' = '49H')
 ```
 
 # Edit specific isolates with coding differences 
 ```{r}
 # 113H_2_Pet Stool 1A C1: Remove C1
-metadata$isolate_id_recode <- ifelse(metadata$household_number=="113H" & metadata$visit ==2 & metadata$isolate_id == "Pet Stool 1A C1", "Pet Stool 1A",metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode=="113H" & metadata$visit ==2 & metadata$isolate_id == "Pet Stool 1A C1", "Pet Stool 1A",metadata$isolate_id_recode)
 
 # 113H: Add "C1" to Visit 2 Washing Machine  
-metadata$isolate_id_recode <- ifelse(metadata$household_number == "113H" & metadata$visit == 2 & metadata$isolate_id == "Washing Machine","Washing Machine C1", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "113H" & metadata$visit == 2 & metadata$isolate_id == "Washing Machine","Washing Machine C1", metadata$isolate_id_recode)
  
 # 160H: Add "C1" to Visit 1 Bath 1
-metadata$isolate_id_recode <- ifelse(metadata$household_number == "160H" & metadata$visit == 1 & metadata$isolate_id == "Bath 1","Bath 1 C1", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "160H" & metadata$visit == 1 & metadata$isolate_id == "Bath 1","Bath 1 C1", metadata$isolate_id_recode)
 
 # 182H: Add "C1" to Visit 3 Bath 1 
-metadata$isolate_id_recode <- ifelse(metadata$household_number == "182H" & metadata$visit == 3 & metadata$isolate_id == "Bath 1","Bath 1 C1", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "182H" & metadata$visit == 3 & metadata$isolate_id == "Bath 1","Bath 1 C1", metadata$isolate_id_recode)
 
 # 197H: Add "C1" to Visit 2 Living Room 
-metadata$isolate_id_recode <- ifelse(metadata$household_number == "197H" & metadata$visit == 2 & metadata$isolate_id == "Living Room", "Living Room C1", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "197H" & metadata$visit == 2 & metadata$isolate_id == "Living Room", "Living Room C1", metadata$isolate_id_recode)
 
 # 151H: Remove "C1" from  Visit 3 Living Room & Washing Room
-metadata$isolate_id_recode <- ifelse(metadata$household_number == "151H" & metadata$visit == 3 & metadata$isolate_id == "Living Room C1","Living Room", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "151H" & metadata$visit == 3 & metadata$isolate_id == "Living Room C1","Living Room", metadata$isolate_id_recode)
 
-metadata$isolate_id_recode <- ifelse(metadata$household_number == "151H" & metadata$visit == 3 & metadata$isolate_id == "Washing Machine C1","Washing Machine", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "151H" & metadata$visit == 3 & metadata$isolate_id == "Washing Machine C1","Washing Machine", metadata$isolate_id_recode)
 ```
 
 # Create useful and parsable tag for isolates
 ```{r}
 # Metadata
-metadata$isolate_info <- ifelse(grepl("MER",metadata$household_number)==T,paste0(metadata$isolate_id,"_i"),
-                                paste0(metadata$household_number,"_",metadata$visit,"_",metadata$isolate_id_recode))
+metadata$isolate_info <- ifelse(grepl("MER", metadata$household_number_recode)==T, paste0(metadata$isolate_id,"_i"), paste0(metadata$household_number_recode, "_",metadata$visit, "_",metadata$isolate_id_recode))
 ```
 
 ```{r}

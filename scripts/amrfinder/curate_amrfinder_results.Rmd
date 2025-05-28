@@ -27,7 +27,8 @@ sessionInfo()
 
 ```{r cars} 
 df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") 
-final_isolates <- subset(df,escre == TRUE & qc_pass == TRUE) %>% .$genomic_id 
+final_isolates <- subset(df,WGS_escre == TRUE & qc_pass == TRUE) %>% .$genomic_id 
+paste0("Number of final isolates that were ESCRE and QC passing: ", length(final_isolates))
 ```
 
 # create_master_amrfinder_script

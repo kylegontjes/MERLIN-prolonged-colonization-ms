@@ -16,7 +16,7 @@ opts_knit$set(root.dir='~/Desktop/gl_MERLIN/Analysis/Household_transmission/MERL
 
 ```{r cars} 
 library(tidyverse)
-df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS")  %>% subset(escre == TRUE & qc_pass == TRUE) 
+df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS")  %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
 isolates <- df$genomic_id
 
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS")

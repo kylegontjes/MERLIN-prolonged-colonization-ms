@@ -12,7 +12,7 @@ opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
-
+# Environment 
 ```{r environment, echo=F, message=FALSE, include=F, results=F}
 #Packages
 packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra','ComplexHeatmap','gontjesr') 
@@ -34,8 +34,8 @@ sessionInfo()
 prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS")
 ```
 
+# Marginal stats
 ```{r}
-
 get_marginal_stats <- function(feature,outcome){ 
   if(class(outcome) != "numeric"){
     stop("Outcome is not numeric")
@@ -89,7 +89,6 @@ E <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=
 figure_3 <- cowplot::plot_grid(A,B,C,D,E,labels = "AUTO",ncol=3)
 figure_3
 ```
-
 
 ```{r}
 ggsave(plot = figure_3,filename = './figures/figure_3_diagnostic_statistics_species_prolonged_colonization.png',dpi = 600,width = 8,height = 9)

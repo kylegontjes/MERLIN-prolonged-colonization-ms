@@ -54,7 +54,7 @@ paste0("Initial number of sequenced genomes: ",nrow(sequencing))
 ## Function
 ```{r}
 load_plate_map <- function(path,sheet,name){
-   readxl::read_xlsx(path,sheet = sheet, col_names = FALSE) %>% as.data.frame %>% `rownames<-`(eight)%>% `colnames<-`(c(1:ncol(.)))
+   readxl::read_xlsx(path,sheet = sheet, col_names = FALSE) %>% as.data.frame %>% `rownames<-`(eight)%>% `colnames<-`(c(1:ncol(.))) 
 }
 ```
 
@@ -223,11 +223,11 @@ sequencing$map_name <- ifelse(sequencing$map_name == "445H V3 S1A C2","445H V3 S
 
 #  345H V3 S1A C1
 ## Change plate location from G9 to G8
-metadata$position <-  ifelse(metadata$position=="G9" & metadata$plate=="5" & metadata$household_number =="370H","G8",metadata$position) 
+metadata$position <-  ifelse(metadata$position=="G9" & metadata$plate=="5" & metadata$household_number_recode =="370H","G8",metadata$position) 
 
 # 238H V1 B1 C1
 ## Change plate location from D6 to D7 
-metadata$position <-  ifelse(metadata$position=="D6" & metadata$plate=="1" & metadata$household_number =="238H","D7",metadata$position) 
+metadata$position <-  ifelse(metadata$position=="D6" & metadata$plate=="1" & metadata$household_number_recode =="238H","D7",metadata$position) 
 
 # 238H V1 K C1 (00843) - Two multiple entries in platemap with different barcode, but same sample info
 ## 238H V1 K C1 (00843) - > 238H V1 K C1
@@ -289,6 +289,7 @@ newmap <- rbind(newmap,IMPALA_map)
 newmap$Sequencing.plate <- paste0("Sequencing plate MERLIN ",newmap$plate,", ",newmap$row,"-",newmap$column)
 
 sequencing_fin <- left_join(sequencing,newmap) 
+colnames(sequencing_fin) <- gsub("\\.","_",colnames(sequencing_fin))
 paste0("How sequencing list looks like...")
 head(sequencing_fin,n = 3)
 ```
@@ -305,24 +306,24 @@ table(no_correct_platemap$plate,useNA = 'ifany')
  
 # Edit platemap
 paste0("One of them had an issue w/ their naming. ")
-metadata$map_name <- ifelse(metadata$household_number=="126H" & metadata$visit == 3 & metadata$isolate_id =='Pet Stool 2A C1' & metadata$lab_vantage_s_number == "S-220606-00837",'126H V3 PS 2A C1 (00837)',metadata$map_name)
+metadata$map_name <- ifelse(metadata$household_number_recode=="126H" & metadata$visit == 3 & metadata$isolate_id =='Pet Stool 2A C1' & metadata$lab_vantage_s_number == "S-220606-00837",'126H V3 PS 2A C1 (00837)',metadata$map_name)
 
 # 345H V3 S1A C1 - ALso found on P5 C9 in original map
-metadata$map_name <- ifelse(metadata$household_number=="345H" & metadata$visit == 3 & metadata$isolate_id == "Stool 1A C1","345H V3 S1A C1",metadata$map_name)
+metadata$map_name <- ifelse(metadata$household_number_recode=="345H" & metadata$visit == 3 & metadata$isolate_id == "Stool 1A C1","345H V3 S1A C1",metadata$map_name)
 ``` 
 
 # Merge w metadata with sequencing data
 ```{r}
 # Merge duplicates
-simple_sequencing_tag <- aggregate(Genome.ID ~ map_name,sequencing_fin,paste,collapse=";") 
+simple_sequencing_tag <- aggregate(Genome_ID ~ map_name,sequencing_fin,paste,collapse=";") 
 paste0("Number of map names: ",nrow(simple_sequencing_tag))
-paste0("Number of map names with duplicate sequencing runs: ",simple_sequencing_tag$Genome.ID %>% grepl (";",.)  %>% sum)
+paste0("Number of map names with duplicate sequencing runs: ",simple_sequencing_tag$Genome_ID %>% grepl (";",.)  %>% sum)
 
 # Join data
 metadata_w_genomic_id <- left_join(metadata,simple_sequencing_tag)
 
 # Metdaata without genomic id
-metadata_wo_genomic_id <- subset(metadata_w_genomic_id,is.na(Genome.ID) == T)
+metadata_wo_genomic_id <- subset(metadata_w_genomic_id,is.na(Genome_ID) == T)
 paste0("Number of metadata entries without genomic id: ",nrow(metadata_wo_genomic_id))
 ```
 
@@ -336,23 +337,23 @@ get_qc_flag <- function(ID,QC_data){
     QC_subset <- QC_data %>% subset(genomic_id %in% ID )  
     sequencing_runs_num <- nrow(QC_subset)
     QC_status <- QC_subset$qc_pass %>% paste0(collapse=';') 
-    Genome.ID_qc_passing <- ifelse(sum(QC_subset$qc_pass)>0,ID,"") 
-    return(data.frame(Genome.ID = ID,qc_pass = QC_status,sequencing_runs_num=sequencing_runs_num,Genome.ID_qc_passing=Genome.ID_qc_passing))
+    genomic_id_qc_passing <- ifelse(sum(QC_subset$qc_pass)>0,ID,"") 
+    return(data.frame(Genome_ID = ID,WGS_qc_pass = QC_status,sequencing_runs_num=sequencing_runs_num,genomic_id_qc_passing=genomic_id_qc_passing))
   }
   
   qc_data <- lapply(ID_split,get_qc_flag_isolate,QC_data=QC_data) %>% do.call(rbind,.)    
-  qc_data_df <- qc_data %>% summarise(Genome.ID = paste0(Genome.ID,collapse=";"),WGS_qc_pass = paste0(qc_pass,collapse=";"),Genome.ID_qc_pass = paste0(subset(Genome.ID_qc_passing,Genome.ID_qc_passing != ''),collapse=";"))
+  qc_data_df <- qc_data %>% summarise(Genome_ID = paste0(Genome_ID,collapse=";"),WGS_qc_pass = paste0(WGS_qc_pass,collapse=";"),genomic_id_qc_pass = paste0(subset(genomic_id_qc_passing,genomic_id_qc_passing != ''),collapse=";"))
   return(qc_data_df)
 }
  
-qc_summary <- lapply(metadata_w_genomic_id$Genome.ID,FUN=get_qc_flag,QC_data=qcd) %>% do.call(rbind,.) %>% distinct
+qc_summary <- lapply(metadata_w_genomic_id$Genome_ID,FUN=get_qc_flag,QC_data=qcd) %>% do.call(rbind,.) %>% distinct 
 
 paste0("Number of metadata entires: ", nrow(qc_summary))
 
 qc_summary$WGS_qc_pass_runs_num <- sapply(qc_summary$WGS_qc_pass,FUN=function(x){
   str_split(string = x,pattern = ';') %>% unlist %>% subset(.,.==TRUE) %>% length
 })
-qc_summary$WGS_qc_pass_ids_num <- sapply(qc_summary$Genome.ID_qc_pass,FUN=function(x){
+qc_summary$WGS_qc_pass_ids_num <- sapply(qc_summary$genomic_id_qc_pass,FUN=function(x){
   str_split(string = x,pattern = ';') %>% unlist %>% subset(.!= "") %>% length
 })  
 

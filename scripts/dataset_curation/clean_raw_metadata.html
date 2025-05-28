@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2025-05-27" />
+<meta name="date" content="2025-05-28" />
 
 <title>Curate raw MERLIN metadata</title>
 
@@ -350,7 +350,7 @@ display: none;
 
 
 <h1 class="title toc-ignore">Curate raw MERLIN metadata</h1>
-<h4 class="date">2025-05-27</h4>
+<h4 class="date">2025-05-28</h4>
 
 </div>
 
@@ -386,36 +386,35 @@ metadata$isolate_id_recode &lt;- gsub(pattern = &quot;Petstool&quot;,replacement
 <div id="household-id-correct-lowercase" class="section level2">
 <h2>Household id (correct lowercase)</h2>
 <pre class="r"><code># Correct lowercase
-metadata$household_number &lt;- recode(metadata$household_number,&#39;49h&#39; = &#39;49H&#39;)</code></pre>
+metadata$household_number_recode &lt;- recode(metadata$household_number,&#39;49h&#39; = &#39;49H&#39;)</code></pre>
 </div>
 </div>
 <div id="edit-specific-isolates-with-coding-differences" class="section level1">
 <h1>Edit specific isolates with coding differences</h1>
 <pre class="r"><code># 113H_2_Pet Stool 1A C1: Remove C1
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number==&quot;113H&quot; &amp; metadata$visit ==2 &amp; metadata$isolate_id == &quot;Pet Stool 1A C1&quot;, &quot;Pet Stool 1A&quot;,metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode==&quot;113H&quot; &amp; metadata$visit ==2 &amp; metadata$isolate_id == &quot;Pet Stool 1A C1&quot;, &quot;Pet Stool 1A&quot;,metadata$isolate_id_recode)
 
 # 113H: Add &quot;C1&quot; to Visit 2 Washing Machine  
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number == &quot;113H&quot; &amp; metadata$visit == 2 &amp; metadata$isolate_id == &quot;Washing Machine&quot;,&quot;Washing Machine C1&quot;, metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;113H&quot; &amp; metadata$visit == 2 &amp; metadata$isolate_id == &quot;Washing Machine&quot;,&quot;Washing Machine C1&quot;, metadata$isolate_id_recode)
  
 # 160H: Add &quot;C1&quot; to Visit 1 Bath 1
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number == &quot;160H&quot; &amp; metadata$visit == 1 &amp; metadata$isolate_id == &quot;Bath 1&quot;,&quot;Bath 1 C1&quot;, metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;160H&quot; &amp; metadata$visit == 1 &amp; metadata$isolate_id == &quot;Bath 1&quot;,&quot;Bath 1 C1&quot;, metadata$isolate_id_recode)
 
 # 182H: Add &quot;C1&quot; to Visit 3 Bath 1 
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number == &quot;182H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Bath 1&quot;,&quot;Bath 1 C1&quot;, metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;182H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Bath 1&quot;,&quot;Bath 1 C1&quot;, metadata$isolate_id_recode)
 
 # 197H: Add &quot;C1&quot; to Visit 2 Living Room 
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number == &quot;197H&quot; &amp; metadata$visit == 2 &amp; metadata$isolate_id == &quot;Living Room&quot;, &quot;Living Room C1&quot;, metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;197H&quot; &amp; metadata$visit == 2 &amp; metadata$isolate_id == &quot;Living Room&quot;, &quot;Living Room C1&quot;, metadata$isolate_id_recode)
 
 # 151H: Remove &quot;C1&quot; from  Visit 3 Living Room &amp; Washing Room
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Living Room C1&quot;,&quot;Living Room&quot;, metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Living Room C1&quot;,&quot;Living Room&quot;, metadata$isolate_id_recode)
 
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Washing Machine C1&quot;,&quot;Washing Machine&quot;, metadata$isolate_id_recode)</code></pre>
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Washing Machine C1&quot;,&quot;Washing Machine&quot;, metadata$isolate_id_recode)</code></pre>
 </div>
 <div id="create-useful-and-parsable-tag-for-isolates" class="section level1">
 <h1>Create useful and parsable tag for isolates</h1>
 <pre class="r"><code># Metadata
-metadata$isolate_info &lt;- ifelse(grepl(&quot;MER&quot;,metadata$household_number)==T,paste0(metadata$isolate_id,&quot;_i&quot;),
-                                paste0(metadata$household_number,&quot;_&quot;,metadata$visit,&quot;_&quot;,metadata$isolate_id_recode))</code></pre>
+metadata$isolate_info &lt;- ifelse(grepl(&quot;MER&quot;, metadata$household_number_recode)==T, paste0(metadata$isolate_id,&quot;_i&quot;), paste0(metadata$household_number_recode, &quot;_&quot;,metadata$visit, &quot;_&quot;,metadata$isolate_id_recode))</code></pre>
 <pre class="r"><code>saveRDS(metadata,&quot;./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.RDS&quot;)
 write_csv(metadata,&quot;./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.csv&quot;)</code></pre>
 </div>

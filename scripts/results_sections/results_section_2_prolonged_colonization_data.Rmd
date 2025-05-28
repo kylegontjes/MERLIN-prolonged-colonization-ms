@@ -37,15 +37,15 @@ prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolo
 ```
 
 ```{r}
-ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & escre==T) %>% .$household
+ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & WGS_escre==T) %>% .$household
 paste0("Number of subjects with index specimens positive: ", length(ESCrE_index_positive_households))
 paste0("Proportion of subjects with index specimens positive: ", length(ESCrE_index_positive_households) / 40)
 ```
 
 ```{r}
-prolonged_melt <- reshape2::melt(prolonged_colonization_df %>% select(household,index_at_1_and_or_2_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster,index_at_1_and_or_2_ESBL_genes,index_at_1_and_or_2_ESBL_plasmidic_genes,index_at_1_and_or_2_ESBL_plasmids,index_at_1_and_or_2_Species_ST_cluster_ESBL_genes,index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes,index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmids),id.vars="household")
+prolonged_melt <- reshape2::melt(prolonged_colonization_df %>% select(household,index_at_1_and_or_2_WGS_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster,index_at_1_and_or_2_ESBL_genes,index_at_1_and_or_2_ESBL_plasmidic_genes,index_at_1_and_or_2_ESBL_plasmids,index_at_1_and_or_2_Species_ST_cluster_ESBL_genes,index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes,index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmids),id.vars="household")
 prolonged_melt$value <- factor(prolonged_melt$value,levels = c(0,1))
-prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Species + ST','index_at_1_and_or_2_Species_ST_cluster'='Species + ST + Cluster (Strain)','index_at_1_and_or_2_ESBL_genes'='ESBL gene','index_at_1_and_or_2_ESBL_plasmidic_genes'= 'Plasmidic ESBL','index_at_1_and_or_2_ESBL_plasmids'= 'ESBL plasmid',
+prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_WGS_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Species + ST','index_at_1_and_or_2_Species_ST_cluster'='Species + ST + Cluster (Strain)','index_at_1_and_or_2_ESBL_genes'='ESBL gene','index_at_1_and_or_2_ESBL_plasmidic_genes'= 'Plasmidic ESBL','index_at_1_and_or_2_ESBL_plasmids'= 'ESBL plasmid',
   'index_at_1_and_or_2_Species_ST_cluster_ESBL_genes'='Strain +/- ESBL',
   'index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes'='Strain +/- plasmidic ESBL',
   'index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmids'='Strain +/- ESBL plasmid')

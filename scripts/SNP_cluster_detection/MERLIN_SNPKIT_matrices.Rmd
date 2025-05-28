@@ -28,7 +28,7 @@ sessionInfo()
 ```
 
 ```{r} 
-df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") %>% subset(escre==T & qc_pass==T)
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") %>% subset(WGS_escre==T & qc_pass==T)
 ``` 
 
 ```{r}

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-05-27" />
+<meta name="date" content="2025-05-28" />
 
 <title>Generate Beta-lactam presence and location data for each isolate</title>
 
@@ -577,14 +577,14 @@ display: none;
 <h1 class="title toc-ignore">Generate Beta-lactam presence and location
 data for each isolate</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-05-27</h4>
+<h4 class="date">2025-05-28</h4>
 
 </div>
 
 
 <div id="environment" class="section level1">
 <h1>Environment</h1>
-<pre class="r"><code>df &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_metadata_final.RDS&quot;) %&gt;% subset(qc_pass == &quot;TRUE&quot; &amp; escre == TRUE)
+<pre class="r"><code>df &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_metadata_final.RDS&quot;) %&gt;% subset(qc_pass == &quot;TRUE&quot; &amp; WGS_escre == TRUE)
 amrfinder_mat &lt;- readRDS(&quot;./data/amrfinder/amrfinder_matrix.RDS&quot;) %&gt;% subset(rownames(.) %in% df$genomic_id) %&gt;% select_if(colSums(.)&gt;0)
 amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.RDS&quot;)  %&gt;% subset(element_symbol %in% colnames(amrfinder_mat))
 mobsuite_gene_pres &lt;- readRDS(&quot;./data/ESBL_plasmids/amrfinder_mobsuite_gene_presence.RDS&quot;) %&gt;% subset(genomic_id %in% df$genomic_id) 

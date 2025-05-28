@@ -12,6 +12,7 @@ opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
+# Environment
 ```{r environment, echo=F, message=FALSE, include=F, results=F}
 #Packages
 packages <- c("tidyverse",'kableExtra') 
@@ -25,12 +26,14 @@ Sys.info()
 sessionInfo()
 ```
 
+# Data
 ```{r cars} 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
 plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_beta_lactam_presence_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
 amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
 ```
 
+# ESBL gene frequency on plasmids
 ```{r}
 amrfinder_ESBL <- amrfinder %>% subset(grepl("CTX|OXA|TEM|SHV|PER|VEB|GES|TLA|BES",element_symbol))
 ESBL_genes <- amrfinder_ESBL$element_symbol %>% unique %>% sort

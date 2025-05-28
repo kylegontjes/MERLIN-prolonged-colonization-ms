@@ -36,7 +36,7 @@ df_index <- left_join(df_index,plasmid_data)
 
 # Positive specimens
 ```{r}
-ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & escre==T) %>% .$household
+ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & WGS_escre==T) %>% .$household
 ```
 
 
@@ -61,7 +61,7 @@ get_prolonged_colonization <- function(isolate,metadata,variable){
   return(results)
 }
 
-any_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='escre') %>% do.call(rbind,.)
+any_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='WGS_escre') %>% do.call(rbind,.)
 species_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species') %>% do.call(rbind,.)
 species_ST_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species_ST') %>% do.call(rbind,.)
 species_ST_cluster_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species_ST_cluster') %>% do.call(rbind,.)

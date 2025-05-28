@@ -28,7 +28,7 @@ sessionInfo()
 ```
 
 ```{r}
-df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(qc_pass == "TRUE" & escre == TRUE)
+df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(qc_pass == "TRUE" & WGS_escre == TRUE)
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0)
 amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(element_symbol %in% colnames(amrfinder_mat))
 mobsuite_gene_pres <- readRDS("./data/ESBL_plasmids/amrfinder_mobsuite_gene_presence.RDS") %>% subset(genomic_id %in% df$genomic_id) 

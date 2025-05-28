@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-05-27" />
+<meta name="date" content="2025-05-28" />
 
 <title>MERLIN_merge_metadata_w_qcd</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">MERLIN_merge_metadata_w_qcd</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-05-27</h4>
+<h4 class="date">2025-05-28</h4>
 
 </div>
 
@@ -372,9 +372,9 @@ display: none;
 qcd &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS&quot;)</code></pre>
 <div id="merge-qcd-data" class="section level1">
 <h1>Merge qcd data</h1>
-<pre class="r"><code>merge_qcd_data &lt;- function(WGS_id){
+<pre class="r"><code>merge_qcd_data &lt;- function(WGS_id, QC_flag){
   samples &lt;- str_split(WGS_id,&quot;;&quot;) %&gt;% unlist
-  qcd_subset &lt;- qcd %&gt;% subset(Sample %in% samples &amp; qc_pass==TRUE)
+  qcd_subset &lt;- qcd %&gt;% subset(Sample %in% samples &amp; qc_pass==QC_flag)
   if(nrow(qcd_subset)&gt;1){
     qcd_subset &lt;- qcd_subset[match(qcd_subset$Sample,samples),]
     qcd_subset &lt;- qcd_subset  %&gt;%
@@ -383,28 +383,33 @@ qcd &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_al
   return(qcd_subset)
 }
 
-qcd_entries &lt;- lapply(metadata$genomic_id,merge_qcd_data) %&gt;% do.call(rbind,.) %&gt;% distinct()
-metadata &lt;- left_join(metadata ,qcd_entries)</code></pre>
+qcd_entries &lt;- lapply(metadata$genomic_id,merge_qcd_data,QC_flag=&#39;TRUE&#39;) %&gt;% do.call(rbind,.) %&gt;% distinct() 
+
+# Failing genomes
+failed_genomes &lt;- metadata %&gt;% subset(WGS_qc_pass_runs_num == 0 ) %&gt;% .$Genome_ID
+ 
+qcd_entries_failed &lt;-  lapply(failed_genomes,merge_qcd_data,QC_flag=&#39;FALSE&#39;) %&gt;% do.call(rbind,.) %&gt;% distinct()
+qcd_results &lt;- rbind(qcd_entries,qcd_entries_failed)
+
+metadata &lt;- left_join(metadata, qcd_results)</code></pre>
 <pre><code>## Joining with `by = join_by(genomic_id)`</code></pre>
 </div>
 <div id="clean-dataframe" class="section level1">
 <h1>Clean dataframe</h1>
-<pre class="r"><code>metadata$household &lt;- ifelse(grepl(&quot;MER&quot;,metadata$household_number),metadata$isolate_id,metadata$household_number) %&gt;% gsub(&quot;h&quot;,&quot;H&quot;,.)
+<pre class="r"><code>metadata$household &lt;- ifelse(grepl(&quot;MER&quot;,metadata$household_number_recode), metadata$isolate_id,metadata$household_number_recode) %&gt;% gsub(&quot;h&quot;,&quot;H&quot;,.)
 metadata$ST &lt;- ifelse(metadata$ST ==&quot;-&quot;,&quot;Unknown&quot;,metadata$ST) 
 metadata$Species_ST &lt;- paste0(metadata$Species,&quot; ST &quot;,metadata$ST) %&gt;% trimws(.,&quot;both&quot;)
-metadata$specimen &lt;- ifelse(grepl(&quot;MER&quot;,metadata$household_number),&quot;Stool 1A&quot;,metadata$isolate_id)%&gt;% gsub(&quot;C1|C2|C3&quot;,&quot;&quot;,.)  %&gt;% trimws(.,&quot;both&quot;)  %&gt;% gsub(&quot;\\)|pink|00784|01240|01238|00794|00792|\\(&quot;,&quot;&quot;,.) %&gt;% trimws(.,&quot;both&quot;)  %&gt;% gsub(&quot;Petnape&quot;,&quot;Pet Nape&quot;,.)%&gt;% trimws(.,&quot;both&quot;) %&gt;% gsub(&quot;Petstool&quot;,&quot;Pet Stool&quot;,.) %&gt;% trimws(.,&quot;both&quot;)  
+metadata$specimen &lt;- ifelse(grepl(&quot;MER&quot;,metadata$household_number_recode),&quot;Stool 1A&quot;,metadata$isolate_id)%&gt;% gsub(&quot;C1|C2|C3&quot;,&quot;&quot;,.)  %&gt;% trimws(.,&quot;both&quot;)  %&gt;% gsub(&quot;\\)|pink|00784|01240|01238|00794|00792|\\(&quot;,&quot;&quot;,.) %&gt;% trimws(.,&quot;both&quot;)  %&gt;% gsub(&quot;Petnape&quot;,&quot;Pet Nape&quot;,.)%&gt;% trimws(.,&quot;both&quot;) %&gt;% gsub(&quot;Petstool&quot;,&quot;Pet Stool&quot;,.) %&gt;% trimws(.,&quot;both&quot;)
 
 metadata$specimen_category &lt;- ifelse(metadata$specimen %in% c(&quot;Bath 1&quot;,&quot;Kitchen&quot;,&quot;Living Room&quot;,&quot;Washing Machine&quot;),&quot;Environmnent&quot;,
                                            ifelse(metadata$specimen %in% c(&quot;Pet Nape 1A&quot;,&quot;Pet Nape 2A&quot;,&quot;Pet Nape 3A&quot;,&quot;Pet Stool 1A&quot;,&quot;Pet Stool 2A&quot;),&quot;Pet&quot;,
                                                   ifelse(metadata$specimen %in% c(&quot;Stool 1A&quot;,&quot;Stool 2A&quot;,&quot;Stool 3A&quot;),&quot;Human&quot;,&quot;Unk&quot;)))
 
 metadata$individual_id &lt;- paste0(metadata$household,&quot;_&quot;,metadata$specimen)
-metadata$index &lt;-  grepl(&#39;hi&#39;,metadata$location_or_participant) | grepl(&quot;MER&quot;,metadata$household_number)
+metadata$index &lt;-  grepl(&#39;hi&#39;,metadata$location_or_participant) | grepl(&quot;MER&quot;,metadata$household_number_recode)
 metadata$isolate_name &lt;- paste0(metadata$household,&quot;_&quot;,metadata$visit,&quot;_&quot;,metadata$specimen)</code></pre>
-<pre class="r"><code>metadata_clean &lt;- metadata %&gt;% select(-Genome.ID,-row,-column,-no_correct_platemap,-WGS_qc_pass_runs_num,-WGS_qc_pass_ids_num,-Genome.ID_qc_pass_escre_num,-Sample)
-
-# lowercase
-colnames(metadata_clean) &lt;- colnames(metadata_clean) %&gt;% janitor::make_clean_names(.,&#39;snake&#39;)
+<pre class="r"><code>metadata_clean &lt;- metadata %&gt;% select(-row,-column,-no_correct_platemap,-WGS_qc_pass_runs_num,-WGS_qc_pass_ids_num)
+colnames(metadata_clean) &lt;- gsub(&quot;\\.|\\.\\.\\.&quot;,&quot;_&quot;,colnames(metadata_clean))
 
 saveRDS(metadata_clean,&#39;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS&#39;)
 write.csv(metadata_clean,&#39;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.csv&#39;)</code></pre>

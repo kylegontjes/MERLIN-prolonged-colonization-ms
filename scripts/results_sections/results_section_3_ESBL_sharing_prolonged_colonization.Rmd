@@ -39,7 +39,7 @@ df_index <- left_join(df_index,plasmid_data)
 ```
 
 ```{r}
-ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & escre==T) %>% .$household
+ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & WGS_escre==T) %>% .$household
 paste0("Number of subjects with index specimens positive: ", length(ESCrE_index_positive_households))
 paste0("Proportion of subjects with index specimens positive: ", length(ESCrE_index_positive_households) / 40)
 ```

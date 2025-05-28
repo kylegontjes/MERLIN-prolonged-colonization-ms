@@ -19,9 +19,9 @@ qcd <- readRDS("./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS")
 
 # Merge qcd data
 ```{r}
-merge_qcd_data <- function(WGS_id){
+merge_qcd_data <- function(WGS_id, QC_flag){
   samples <- str_split(WGS_id,";") %>% unlist
-  qcd_subset <- qcd %>% subset(Sample %in% samples & qc_pass==TRUE)
+  qcd_subset <- qcd %>% subset(Sample %in% samples & qc_pass==QC_flag)
   if(nrow(qcd_subset)>1){
     qcd_subset <- qcd_subset[match(qcd_subset$Sample,samples),]
     qcd_subset <- qcd_subset  %>%
@@ -30,33 +30,38 @@ merge_qcd_data <- function(WGS_id){
   return(qcd_subset)
 }
 
-qcd_entries <- lapply(metadata$genomic_id,merge_qcd_data) %>% do.call(rbind,.) %>% distinct()
-metadata <- left_join(metadata ,qcd_entries)
+qcd_entries <- lapply(metadata$genomic_id,merge_qcd_data,QC_flag='TRUE') %>% do.call(rbind,.) %>% distinct() 
+
+# Failing genomes
+failed_genomes <- metadata %>% subset(WGS_qc_pass_runs_num == 0 ) %>% .$Genome_ID
+ 
+qcd_entries_failed <-  lapply(failed_genomes,merge_qcd_data,QC_flag='FALSE') %>% do.call(rbind,.) %>% distinct()
+qcd_results <- rbind(qcd_entries,qcd_entries_failed)
+
+metadata <- left_join(metadata, qcd_results)
 ```
  
 
 # Clean dataframe  
 ```{r} 
-metadata$household <- ifelse(grepl("MER",metadata$household_number),metadata$isolate_id,metadata$household_number) %>% gsub("h","H",.)
+metadata$household <- ifelse(grepl("MER",metadata$household_number_recode), metadata$isolate_id,metadata$household_number_recode) %>% gsub("h","H",.)
 metadata$ST <- ifelse(metadata$ST =="-","Unknown",metadata$ST) 
 metadata$Species_ST <- paste0(metadata$Species," ST ",metadata$ST) %>% trimws(.,"both")
-metadata$specimen <- ifelse(grepl("MER",metadata$household_number),"Stool 1A",metadata$isolate_id)%>% gsub("C1|C2|C3","",.)  %>% trimws(.,"both")  %>% gsub("\\)|pink|00784|01240|01238|00794|00792|\\(","",.) %>% trimws(.,"both")  %>% gsub("Petnape","Pet Nape",.)%>% trimws(.,"both") %>% gsub("Petstool","Pet Stool",.) %>% trimws(.,"both")  
+metadata$specimen <- ifelse(grepl("MER",metadata$household_number_recode),"Stool 1A",metadata$isolate_id)%>% gsub("C1|C2|C3","",.)  %>% trimws(.,"both")  %>% gsub("\\)|pink|00784|01240|01238|00794|00792|\\(","",.) %>% trimws(.,"both")  %>% gsub("Petnape","Pet Nape",.)%>% trimws(.,"both") %>% gsub("Petstool","Pet Stool",.) %>% trimws(.,"both")
 
 metadata$specimen_category <- ifelse(metadata$specimen %in% c("Bath 1","Kitchen","Living Room","Washing Machine"),"Environmnent",
                                            ifelse(metadata$specimen %in% c("Pet Nape 1A","Pet Nape 2A","Pet Nape 3A","Pet Stool 1A","Pet Stool 2A"),"Pet",
                                                   ifelse(metadata$specimen %in% c("Stool 1A","Stool 2A","Stool 3A"),"Human","Unk")))
 
 metadata$individual_id <- paste0(metadata$household,"_",metadata$specimen)
-metadata$index <-  grepl('hi',metadata$location_or_participant) | grepl("MER",metadata$household_number)
+metadata$index <-  grepl('hi',metadata$location_or_participant) | grepl("MER",metadata$household_number_recode)
 metadata$isolate_name <- paste0(metadata$household,"_",metadata$visit,"_",metadata$specimen)
 ```
 
 
 ```{r}
-metadata_clean <- metadata %>% select(-Genome.ID,-row,-column,-no_correct_platemap,-WGS_qc_pass_runs_num,-WGS_qc_pass_ids_num,-Genome.ID_qc_pass_escre_num,-Sample)
-
-# lowercase
-colnames(metadata_clean) <- colnames(metadata_clean) %>% janitor::make_clean_names(.,'snake')
+metadata_clean <- metadata %>% select(-row,-column,-no_correct_platemap,-WGS_qc_pass_runs_num,-WGS_qc_pass_ids_num)
+colnames(metadata_clean) <- gsub("\\.|\\.\\.\\.","_",colnames(metadata_clean))
 
 saveRDS(metadata_clean,'./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS')
 write.csv(metadata_clean,'./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.csv')

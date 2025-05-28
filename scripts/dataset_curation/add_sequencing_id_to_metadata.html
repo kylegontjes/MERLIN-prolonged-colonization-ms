@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-05-27" />
+<meta name="date" content="2025-05-28" />
 
 <title>Platemap Harmonization with Metadata</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">Platemap Harmonization with Metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-05-27</h4>
+<h4 class="date">2025-05-28</h4>
 
 </div>
 
@@ -391,7 +391,7 @@ paste0(&quot;Initial number of sequenced genomes: &quot;,nrow(sequencing))</code
 <div id="function" class="section level2">
 <h2>Function</h2>
 <pre class="r"><code>load_plate_map &lt;- function(path,sheet,name){
-   readxl::read_xlsx(path,sheet = sheet, col_names = FALSE) %&gt;% as.data.frame %&gt;% `rownames&lt;-`(eight)%&gt;% `colnames&lt;-`(c(1:ncol(.)))
+   readxl::read_xlsx(path,sheet = sheet, col_names = FALSE) %&gt;% as.data.frame %&gt;% `rownames&lt;-`(eight)%&gt;% `colnames&lt;-`(c(1:ncol(.))) 
 }</code></pre>
 </div>
 <div id="paths" class="section level2">
@@ -663,11 +663,11 @@ sequencing$map_name &lt;- ifelse(sequencing$map_name == &quot;445H V3 S1A C2&quo
 
 #  345H V3 S1A C1
 ## Change plate location from G9 to G8
-metadata$position &lt;-  ifelse(metadata$position==&quot;G9&quot; &amp; metadata$plate==&quot;5&quot; &amp; metadata$household_number ==&quot;370H&quot;,&quot;G8&quot;,metadata$position) 
+metadata$position &lt;-  ifelse(metadata$position==&quot;G9&quot; &amp; metadata$plate==&quot;5&quot; &amp; metadata$household_number_recode ==&quot;370H&quot;,&quot;G8&quot;,metadata$position) 
 
 # 238H V1 B1 C1
 ## Change plate location from D6 to D7 
-metadata$position &lt;-  ifelse(metadata$position==&quot;D6&quot; &amp; metadata$plate==&quot;1&quot; &amp; metadata$household_number ==&quot;238H&quot;,&quot;D7&quot;,metadata$position) 
+metadata$position &lt;-  ifelse(metadata$position==&quot;D6&quot; &amp; metadata$plate==&quot;1&quot; &amp; metadata$household_number_recode ==&quot;238H&quot;,&quot;D7&quot;,metadata$position) 
 
 # 238H V1 K C1 (00843) - Two multiple entries in platemap with different barcode, but same sample info
 ## 238H V1 K C1 (00843) - &gt; 238H V1 K C1
@@ -727,10 +727,11 @@ newmap$Sequencing.plate &lt;- paste0(&quot;Sequencing plate MERLIN &quot;,newmap
 
 sequencing_fin &lt;- left_join(sequencing,newmap) </code></pre>
 <pre><code>## Joining with `by = join_by(Sequencing.plate, map_name)`</code></pre>
-<pre class="r"><code>paste0(&quot;How sequencing list looks like...&quot;)</code></pre>
+<pre class="r"><code>colnames(sequencing_fin) &lt;- gsub(&quot;\\.&quot;,&quot;_&quot;,colnames(sequencing_fin))
+paste0(&quot;How sequencing list looks like...&quot;)</code></pre>
 <pre><code>## [1] &quot;How sequencing list looks like...&quot;</code></pre>
 <pre class="r"><code>head(sequencing_fin,n = 3)</code></pre>
-<pre><code>##                  Sample.ID Genome.ID               Sequencing.plate Prep.method
+<pre><code>##                  Sample_ID Genome_ID               Sequencing_plate Prep_method
 ## 1           126H V1 S1A C1  MERLIN_1 Sequencing plate MERLIN 1, A-1     Seqwell
 ## 2                  MER 203  MERLIN_2 Sequencing plate MERLIN 1, B-1     Seqwell
 ## 3 MER 209 (320H) V1 PN1AC1  MERLIN_3 Sequencing plate MERLIN 1, C-1     Seqwell
@@ -757,24 +758,24 @@ paste0(nrow(no_correct_platemap),&quot; isolates w/o genotyping data due to sequ
 <pre class="r"><code># Edit platemap
 paste0(&quot;One of them had an issue w/ their naming. &quot;)</code></pre>
 <pre><code>## [1] &quot;One of them had an issue w/ their naming. &quot;</code></pre>
-<pre class="r"><code>metadata$map_name &lt;- ifelse(metadata$household_number==&quot;126H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id ==&#39;Pet Stool 2A C1&#39; &amp; metadata$lab_vantage_s_number == &quot;S-220606-00837&quot;,&#39;126H V3 PS 2A C1 (00837)&#39;,metadata$map_name)
+<pre class="r"><code>metadata$map_name &lt;- ifelse(metadata$household_number_recode==&quot;126H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id ==&#39;Pet Stool 2A C1&#39; &amp; metadata$lab_vantage_s_number == &quot;S-220606-00837&quot;,&#39;126H V3 PS 2A C1 (00837)&#39;,metadata$map_name)
 
 # 345H V3 S1A C1 - ALso found on P5 C9 in original map
-metadata$map_name &lt;- ifelse(metadata$household_number==&quot;345H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Stool 1A C1&quot;,&quot;345H V3 S1A C1&quot;,metadata$map_name)</code></pre>
+metadata$map_name &lt;- ifelse(metadata$household_number_recode==&quot;345H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Stool 1A C1&quot;,&quot;345H V3 S1A C1&quot;,metadata$map_name)</code></pre>
 </div>
 <div id="merge-w-metadata-with-sequencing-data" class="section level1">
 <h1>Merge w metadata with sequencing data</h1>
 <pre class="r"><code># Merge duplicates
-simple_sequencing_tag &lt;- aggregate(Genome.ID ~ map_name,sequencing_fin,paste,collapse=&quot;;&quot;) 
+simple_sequencing_tag &lt;- aggregate(Genome_ID ~ map_name,sequencing_fin,paste,collapse=&quot;;&quot;) 
 paste0(&quot;Number of map names: &quot;,nrow(simple_sequencing_tag))</code></pre>
 <pre><code>## [1] &quot;Number of map names: 277&quot;</code></pre>
-<pre class="r"><code>paste0(&quot;Number of map names with duplicate sequencing runs: &quot;,simple_sequencing_tag$Genome.ID %&gt;% grepl (&quot;;&quot;,.)  %&gt;% sum)</code></pre>
+<pre class="r"><code>paste0(&quot;Number of map names with duplicate sequencing runs: &quot;,simple_sequencing_tag$Genome_ID %&gt;% grepl (&quot;;&quot;,.)  %&gt;% sum)</code></pre>
 <pre><code>## [1] &quot;Number of map names with duplicate sequencing runs: 23&quot;</code></pre>
 <pre class="r"><code># Join data
 metadata_w_genomic_id &lt;- left_join(metadata,simple_sequencing_tag)</code></pre>
 <pre><code>## Joining with `by = join_by(map_name)`</code></pre>
 <pre class="r"><code># Metdaata without genomic id
-metadata_wo_genomic_id &lt;- subset(metadata_w_genomic_id,is.na(Genome.ID) == T)
+metadata_wo_genomic_id &lt;- subset(metadata_w_genomic_id,is.na(Genome_ID) == T)
 paste0(&quot;Number of metadata entries without genomic id: &quot;,nrow(metadata_wo_genomic_id))</code></pre>
 <pre><code>## [1] &quot;Number of metadata entries without genomic id: 0&quot;</code></pre>
 </div>
@@ -788,28 +789,28 @@ get_qc_flag &lt;- function(ID,QC_data){
     QC_subset &lt;- QC_data %&gt;% subset(genomic_id %in% ID )  
     sequencing_runs_num &lt;- nrow(QC_subset)
     QC_status &lt;- QC_subset$qc_pass %&gt;% paste0(collapse=&#39;;&#39;) 
-    Genome.ID_qc_passing &lt;- ifelse(sum(QC_subset$qc_pass)&gt;0,ID,&quot;&quot;) 
-    return(data.frame(Genome.ID = ID,qc_pass = QC_status,sequencing_runs_num=sequencing_runs_num,Genome.ID_qc_passing=Genome.ID_qc_passing))
+    genomic_id_qc_passing &lt;- ifelse(sum(QC_subset$qc_pass)&gt;0,ID,&quot;&quot;) 
+    return(data.frame(Genome_ID = ID,WGS_qc_pass = QC_status,sequencing_runs_num=sequencing_runs_num,genomic_id_qc_passing=genomic_id_qc_passing))
   }
   
   qc_data &lt;- lapply(ID_split,get_qc_flag_isolate,QC_data=QC_data) %&gt;% do.call(rbind,.)    
-  qc_data_df &lt;- qc_data %&gt;% summarise(Genome.ID = paste0(Genome.ID,collapse=&quot;;&quot;),WGS_qc_pass = paste0(qc_pass,collapse=&quot;;&quot;),Genome.ID_qc_pass = paste0(subset(Genome.ID_qc_passing,Genome.ID_qc_passing != &#39;&#39;),collapse=&quot;;&quot;))
+  qc_data_df &lt;- qc_data %&gt;% summarise(Genome_ID = paste0(Genome_ID,collapse=&quot;;&quot;),WGS_qc_pass = paste0(WGS_qc_pass,collapse=&quot;;&quot;),genomic_id_qc_pass = paste0(subset(genomic_id_qc_passing,genomic_id_qc_passing != &#39;&#39;),collapse=&quot;;&quot;))
   return(qc_data_df)
 }
  
-qc_summary &lt;- lapply(metadata_w_genomic_id$Genome.ID,FUN=get_qc_flag,QC_data=qcd) %&gt;% do.call(rbind,.) %&gt;% distinct
+qc_summary &lt;- lapply(metadata_w_genomic_id$Genome_ID,FUN=get_qc_flag,QC_data=qcd) %&gt;% do.call(rbind,.) %&gt;% distinct 
 
 paste0(&quot;Number of metadata entires: &quot;, nrow(qc_summary))</code></pre>
 <pre><code>## [1] &quot;Number of metadata entires: 260&quot;</code></pre>
 <pre class="r"><code>qc_summary$WGS_qc_pass_runs_num &lt;- sapply(qc_summary$WGS_qc_pass,FUN=function(x){
   str_split(string = x,pattern = &#39;;&#39;) %&gt;% unlist %&gt;% subset(.,.==TRUE) %&gt;% length
 })
-qc_summary$WGS_qc_pass_ids_num &lt;- sapply(qc_summary$Genome.ID_qc_pass,FUN=function(x){
+qc_summary$WGS_qc_pass_ids_num &lt;- sapply(qc_summary$genomic_id_qc_pass,FUN=function(x){
   str_split(string = x,pattern = &#39;;&#39;) %&gt;% unlist %&gt;% subset(.!= &quot;&quot;) %&gt;% length
 })  
 
 metadata_w_genomic_id_qc_status &lt;- left_join(metadata_w_genomic_id,qc_summary)</code></pre>
-<pre><code>## Joining with `by = join_by(Genome.ID)`</code></pre>
+<pre><code>## Joining with `by = join_by(Genome_ID)`</code></pre>
 <pre class="r"><code>paste0(&quot;Number metadata entries with qc passing genome: &quot;, sum(metadata_w_genomic_id_qc_status$WGS_qc_pass_runs_num&gt;0))</code></pre>
 <pre><code>## [1] &quot;Number metadata entries with qc passing genome: 255&quot;</code></pre>
 <pre class="r"><code>paste0(&quot;Proportion of metadata entries with qc passing genome: &quot;,  round(sum(metadata_w_genomic_id_qc_status$WGS_qc_pass_runs_num&gt;0) / nrow(metadata_w_genomic_id_qc_status),2))</code></pre>
