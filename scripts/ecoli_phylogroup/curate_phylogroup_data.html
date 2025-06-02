@@ -13,7 +13,7 @@
 
 <meta name="date" content="2025-06-02" />
 
-<title>Data Cleaning Step 6- Curate final metadata</title>
+<title>Curate_phylogroup_data</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,22 +350,20 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Data Cleaning Step 6- Curate final
-metadata</h1>
+<h1 class="title toc-ignore">Curate_phylogroup_data</h1>
 <h4 class="author">Kyle Gontjes</h4>
 <h4 class="date">2025-06-02</h4>
 
 </div>
 
 
-<p>NOTE: Run scripts in scripts/SNP_distance before completion!!!!</p>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
 <pre class="r"><code>#Packages
 packages &lt;- c(&quot;tidyverse&quot;) 
 
 #Load Packages
-invisible(lapply(packages,library,character.only=T,quietly=T))
+invisible(lapply(packages,library,character.only=T,quietly=T)) 
 
 # Print environment
 set.seed(45) 
@@ -419,31 +417,12 @@ loaded via a namespace (and not attached):
 [25] grid_4.5.0         rstudioapi_0.17.1  hms_1.1.3          lifecycle_1.0.4   
 [29] vctrs_0.6.5        evaluate_1.0.3     glue_1.8.0         farver_2.1.2      
 [33] rmarkdown_2.29     tools_4.5.0        pkgconfig_2.0.3    htmltools_0.5.8.1 </code></pre>
-<pre class="r"><code>df &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS&quot;) 
-cluster_30_SNPs &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_30_SNP_clusters.RDS&quot;)
-ecoli_phylogroup &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS&quot;)</code></pre>
 </div>
-<div id="merge-cluster-data" class="section level1">
-<h1>Merge cluster data</h1>
-<pre class="r"><code>df &lt;- left_join(df,cluster_30_SNPs)</code></pre>
+<div id="load-and-clean-data" class="section level1">
+<h1>Load and clean data</h1>
 </div>
-<div id="merge-ecoli-phylogroup_data" class="section level1">
-<h1>Merge ecoli phylogroup_data</h1>
-<pre class="r"><code>get_clermont_data &lt;- function(genomic_id, clermont_data){
-  ids &lt;- str_split(genomic_id,&quot;;&quot;) %&gt;% unlist
-  clermont_sub &lt;- clermont_data %&gt;% subset(genomic_id %in% ids)
-  if(nrow(clermont_sub) &gt;0 ){
-    clermont_sub[[&quot;ecoli_phylogroup&quot;]] %&gt;% paste0(collapse=&quot;;&quot;)
-    } else{
-    NA
-    }
-}
-df$ecoli_phylogroup &lt;- sapply(df$genomic_id, get_clermont_data, clermont_data = ecoli_phylogroup)</code></pre>
-</div>
-<div id="save" class="section level1">
-<h1>Save</h1>
-<pre class="r"><code>saveRDS(df,&quot;/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS&quot;)
-write_csv(df,&quot;/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.csv&quot;)</code></pre>
+<div id="save-data" class="section level1">
+<h1>Save Data</h1>
 </div>
 
 

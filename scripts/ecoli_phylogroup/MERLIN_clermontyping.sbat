@@ -1,0 +1,21 @@
+#!/bin/sh
+# Job name
+#SBATCH --job-name=MERLIN_ecoli_phylogroup
+# User info
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,END
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --output=./clermontyping.out
+#SBATCH --nodes=1  --ntasks=1 --cpus-per-task=10 --mem=50g --time=2:00:00
+
+IFS=$'\n'       # make newlines the only separatorset +o noglob
+
+isolates=`ls /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/assembly/illumina/spades/*/*fasta | sort | tr "\n" @ `
+
+cd /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data
+
+clermonTyping.sh -v
+
+clermonTyping.sh --fasta $isolates --name ecoli_phylogroup 

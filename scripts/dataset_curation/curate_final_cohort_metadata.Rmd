@@ -32,11 +32,26 @@ sessionInfo()
 ```{r}  
 df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") 
 cluster_30_SNPs <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_30_SNP_clusters.RDS")
+ecoli_phylogroup <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS")
 ``` 
 
 # Merge cluster data
 ```{r}
 df <- left_join(df,cluster_30_SNPs)
+```
+
+# Merge ecoli phylogroup_data
+```{r}
+get_clermont_data <- function(genomic_id, clermont_data){
+  ids <- str_split(genomic_id,";") %>% unlist
+  clermont_sub <- clermont_data %>% subset(genomic_id %in% ids)
+  if(nrow(clermont_sub) >0 ){
+    clermont_sub[["ecoli_phylogroup"]] %>% paste0(collapse=";")
+    } else{
+    NA
+    }
+}
+df$ecoli_phylogroup <- sapply(df$genomic_id, get_clermont_data, clermont_data = ecoli_phylogroup)
 ```
 
 # Save
