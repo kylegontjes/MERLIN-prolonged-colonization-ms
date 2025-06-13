@@ -1,5 +1,5 @@
 ---
-title: "Figure 3: Accuracy of species-level evaluation of prolonged colonization"
+title: "Figure 2: Accuracy of species-level evaluation of prolonged colonization"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -81,8 +81,8 @@ comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- gsub("index_at_1_and_o
 
 comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()
 
-A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=sens)) + geom_bar(stat='identity',fill="black") + ylab("Sensitivity") + xlab("Molecular Category")+ theme_bw_me + ylim(NA,1.001)  + figure_3_format +   geom_text(aes(label=sens), vjust=0) 
-B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=ppv)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.001)  + figure_3_format  +  geom_text(aes(label=ppv), vjust=0) 
+A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=sens)) + geom_bar(stat='identity',fill="black") + ylab("Sensitivity") + xlab(" ")+ theme_bw_me + ylim(NA,1.001)  + figure_3_format +   geom_text(aes(label=sens), vjust=0) 
+B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=ppv)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value") + xlab(" ")+ theme_bw_me+ ylim(NA,1.001)  + figure_3_format  +  geom_text(aes(label=ppv), vjust=0) 
 C <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,1.001)  + figure_3_format  +   geom_text(aes(label=spec), vjust=0) 
 D <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=npv)) + geom_bar(stat='identity',fill="black") + ylab("Negative predictive value") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.001)  + figure_3_format  +  geom_text(aes(label=npv), vjust=0) 
 E <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,1.001) + figure_3_format + geom_text(aes(label=accuracy), vjust=0) 
@@ -92,5 +92,5 @@ figure_3
 ```
 
 ```{r}
-ggsave(plot = figure_3,filename = './figures/figure_3_diagnostic_statistics_species_prolonged_colonization.png',dpi = 600,width = 8,height = 9)
+ggsave(plot = figure_3,filename = './figures/figure_2_diagnostic_statistics_species_prolonged_colonization.png',dpi = 600,width = 8,height = 9)
 ```

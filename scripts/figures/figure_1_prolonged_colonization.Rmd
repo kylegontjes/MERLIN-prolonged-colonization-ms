@@ -1,5 +1,5 @@
 ---
-title: "Figure 2: Prolonged colonization across molecular definitions"
+title: "Figure 1: Prolonged colonization across molecular definitions"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -55,5 +55,5 @@ figure_2
 ```
 
 ```{r}
-ggsave(plot = figure_2,filename = './figures/figure_2_prolonged_colonization.png', dpi = 900, width = 6.5, height = 8.125)
+ggsave(plot = figure_2,filename = './figures/figure_1_prolonged_colonization.png', dpi = 900, width = 6.5, height = 8.125)
 ```
