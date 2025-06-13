@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-06-02" />
+<meta name="date" content="2025-06-13" />
 
 <title>Data Cleaning Step 6- Curate final metadata</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 6- Curate final
 metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-06-02</h4>
+<h4 class="date">2025-06-13</h4>
 
 </div>
 
@@ -420,12 +420,12 @@ loaded via a namespace (and not attached):
 [29] vctrs_0.6.5        evaluate_1.0.3     glue_1.8.0         farver_2.1.2      
 [33] rmarkdown_2.29     tools_4.5.0        pkgconfig_2.0.3    htmltools_0.5.8.1 </code></pre>
 <pre class="r"><code>df &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS&quot;) 
-cluster_30_SNPs &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_30_SNP_clusters.RDS&quot;)
+cluster_25_SNPs &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_25_SNP_clusters.RDS&quot;)
 ecoli_phylogroup &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS&quot;)</code></pre>
 </div>
 <div id="merge-cluster-data" class="section level1">
 <h1>Merge cluster data</h1>
-<pre class="r"><code>df &lt;- left_join(df,cluster_30_SNPs)</code></pre>
+<pre class="r"><code>df &lt;- left_join(df,cluster_25_SNPs)</code></pre>
 </div>
 <div id="merge-ecoli-phylogroup_data" class="section level1">
 <h1>Merge ecoli phylogroup_data</h1>

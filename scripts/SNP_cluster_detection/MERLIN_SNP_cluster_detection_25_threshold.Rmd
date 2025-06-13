@@ -35,6 +35,7 @@ SNP_distance_matrices <- readRDS('./Analysis/Household_transmission/MERLIN-prolo
 
 # Cluster calculation
 ## Impure (i.e., any edge under threhold)
+## Note: Clusters are exactly the same if requiring pure clusters at 25 SNPs
 ```{r}
 get_clusters_under <- function(dataframe,pair_types,threshold){
   pair_types_under_t <- subset(pair_types,pairwise_dist <=threshold)

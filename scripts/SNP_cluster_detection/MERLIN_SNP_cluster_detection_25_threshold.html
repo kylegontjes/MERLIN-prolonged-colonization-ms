@@ -654,6 +654,10 @@ SNP_distance_matrices &lt;- readRDS(&#39;./Analysis/Household_transmission/MERLI
 <h1>Cluster calculation</h1>
 <div id="impure-i.e.-any-edge-under-threhold" class="section level2">
 <h2>Impure (i.e., any edge under threhold)</h2>
+</div>
+<div id="note-clusters-are-exactly-the-same-if-requiring-pure-clusters-at-25-snps" class="section level2">
+<h2>Note: Clusters are exactly the same if requiring pure clusters at 25
+SNPs</h2>
 <pre class="r"><code>get_clusters_under &lt;- function(dataframe,pair_types,threshold){
   pair_types_under_t &lt;- subset(pair_types,pairwise_dist &lt;=threshold)
   vertices_info &lt;- subset(dataframe,genomic_id %in% c(unique(c(pair_types_under_t$isolate1,pair_types_under_t$isolate2)))) %&gt;% select(genomic_id)  
