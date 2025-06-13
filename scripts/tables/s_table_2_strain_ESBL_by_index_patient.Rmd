@@ -39,6 +39,7 @@ df_index <- left_join(df_index,plasmid_data)
 ```
 
 # Supplemental Table 2
+## Note: Updated to use 25 SNP threshold not 30 due to epidemiological data
 
 ```{r}
 s_table_2 <- df_index %>% arrange(household,visit) %>% select(household,visit,Species_ST_cluster,plasmids,ESBL_genes,ESBL_chromosome_genes,ESBL_plasmidic_genes,ESBL_plasmids) %>% mutate(plasmids = gsub(";",", ",plasmids),ESBL_genes = gsub(";",", ",ESBL_genes),ESBL_chromosome_genes = gsub(";",", ",ESBL_chromosome_genes),ESBL_plasmidic_genes = gsub(";",", ",ESBL_plasmidic_genes),ESBL_plasmids = gsub(";",", ",ESBL_plasmids)) %>%  `colnames<-`(c("Household","Visit","Strain","Plasmids","ESBL genes",'Chromosomal ESBLs','Plasmidic ESBLs','ESBL plasmid'))

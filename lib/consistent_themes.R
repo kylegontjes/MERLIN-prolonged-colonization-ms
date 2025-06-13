@@ -13,13 +13,14 @@ figure_2_format <- theme(legend.position = "bottom",
                            legend.text =   element_text(size=20, color="black"),
                            legend.title = element_text(size = 22, color="black"),
                            plot.title = element_text(size = 24, color="black"),
-                           axis.text.x = element_text(angle=90)
+                           axis.text.x = element_text(size=15, angle=90,hjust=0.95,vjust=0.2),
+                          legend.margin=margin(c(-20,0,0,0))
 )
 
 # Figure 3
 figure_3_format <- theme(axis.text =   element_text(size=10, color="black"),
                          axis.title = element_text(size = 12, color="black"),
-                         axis.text.x = element_text(angle=90)
+                         axis.text.x = element_text(angle=90,hjust=0.95,vjust=0.2)
 )
 
 

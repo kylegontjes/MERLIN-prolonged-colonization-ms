@@ -38,6 +38,7 @@ amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS") %>% subset(genomi
 ```
 
 # ESBL gene frequency on plasmids
+## Used the following families: CTX, OXA, TEM, SHV, PER, VEB, GES, TLA, BES
 ```{r}
 amrfinder_ESBL <- amrfinder %>% subset(grepl("CTX|OXA|TEM|SHV|PER|VEB|GES|TLA|BES",element_symbol))
 ESBL_genes <- amrfinder_ESBL$element_symbol %>% unique %>% sort
