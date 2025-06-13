@@ -55,5 +55,5 @@ figure_2
 ```
 
 ```{r}
-ggsave(plot = figure_2,filename = './figures/figure_1_prolonged_colonization.png', dpi = 900, width = 6.5, height = 8.125)
+ggsave(plot = figure_2,filename = './figures/figure_1_prolonged_colonization.png', dpi = 900, width = 6.5, height = 8.125,bg='white')
 ```

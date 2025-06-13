@@ -70,5 +70,5 @@ s_figure_1
 ```
 
 ```{r}
-ggsave(plot = s_figure_1,filename = './figures/s_figure_1_pairwise_SNP_distance.png', dpi = 900, width = 8.25, height = 5.5)
+ggsave(plot = s_figure_1,filename = './figures/s_figure_1_pairwise_SNP_distance.png', dpi = 900, width = 8.25, height = 5.5,bg='white')
 ```
