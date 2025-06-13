@@ -1,5 +1,5 @@
 ---
-title: "MERLIN_SNP_cluster_detection_30_threshold"
+title: "Cluster detection using 25 SNPs"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -16,7 +16,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/')
 
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'ggraph','igraph') 
+packages <- c("tidyverse",'ggraph','igraph','kableExtra') 
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
@@ -71,13 +71,13 @@ return(data_list)
 
 } 
 
-cluster_30_SNPs <- get_clusters_under(df,overall_pair_types,threshold=30)
+cluster_25_SNPs <- get_clusters_under(df,overall_pair_types,threshold=25)
 ```
 
 
 # Merge clustering with metadata
 ```{r}
-cluster_data <- cbind.data.frame(genomic_id = cluster_30_SNPs$cluster %>% names,cluster = cluster_30_SNPs$cluster)  
+cluster_data <- cbind.data.frame(genomic_id = cluster_25_SNPs$cluster %>% names,cluster = cluster_25_SNPs$cluster)  
 cluster_data$cluster <- ifelse(cluster_data$cluster=='','singleton',cluster_data$cluster)
 cluster_df <- left_join(cluster_data,df %>% select(Species,ST,Species_ST,genomic_id))
 
@@ -110,6 +110,30 @@ recode_ST_data <- function(ST,metadata){
 ST_df <- lapply(ST_list,recode_ST_data,cluster_df) %>% do.call(rbind,.)
 ```
 
+## Descriptive stats
+```{r}
+table(ST_df$Species_ST_cluster) %>% sort
+```
+
+## Descriptive stats
+```{r}
+num_clusters <- function(cluster_list,df){
+  clusters <- cluster_list %>% unlist %>% subset(.!="") %>% unlist
+  no_cluster <- unique(clusters) %>% length
+  no_cluster_ct <-length(clusters)
+  not_in_cluster <- nrow(df) - length(clusters)
+  prop_in_cluster <- no_cluster_ct / nrow(df)  * 100
+  cluster_size_med <- table(clusters) %>% median
+  cluster_size_mean <- table(clusters) %>% mean
+  cluster_size_max <- table(clusters) %>% max
+  cluster_size_range <- table(clusters) %>% range %>% paste0(collapse = "-")
+  clustering_data <- cbind.data.frame(no_cluster,no_cluster_ct,not_in_cluster,prop_in_cluster,cluster_size_med,cluster_size_mean,cluster_size_max,cluster_size_range)
+  return(clustering_data)
+}
+
+num_clusters(cluster_25_SNPs$cluster,df=df) %>% gontjesr::favorite_kable()
+```
+
 ```{r} 
-saveRDS(ST_df,"./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_30_SNP_clusters.RDS")
+saveRDS(ST_df,"./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_25_SNP_clusters.RDS")
 ``` 
