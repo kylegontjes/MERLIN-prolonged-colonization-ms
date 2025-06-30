@@ -1,5 +1,5 @@
 ---
-title: "Results Section 3: Sharing of ESBLs provides additional support for prolonged colonization"
+title: "Results Section 3: Sharing of ESCrEs provides additional support for prolonged colonization"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -34,7 +34,7 @@ sessionInfo()
 ```{r } 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
 prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS")
-plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_beta_lactam_presence_location_data.RDS")
+plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS")
 
 df_index <- left_join(df_index,plasmid_data)
 ```
@@ -50,17 +50,44 @@ paste0("Proportion of subjects with index specimens positive: ", length(ESCrE_in
 
 ```{r}
 paste0("Strain vs. Plasmid sharing")
-table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESBL_plasmidic_genes,dnn=c("Strain","Plasmidic ESBL"))  
+table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_plasmidic_genes,dnn=c("Strain","Plasmidic ESCrE"))  
 
-convert_tableone_into_df(dataset=prolonged_colonization_df,vars = "index_at_1_and_or_2_ESBL_plasmidic_genes",strata= "index_at_1_and_or_2_Species_ST_cluster",factorVars = "index_at_1_and_or_2_ESBL_plasmidic_genes",outcome_names = c("Not same strain","Same strain"))
+convert_tableone_into_df(dataset=prolonged_colonization_df,vars = "index_at_1_and_or_2_ESCrE_plasmidic_genes",strata= "index_at_1_and_or_2_Species_ST_cluster",factorVars = "index_at_1_and_or_2_ESCrE_plasmidic_genes",outcome_names = c("Not same strain","Same strain"))
 ```
 
 ```{r,results='asis'}
-same_ESBL_not_same_strain <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESBL_plasmidic_genes==1) %>% .$household
+same_ESCrE_not_same_strain <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_plasmidic_genes==1) %>% .$household
 
-lapply(same_ESBL_not_same_strain,FUN=function(x){
+lapply(same_ESCrE_not_same_strain,FUN=function(x){
   
-  df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESBL_genes,ESBL_plasmidic_genes,  bla_chromosome_genes,ESBL_chromosome_genes,ESBL_plasmid_genes,bla_plasmids,ESBL_plasmids) %>% arrange(visit)   
+  df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
 }) %>% lapply(.,gontjesr::favorite_kable)
 ```
+
+# Unexplained 
+```{r,results='asis'}
+notexplained <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_plasmidic_genes==0) %>% .$household
+
+paste0("Not explained: ",length(notexplained))
+
+lapply(notexplained,FUN=function(x){
+  
+  df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
+}) %>% lapply(.,gontjesr::favorite_kable)
+```
+
+# Households with ESCrE genotypes, but not plasmidic sharing
+```{r,results='asis'}
+non_plasmidic <- subset(prolonged_colonization_df,index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_plasmidic_genes==0)  
+
+table(non_plasmidic$index_at_1_and_or_2_Species_ST_cluster)
+
+paste0("Had same ESCrE genotype, but not shared: ",nrow(non_plasmidic))
+
+lapply(non_plasmidic$household,FUN=function(x){
+  
+  df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
+}) %>% lapply(.,gontjesr::favorite_kable)
+```
+
 

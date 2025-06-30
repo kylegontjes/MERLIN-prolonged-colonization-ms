@@ -32,76 +32,79 @@ sessionInfo()
 df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(qc_pass == "TRUE" & WGS_escre == TRUE)
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0)
 amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(element_symbol %in% colnames(amrfinder_mat))
+ESCrE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_index_cohort.RDS") 
 mobsuite_gene_pres <- readRDS("./data/ESBL_plasmids/amrfinder_mobsuite_gene_presence.RDS") %>% subset(genomic_id %in% df$genomic_id) 
-ESBL_plasmid_clusters <- readRDS("./data/ESBL_plasmids/amrfinder_ESBL_contig_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0)
+ESCrE_plasmid_clusters <- readRDS("./data/ESBL_plasmids/amrfinder_ESCrE_contig_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0) 
 ```
 
 ```{r}
-df <- left_join(df,amrfinder_mat %>% mutate(genomic_id = rownames(.))) %>% left_join(ESBL_plasmid_clusters %>% mutate(genomic_id=rownames(.)))
+df <- left_join(df,amrfinder_mat %>% mutate(genomic_id = rownames(.))) %>% left_join(ESCrE_plasmid_clusters %>% mutate(genomic_id=rownames(.)))
 ``` 
 
 # Get BLA and ESBL genes
-```{r}
-amrfinder_blactam <- amrfinder %>% subset(class == "BETA-LACTAM")
-bla_genes <- amrfinder_blactam$element_symbol%>% unique %>% sort
-paste0("Number of beta-lactamase genes identified: " , length(amrfinder_blactam$element_symbol %>% unique))
-table(amrfinder_blactam$element_symbol,amrfinder_blactam$subclass) 
+```{r} 
+bla_genes <- ESCrE_genotype_info$element_symbol%>% unique %>% sort
+paste0("Number of beta-lactamase genes identified: " , length(ESCrE_genotype_info$element_symbol %>% unique))
+table(ESCrE_genotype_info$element_symbol,ESCrE_genotype_info$blactam_class) 
 
-amrfinder_ESBL <- amrfinder %>% subset(grepl("CTX|OXA|TEM|SHV|PER|VEB|GES|TLA|BES",element_symbol))
-ESBL_genes <- amrfinder_ESBL$element_symbol %>% unique %>% sort
+escre_genotypes <- subset(ESCrE_genotype_info,ESCrE==T)
+ESCrE_genes = escre_genotypes$element_symbol %>% sort %>% unique
+paste0("ESCrE beta-lactamase genes identified: " ,nrow(escre_genotypes)) 
+escre_genotypes$element_symbol %>% sort
 ```
 
 # Get BLA and ESBL data on plasmids and chromosome
 ```{r,fig.width=10}
-get_ESBL_data <- function(isolate,mobsuite_gene_pres,bla_genes,ESBL_genes){
+get_ESCrE_genes_data <- function(isolate,mobsuite_gene_pres,bla_genes,ESCrE_genes){
   mobsuite_df <- subset(mobsuite_gene_pres,genomic_id == isolate)
   plasmids_str <- mobsuite_df$type %>% subset(. != 'chromosome')  %>% paste0(collapse=';')  %>% {ifelse(is_empty(.)==T,"",.)}  
   bla_genes_str <- mobsuite_df %>% select(bla_genes) %>% select_if(colSums(.)==1) %>% colnames() %>% paste0(collapse=';')
-  ESBL_genes_str <- mobsuite_df %>% select(ESBL_genes) %>% select_if(colSums(.)==1) %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
+  ESCrE_genes_str <- mobsuite_df %>% select(ESCrE_genes) %>% select_if(colSums(.)==1) %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
   bla_chromosome_genes <-  mobsuite_df %>% subset(type=='chromosome') %>% select(bla_genes) %>% select_if(colSums(.)==1)  %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
-  ESBL_chromosome_genes <-  mobsuite_df %>% subset(type=='chromosome') %>% select(ESBL_genes) %>% select_if(colSums(.)==1)  %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
-  ESBL_plasmid_genes <- mobsuite_df %>% subset(type!='chromosome') %>% select(ESBL_genes) %>% select_if(colSums(.)==1)  %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
+  ESCrE_chromosome_genes <-  mobsuite_df %>% subset(type=='chromosome') %>% select(ESCrE_genes) %>% select_if(colSums(.)==1)  %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
+  ESCrE_plasmid_genes <- mobsuite_df %>% subset(type!='chromosome') %>% select(ESCrE_genes) %>% select_if(colSums(.)==1)  %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
   bla_plasmids <- subset(mobsuite_df,BETA_LACTAM_contig ==1) %>% .$type %>% subset(. != 'chromosome') %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
-  ESBL_plasmids <- subset(mobsuite_df,ESBL_contig ==1) %>% .$type %>% subset(. != 'chromosome') %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
+  ESCrE_plasmids <- subset(mobsuite_df,ESCrE_contig ==1) %>% .$type %>% subset(. != 'chromosome') %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)}
      
-  results <- cbind.data.frame(genomic_id = isolate,plasmids=plasmids_str,bla_genes=bla_genes_str,ESBL_genes=ESBL_genes_str,bla_chromosome_genes=bla_chromosome_genes,ESBL_chromosome_genes=ESBL_chromosome_genes,ESBL_plasmid_genes=ESBL_plasmid_genes,bla_plasmids=bla_plasmids,ESBL_plasmids = ESBL_plasmids)
+  results <- cbind.data.frame(genomic_id = isolate,plasmids=plasmids_str,bla_genes=bla_genes_str,ESCrE_genes=ESCrE_genes_str,bla_chromosome_genes=bla_chromosome_genes,ESCrE_chromosome_genes=ESCrE_chromosome_genes,ESCrE_plasmid_genes=ESCrE_plasmid_genes,bla_plasmids=bla_plasmids,ESCrE_plasmids = ESCrE_plasmids)
   return(results)
 }
 
-plasmid_data <- lapply(df$genomic_id,get_ESBL_data,mobsuite_gene_pres,bla_genes,ESBL_genes) %>% do.call(rbind,.) 
+plasmid_data <- lapply(df$genomic_id,get_ESCrE_genes_data,mobsuite_gene_pres,bla_genes,ESCrE_genes) %>% do.call(rbind,.) 
 ```
 
 # Plasmidic ESBL
 ```{r}
-analyze_frequency_on_plasmid <- function(ESBL,plasmid_data){
-  chromosome_ESBL <- str_split(string = plasmid_data$ESBL_chromosome_genes,';') %>% unlist %>% subset(.==ESBL)
-  plasmid_ESBSL <- str_split(string = plasmid_data$ESBL_plasmid_genes,';') %>% unlist %>% subset(.==ESBL)
-  n_chromosome <- length(chromosome_ESBL)
-  n_plasmid <- length(plasmid_ESBSL)
+analyze_frequency_on_plasmid <- function(ESCrE,plasmid_data){
+  chromosome_ESCrE <- str_split(string = plasmid_data$ESCrE_chromosome_genes,';') %>% unlist %>% subset(.==ESCrE)
+  plasmid_ESCrE <- str_split(string = plasmid_data$ESCrE_plasmid_genes,';') %>% unlist %>% subset(.==ESCrE)
+  n_chromosome <- length(chromosome_ESCrE)
+  n_plasmid <- length(plasmid_ESCrE)
   prop_plasmid <-  round(n_plasmid / (n_chromosome + n_plasmid) * 100 , 2)
-  results <- cbind.data.frame(ESBL,n_chromosome,n_plasmid,prop_plasmid)
+  results <- cbind.data.frame(ESCrE,n_chromosome,n_plasmid,prop_plasmid)
   return(results)
 }
 
-ESBL_prop_data <- lapply(ESBL_genes,analyze_frequency_on_plasmid,plasmid_data) %>% do.call(rbind,.) %>% arrange(prop_plasmid,n_plasmid) 
-
+ESCrE_prop_data <- lapply(ESCrE_genes,analyze_frequency_on_plasmid,plasmid_data) %>% do.call(rbind,.) %>% arrange(prop_plasmid,n_plasmid) 
  
-ESBL_prop_data %>% arrange(prop_plasmid) %>% gontjesr::favorite_kable()
-plasmidic_ESBLs <- subset(ESBL_prop_data,prop_plasmid>0) %>% .$ESBL %>% sort
+ESCrE_prop_data %>% arrange(prop_plasmid) %>% gontjesr::favorite_kable()
+plasmidic_ESCrEs <- subset(ESCrE_prop_data,prop_plasmid>0) %>% .$ESCrE %>% sort
 
-get_plasmidic_ESBSL <-  function(isolate,mobsuite_gene_pres,ESBL_plasmidic_genes){
+saveRDS(ESCrE_prop_data,"./data/ESBL_plasmids/MERLIN_ESCrE_proportion_plasmidic.RDS")
+
+get_plasmidic_ESBSL <-  function(isolate,mobsuite_gene_pres,ESCrE_plasmidic_genes){
   mobsuite_df <- subset(mobsuite_gene_pres,genomic_id == isolate)
-  ESBL_plasmidic_genes_str <- mobsuite_df %>% select(ESBL_plasmidic_genes) %>% select_if(colSums(.)==1) %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)} 
+  ESCrE_plasmidic_genes_str <- mobsuite_df %>% select(ESCrE_plasmidic_genes) %>% select_if(colSums(.)==1) %>% colnames() %>% paste0(collapse=";") %>% {ifelse(length(.)==0,"",.)} 
      
-  results <- cbind.data.frame(genomic_id = isolate,ESBL_plasmidic_genes=ESBL_plasmidic_genes_str)
+  results <- cbind.data.frame(genomic_id = isolate,ESCrE_plasmidic_genes=ESCrE_plasmidic_genes_str)
   return(results)
 }
 
-ESBL_plasmidic_presence <- lapply(df$genomic_id,get_plasmidic_ESBSL,mobsuite_gene_pres,plasmidic_ESBLs) %>% do.call(rbind,.)
+ESCrE_plasmidic_presence <- lapply(df$genomic_id,get_plasmidic_ESBSL,mobsuite_gene_pres,plasmidic_ESCrEs) %>% do.call(rbind,.)
 ```
 
 # Save overall data
 ```{r}
-plasmid_data <-  left_join(plasmid_data,ESBL_plasmidic_presence) 
-saveRDS(plasmid_data,"./data/ESBL_plasmids/MERLIN_beta_lactam_presence_location_data.RDS")
+plasmid_data <-  left_join(plasmid_data,ESCrE_plasmidic_presence) 
+saveRDS(plasmid_data,"./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS")
 ```

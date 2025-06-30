@@ -16,7 +16,7 @@ opts_knit$set(root.dir='~/Desktop/gl_MERLIN/Analysis/Household_transmission/MERL
 
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse") 
+packages <- c("tidyverse","kableExtra") 
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T)) 
@@ -30,23 +30,21 @@ sessionInfo()
 # Load data
 
 ```{r}  
-df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS")  %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
+df <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")  %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
 isolates <- df$genomic_id
 
-amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS")
-amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.txt") 
+amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.txt")  %>% subset(genomic_id %in% isolates)
+amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% isolates)
+ESCrE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_index_cohort.RDS")
  
-mobsuite_contigs <- readRDS("./data/mobsuite/mobsuite_contigs.RDS") 
-mobtyper <- readRDS("./data/mobsuite/mobtyper.RDS")
+mobsuite_contigs <- readRDS("./data/mobsuite/mobsuite_contigs.RDS") %>% subset(genomic_id%in% isolates)
+mobtyper <- readRDS("./data/mobsuite/mobtyper.RDS")%>% subset(genomic_id %in% isolates)
 ``` 
 
 # Annotate contigs with AMRFinder data
 
 ```{r} 
-amrfinder_qc_pass <- subset(amrfinder,genomic_id %in% df$genomic_id)
-amrfinder_mat_qc_passe <- subset(amrfinder_mat,rownames(amrfinder_mat) %in% amrfinder_qc_pass$genomic_id)
-  
-genes <- amrfinder_qc_pass$element_symbol %>% unique %>% sort
+genes <- ESCrE_genotype_info$element_symbol %>% unique %>% sort
 
 annotate_contigs <- function(gene,amrfinder_df,mobsuite_contig_df){
   amrfinder_w_gene <- amrfinder_df %>% subset(element_symbol == gene)
@@ -56,7 +54,7 @@ annotate_contigs <- function(gene,amrfinder_df,mobsuite_contig_df){
   return(row)
 }
 
-gene_pres <- lapply(genes,FUN=annotate_contigs,amrfinder_df = amrfinder_qc_pass,mobsuite_contig_df = mobsuite_contigs) %>% do.call(cbind,.) %>% mutate(contig_id = mobsuite_contigs$contig_id)
+gene_pres <- lapply(genes,FUN=annotate_contigs,amrfinder_df = amrfinder,mobsuite_contig_df = mobsuite_contigs) %>% do.call(cbind,.) %>% mutate(contig_id = mobsuite_contigs$contig_id)
 
 mobsuite_contigs <- left_join(mobsuite_contigs,gene_pres)
 ```
@@ -65,7 +63,6 @@ mobsuite_contigs <- left_join(mobsuite_contigs,gene_pres)
 mobsuite_contigs$chromosome <- ifelse(mobsuite_contigs$molecule_type == "chromosome", 1, 0)
 mobsuite_contigs$plasmid <- ifelse(mobsuite_contigs$molecule_type == "plasmid", 1, 0) 
 ```
-
 
 # Contig data
 ```{r}
@@ -94,7 +91,7 @@ count_genes_mobsuite <- function(isolate,genes,mobsuite_contigs){
   data <- rbind(chromosome_info,plasmid_info)
   return(data)
 } 
-qc_genomes <- amrfinder_qc_pass$genomic_id %>% unique %>% sort
+qc_genomes <- amrfinder$genomic_id %>% unique %>% sort
 
 mobsuite_gene_pres <- lapply(qc_genomes,FUN=count_genes_mobsuite,genes=genes,mobsuite_contigs=mobsuite_contigs) %>% do.call(rbind,.)
 ```
@@ -102,24 +99,20 @@ mobsuite_gene_pres <- lapply(qc_genomes,FUN=count_genes_mobsuite,genes=genes,mob
 # Annotate w/ AMR + Blactam categories
 ```{r}
 AMR_genes <- amrfinder %>% subset(type =="AMR") %>% .$element_symbol %>% unique %>% sort 
-BLA_genes <- amrfinder %>% subset(class =="BETA-LACTAM") %>% .$element_symbol %>% unique %>% sort 
-BLA_carbapenem_genes <- amrfinder %>% subset(class =="BETA-LACTAM" & subclass=="CARBAPENEM") %>% .$element_symbol %>% unique %>% sort 
-BLA_ceph_genes <- amrfinder %>% subset(class =="BETA-LACTAM" & subclass %in% c("CEPHALOSPORIN","CEFIDEROCOL/CEPHALOSPORIN")) %>% .$element_symbol %>% unique %>% sort 
-ESBL_genes <- subset(amrfinder,class=="BETA-LACTAM") %>% .$element_symbol %>% unique %>% subset(.,grepl("CTX|OXA|TEM|SHV|CMY|NDM|PER|VEB|GES|TLA|BES",.))
+BLA_genes <- ESCrE_genotype_info$element_symbol %>% unique %>% sort
+ESCrE_genes <- ESCrE_genotype_info %>% subset(ESCrE ==T) %>% .$element_symbol %>% unique %>% sort
 
-mobsuite_gene_pres$AMR_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(AMR_genes)) %>% rowSums()>0,1,0)
-mobsuite_gene_pres$BETA_LACTAM_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(BLA_genes)) %>% rowSums()>0,1,0)
-mobsuite_gene_pres$BETA_LACTAM_CARBAPENEM_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(BLA_carbapenem_genes)) %>% rowSums()>0,1,0)
-mobsuite_gene_pres$BETA_LACTAM_CEPHALOSPORIN_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(BLA_ceph_genes)) %>% rowSums()>0,1,0)
-mobsuite_gene_pres$ESBL_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(ESBL_genes)) %>% rowSums()>0,1,0)
+mobsuite_gene_pres$AMR_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(AMR_genes)) %>% rowSums()>0,T,F)
+mobsuite_gene_pres$BETA_LACTAM_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(BLA_genes)) %>% rowSums()>0,T,F) 
+mobsuite_gene_pres$ESCrE_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(ESCrE_genes)) %>% rowSums()>0,T,F) 
 
-saveRDS(mobsuite_gene_pres,"./data/ESBL_plasmids/amrfinder_mobsuite_gene_presence.RDS")
+saveRDS(mobsuite_gene_pres,"./data/ESBL_plasmids/amrfinder_mobsuite_beta_lactamase_presence.RDS")
 ```
 
 # Get isolate's
 ```{r} 
-plasmid_sum_info_blactam <- mobsuite_gene_pres %>% subset(BETA_LACTAM_contig ==1)
-plasmid_sum_info_ESBL <- mobsuite_gene_pres %>% subset(ESBL_contig ==1)
+plasmid_sum_info_blactam <- mobsuite_gene_pres %>% subset(BETA_LACTAM_contig ==T)
+plasmid_sum_info_ESCrE <- mobsuite_gene_pres %>% subset(ESCrE_contig ==T)
 
 get_mobtyper_cluster_from_amrfinder <- function (df, mobtyper) 
 {
@@ -138,7 +131,7 @@ blactam_plasmid_contigs <- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum_in
 
 saveRDS(blactam_plasmid_contigs,"./data/ESBL_plasmids/amrfinder_beta_lactam_contig_matrix.RDS")
 
-ESBL_plasmid_contigs <- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum_info_blactam)
+ESCrE_plasmid_contigs <- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum_info_ESCrE)
 
-saveRDS(ESBL_plasmid_contigs,"./data/ESBL_plasmids/amrfinder_ESBL_contig_matrix.RDS")
+saveRDS(ESCrE_plasmid_contigs,"./data/ESBL_plasmids/amrfinder_ESCrE_contig_matrix.RDS")
 ```

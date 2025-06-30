@@ -16,7 +16,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERL
 
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra','ComplexHeatmap','gontjesr') 
+packages <- c("tidyverse",'kableExtra','gontjesr') 
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
@@ -30,7 +30,7 @@ sessionInfo()
 # Load data
 ```{r} 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
-plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_beta_lactam_presence_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
+plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
 
 df_index <- left_join(df_index,plasmid_data)
 ```
@@ -71,7 +71,6 @@ prolonged_df <- left_join(any_prolonged,species_prolonged) %>% left_join(.,speci
 
 # Plasmid level
 ```{r}
-
 get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split){
   isolate_df <- subset(metadata,household==isolate)
   isolate_index <- subset(isolate_df,visit==0) %>% .[[variable]] %>% str_split(.,split) %>% unlist %>% subset(is.na(.)==F & .!='')
@@ -92,8 +91,6 @@ get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split
   isolate_two_month <- subset(isolate_df,visit==3) %>% .[[variable]]  %>% str_split(.,split) %>% unlist 
   isolate_two_month_same <- ifelse(sum(isolate_two_month %in% isolate_index)>0,1,0)
   index_at_1_and_or_2 = ifelse(isolate_one_month_same==1 | isolate_two_month_same==1,1,0)
-   
-    
   }
  
   results <- cbind.data.frame(household=isolate,isolate_follow_up_same_any,isolate_baseline_same,isolate_one_month_same,isolate_two_month_same,index_at_1_and_or_2)
@@ -101,22 +98,22 @@ get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split
   return(results)
 }
 
-ESBL_plasmid_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESBL_plasmids',split=";") %>% do.call(rbind,.)
+ESCrE_plasmid_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESCrE_plasmids',split=";") %>% do.call(rbind,.)
 
-ESBL_genes_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESBL_genes',split=";") %>% do.call(rbind,.)
+ESCrE_genes_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESCrE_genes',split=";") %>% do.call(rbind,.)
 
-ESBL_plasmidic_gene_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESBL_plasmidic_genes',split=";") %>% do.call(rbind,.)
+ESCrE_plasmidic_gene_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESCrE_plasmidic_genes',split=";") %>% do.call(rbind,.)
 
-prolonged_df <- left_join(prolonged_df,ESBL_plasmid_sharing) %>% left_join(.,ESBL_plasmidic_gene_sharing) %>% left_join(.,ESBL_genes_sharing) 
+prolonged_df <- left_join(prolonged_df,ESCrE_plasmid_sharing) %>% left_join(.,ESCrE_genes_sharing) %>% left_join(.,ESCrE_plasmidic_gene_sharing) 
 ```
 
 # Create merged datapoints
 ```{r}
-prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESBL_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESBL_genes ==1,1,0)
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes ==1,1,0)
 
-prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmidic_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESBL_plasmidic_genes ==1,1,0)
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_plasmidic_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_plasmidic_genes ==1,1,0)
 
-prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESBL_plasmids <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESBL_plasmids ==1,1,0)
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_plasmids <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_plasmids ==1,1,0)
 ```
 
 # save
