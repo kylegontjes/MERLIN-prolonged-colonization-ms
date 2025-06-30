@@ -33,7 +33,7 @@ sessionInfo()
 # Data
 ```{r cars} 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
-plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_beta_lactam_presence_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
+plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
 
 df_index <- left_join(df_index,plasmid_data)
 ```
@@ -42,7 +42,7 @@ df_index <- left_join(df_index,plasmid_data)
 ## Note: Updated to use 25 SNP threshold not 30 due to epidemiological data
 
 ```{r}
-s_table_2 <- df_index %>% arrange(household,visit) %>% select(household,visit,Species_ST_cluster,plasmids,ESBL_genes,ESBL_chromosome_genes,ESBL_plasmidic_genes,ESBL_plasmids) %>% mutate(plasmids = gsub(";",", ",plasmids),ESBL_genes = gsub(";",", ",ESBL_genes),ESBL_chromosome_genes = gsub(";",", ",ESBL_chromosome_genes),ESBL_plasmidic_genes = gsub(";",", ",ESBL_plasmidic_genes),ESBL_plasmids = gsub(";",", ",ESBL_plasmids)) %>%  `colnames<-`(c("Household","Visit","Strain","Plasmids","ESBL genes",'Chromosomal ESBLs','Plasmidic ESBLs','ESBL plasmid'))
+s_table_2 <- df_index %>% arrange(household,visit) %>% select(household,visit,Species_ST_cluster,plasmids,ESCrE_genes,ESCrE_chromosome_genes,ESCrE_plasmidic_genes,ESCrE_plasmids) %>% mutate(plasmids = gsub(";",", ",plasmids),ESCrE_genes = gsub(";",", ",ESCrE_genes),ESCrE_chromosome_genes = gsub(";",", ",ESCrE_chromosome_genes),ESCrE_plasmidic_genes = gsub(";",", ",ESCrE_plasmidic_genes),ESCrE_plasmids = gsub(";",", ",ESCrE_plasmids)) %>%  `colnames<-`(c("Household","Visit","Strain","Plasmids","ESCrE genes",'Chromosomal ESCrEs','Plasmidic ESCrEs','ESCrE plasmid'))
 ```
 
 ```{r}
@@ -50,8 +50,8 @@ favorite_kable(s_table_2)
 ```
 
 ```{r}
-saveRDS(s_table_2,"./tables/s_table_2_strain_ESBL_by_index_patient.RDS")
-write_csv(s_table_2,"./tables/s_table_2_strain_ESBL_by_index_patient.csv")
+saveRDS(s_table_2,"./tables/s_table_2_strain_ESCrE_genes_by_index_patient.RDS")
+write_csv(s_table_2,"./tables/s_table_2_strain_ESCrE_genes_by_index_patient.csv")
 ```
 
 

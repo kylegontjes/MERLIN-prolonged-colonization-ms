@@ -32,31 +32,18 @@ sessionInfo()
 
 # Data
 ```{r cars} 
-df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
-plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_beta_lactam_presence_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
-amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
-```
-
-# ESBL gene frequency on plasmids
-## Used the following families: CTX, OXA, TEM, SHV, PER, VEB, GES, TLA, BES
-```{r}
-amrfinder_ESBL <- amrfinder %>% subset(grepl("CTX|OXA|TEM|SHV|PER|VEB|GES|TLA|BES",element_symbol))
-ESBL_genes <- amrfinder_ESBL$element_symbol %>% unique %>% sort
+ESCrE_genotype_data <- readRDS("./data/ESBL_plasmids/MERLIN_ESCrE_proportion_plasmidic.RDS")
+ESCRE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_index_cohort.RDS")
 ```
 
 ```{r}
-analyze_frequency_on_plasmid <- function(ESBL,plasmid_data){
-  chromosome_ESBL <- str_split(string = plasmid_data$ESBL_chromosome_genes,';') %>% unlist %>% subset(.==ESBL)
-  plasmid_ESBSL <- str_split(string = plasmid_data$ESBL_plasmid_genes,';') %>% unlist %>% subset(.==ESBL)
-  n_chromosome <- length(chromosome_ESBL)
-  n_plasmid <- length(plasmid_ESBSL)
-  prop_plasmid <-  round(n_plasmid / (n_chromosome + n_plasmid) * 100 , 2)
-  results <- cbind.data.frame(ESBL,n_chromosome,n_plasmid,prop_plasmid)
-  return(results)
-}
+ESCrE_genotype_data <- left_join(ESCrE_genotype_data %>% mutate(element_symbol = ESCrE),ESCRE_genotype_info %>% select(element_symbol,blactam_class,ESBL,carbapenemase,ampC_like))
+ESCrE_genotype_data$category <- ifelse(ESCrE_genotype_data$ESBL == T,"ESBL",ifelse(ESCrE_genotype_data$carbapenemase == T,"Carbapenemase",ifelse(ESCrE_genotype_data$ampC_like ==T, "ampC-like","Other")))
 
-ESBL_prop_data <- lapply(ESBL_genes,analyze_frequency_on_plasmid,plasmid_data) %>% do.call(rbind,.) %>% arrange(prop_plasmid,n_plasmid)
-colnames(ESBL_prop_data) <- c("ESBL","No. chromosomal","No. plasmidic","Proportion plasmidic")
+ESBL_prop_data <- ESCrE_genotype_data %>% select(element_symbol,category,n_chromosome,n_plasmid,prop_plasmid) %>% arrange(-prop_plasmid,-n_plasmid)
+
+
+colnames(ESBL_prop_data) <- c("ESCrE","Category","No. chromosomal","No. plasmidic","Proportion plasmidic")
 
 ESBL_prop_data %>% favorite_kable() 
 ```
