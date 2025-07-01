@@ -1,5 +1,5 @@
 ---
-title: "Figure 2: Accuracy of species-level evaluation of prolonged colonization"
+title: "Figure 3: Accuracy of species-level evaluation of prolonged colonization"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -101,5 +101,5 @@ figure_3
 ```
 
 ```{r}
-ggsave(plot = figure_3,filename = './figures/figure_2_diagnostic_statistics_species_prolonged_colonization.png',dpi = 900,width = 9.25,height = 9.25,bg='white')
+ggsave(plot = figure_3,filename = './figures/figure_3_diagnostic_statistics_species_prolonged_colonization.png',dpi = 900,width = 9.25,height = 9.25,bg='white')
 ```
