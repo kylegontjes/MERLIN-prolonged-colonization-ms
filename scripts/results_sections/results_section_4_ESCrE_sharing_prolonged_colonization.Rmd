@@ -1,5 +1,5 @@
 ---
-title: "Results Section 3: Sharing of ESCrEs provides additional support for prolonged colonization"
+title: "Results Section 4: Sharing of ESCrEs provides additional support for prolonged colonization"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -46,17 +46,31 @@ paste0("Proportion of subjects with index specimens positive: ", length(ESCrE_in
 ```
 
 
-# Two case patients had episode of shraing ESBL plasmidic genes
+# Three case patients had episode of shraing ESBL plasmidic genes
 
 ```{r}
-paste0("Strain vs. Plasmid sharing")
-table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_plasmidic_genes,dnn=c("Strain","Plasmidic ESCrE"))  
+paste0("Strain vs. ESCrE gene sharing")
+table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,dnn=c("Strain","Plasmidic ESCrE"))  
 
-convert_tableone_into_df(dataset=prolonged_colonization_df,vars = "index_at_1_and_or_2_ESCrE_plasmidic_genes",strata= "index_at_1_and_or_2_Species_ST_cluster",factorVars = "index_at_1_and_or_2_ESCrE_plasmidic_genes",outcome_names = c("Not same strain","Same strain"))
+convert_tableone_into_df(dataset=prolonged_colonization_df,vars = "index_at_1_and_or_2_ESCrE_genes",strata= "index_at_1_and_or_2_Species_ST_cluster",factorVars = "index_at_1_and_or_2_ESCrE_genes",outcome_names = c("Not same strain","Same strain"))
 ```
 
+# Two many were linked by plasmid
+```{r}
+paste0("Strain vs. Plasmid-linked ESCrE genes")
+table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware,dnn=c("Strain","Plasmid-linked ESCrE"))  
+
+paste0("ESCrE vs. Plasmid-linked ESCrE genes")
+table(prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware,dnn=c("ESCrE","Plasmid-linked ESCrE"))  
+```
+
+# Example cases explained by ESCrE but not strain
+## 100H - Different E. coli ST - Linked by blaEC-8, but this was on the chromosome of both genomes...
+## 169H- Different E. coli ST 131 clusters - Linked by CTX-M-15 and blaEC-5*. While blaEC-5 was chromosomal, CTX-M-15 was found on plasmid in 1 isolate, suggestive of HGT and/or co-colonization... 
+## 1H - Initial colonized with E. coli ST69 with blaCTX-M-15 and blaEC-8*. While blaEC-8 was found in subsequent chromosome of E. coli ST6321 strain, blaCTX-M-15 was found on a plasmid in every strain collected!!
+
 ```{r,results='asis'}
-same_ESCrE_not_same_strain <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_plasmidic_genes==1) %>% .$household
+same_ESCrE_not_same_strain <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_genes==1) %>% .$household
 
 lapply(same_ESCrE_not_same_strain,FUN=function(x){
   
@@ -66,7 +80,7 @@ lapply(same_ESCrE_not_same_strain,FUN=function(x){
 
 # Unexplained 
 ```{r,results='asis'}
-notexplained <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_plasmidic_genes==0) %>% .$household
+notexplained <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_genes==0) %>% .$household
 
 paste0("Not explained: ",length(notexplained))
 
@@ -75,19 +89,4 @@ lapply(notexplained,FUN=function(x){
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
 }) %>% lapply(.,gontjesr::favorite_kable)
 ```
-
-# Households with ESCrE genotypes, but not plasmidic sharing
-```{r,results='asis'}
-non_plasmidic <- subset(prolonged_colonization_df,index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_plasmidic_genes==0)  
-
-table(non_plasmidic$index_at_1_and_or_2_Species_ST_cluster)
-
-paste0("Had same ESCrE genotype, but not shared: ",nrow(non_plasmidic))
-
-lapply(non_plasmidic$household,FUN=function(x){
-  
-  df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
-}) %>% lapply(.,gontjesr::favorite_kable)
-```
-
-
+ 
