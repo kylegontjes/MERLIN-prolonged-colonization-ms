@@ -63,12 +63,35 @@ colnames(amrfinder) <- snakecase::to_snake_case(colnames(amrfinder) ) %>% gsub("
 amrfinder <- amrfinder %>% select(-protein_id,-hmm_accession,-hmm_description) 
 amrfinder <- subset(amrfinder, genomic_id %in% final_isolates)
 
+# Curate new element_symbol
+amrfinder$element_symbol_renamed <- apply(amrfinder,1,FUN=function(x){
+  name <- x[["element_symbol"]] 
+  # Get name
+    if(x[["type"]] == "AMR" & x[["class"]] == "BETA-LACTAM" ){
+      if(grepl("-",name) == F| str_split(name,"-",simplify=T) %>% .[,ncol(.)] %>% grepl("[0-9]", .) ==F){
+        if(x[["coverage_of_reference"]] < 100 | x[["identity_to_reference"]] < 100){
+          name <- str_split(x[["closest_reference_name"]],pattern = " ",simplify = T) %>% .[,ncol(.)] %>% paste0('bla',.)
+        }
+      }
+    }
+    if(x[["element_symbol"]] == 'ampC') {
+      name <- x[["element_symbol"]]
+    }
+    if(x[["coverage_of_reference"]] < 100){
+        name <- paste0(name,"?")
+    }
+    if(x[["identity_to_reference"]] <100) {
+        name <- paste0(name,"*")
+    }
+    return(name)
+})
+
 saveRDS(amrfinder,file="./data/amrfinder/amrfinder_cleaned.RDS")
 
 get_amrfinder_matrix <- function(amrfinder,isolates){
-  unique_genes <- amrfinder$element_symbol %>% unique
+  unique_genes <- amrfinder$element_symbol_renamed %>% unique
   lapply(unique_genes,FUN =function(x,amrfinder){
-    isolates_with_gene <-  subset(amrfinder,element_symbol == x) %>% select(genomic_id) %>% unlist
+    isolates_with_gene <-  subset(amrfinder,element_symbol_renamed == x) %>% select(genomic_id) %>% unlist
     row <- assign(paste0(x),ifelse(isolates %in% isolates_with_gene,1,0))
     return(row)},amrfinder) %>% do.call(bind_cols,.) %>% as.data.frame %>% `colnames<-`(unique_genes) %>% `rownames<-`(isolates)
 }

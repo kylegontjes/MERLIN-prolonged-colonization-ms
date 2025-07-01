@@ -62,35 +62,44 @@ get_marginal_stats <- function(feature,outcome){
   ppv = round((tp / c(tp + fp)),3) *100
   npv = round((tn / c(tn + fn)),3) *100
   accuracy =  round(((tp+tn)/n),3) *100
+  precision_raw = tp  / (tp+fp)
+  recall_raw = tp / (tp + fn)
+  f1 = round(2*precision_raw*recall_raw / (precision_raw + recall_raw),3)  *100
+  recall = round(recall_raw,3) *100
+  precision = round(precision_raw,3) *100
+  lr_pos = round(sens / (100-spec),2)
   
-  data <- as.data.frame(cbind(phenotype = colnames(outcome),phenotype_count,phenotype_freq,feature_count,feature_freq,tp,fp,fn,tn,sens,spec,ppv,npv,accuracy))
+  data <- as.data.frame(cbind(phenotype = colnames(outcome),phenotype_count,phenotype_freq,feature_count,feature_freq,tp,fp,fn,tn,sens,spec,ppv,npv,recall,precision,f1,accuracy,lr_pos))
   rownames(data) <- colnames(feature)
   data$name <-colnames(feature)
   return(data)
 }
 ```
 
-```{r,fig.height=10,fig.width=8}
-outcomes <- c('index_at_1_and_or_2_Species_ST','index_at_1_and_or_2_Species_ST_cluster','index_at_1_and_or_2_ESCrE_plasmidic_genes','index_at_1_and_or_2_Species_ST_cluster_ESCrE_plasmidic_genes')
+```{r,fig.height=9.25,fig.width=9.25}
+outcomes <- c('index_at_1_and_or_2_Species_ST','index_at_1_and_or_2_Species_ST_cluster','index_at_1_and_or_2_ESCrE_genes','index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes',"index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware")
 
 comparison_of_any_ESCRE_to_WGS_outcomes <- lapply(outcomes,FUN=function(x){
   get_marginal_stats(prolonged_colonization_df$index_at_1_and_or_2_Species,prolonged_colonization_df[[x]])
 }) %>% do.call(rbind,.) %>% mutate(outcome = outcomes) 
 
-comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- gsub("index_at_1_and_or_2_","",comparison_of_any_ESCRE_to_WGS_outcomes$outcome) %>% recode(.,'Species_ST'='Sequence type','Species_ST_cluster' = 'Strain','ESCrE_plasmidic_genes' = 'Plasmidic ESCrE genes', 'Species_ST_cluster_ESCrE_plasmidic_genes'='Strain + plasmidic ESCrE genes')  %>% factor(.,levels = c("Species","Sequence type","Strain","Plasmidic ESCrE genes",'Strain + plasmidic ESCrE genes'))
+
+comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- recode(comparison_of_any_ESCRE_to_WGS_outcomes$outcome,'index_at_1_and_or_2_WGS_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Sequence type','index_at_1_and_or_2_Species_ST_cluster'='Strain','index_at_1_and_or_2_ESCrE_genes'='ESCrE gene','index_at_1_and_or_2_ESCrE_plasmidic_genes'= 'Plasmidic ESCrE gene','index_at_1_and_or_2_ESCrE_plasmids'= 'ESCrE plasmid',
+  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes'='Strain + ESCrE gene',
+  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware'='Strain + plasmid-linked ESCrE gene') %>% factor(.,levels = c("Species","Sequence type","Strain","ESCrE gene",'Strain + ESCrE gene',"Strain + plasmid-linked ESCrE gene"))
 
 comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()
-
-A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=sens)) + geom_bar(stat='identity',fill="black") + ylab("Sensitivity (%)") + xlab(" ")+ theme_bw_me + ylim(NA,102.5)  + figure_3_format +   geom_text(aes(label=paste0(sens, "%")), vjust=0,nudge_y=1) 
-B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=ppv)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value (%)") + xlab(" ")+ theme_bw_me+ ylim(NA,102.5)  + figure_3_format  +  geom_text(aes(label=paste0(ppv, "%")), vjust=0,nudge_y=1) 
-C <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity (%)") + xlab("Molecular Category")+ theme_bw_me+ ylim(NA,102.5)  + figure_3_format  +   geom_text(aes(label=paste0(spec, "%")), vjust=0,nudge_y=1) 
-D <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=npv)) + geom_bar(stat='identity',fill="black") + ylab("Negative predictive value (%)") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,102.5)  + figure_3_format  +  geom_text(aes(label=paste0(npv, "%")), vjust=0,nudge_y=1) 
-E <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab("Molecular Category") + theme_bw_me+ ylim(NA,102.5) + figure_3_format + geom_text(aes(label=paste0(accuracy, "%")), vjust=0,nudge_y=1) 
+  
+A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity (%)") + xlab(NULL)+ theme_bw_me+ ylim(NA,102.5)  + figure_3_format  +   geom_text(aes(label=paste0(format(spec, nsmall = 1), "%")), vjust=0,nudge_y=1) 
+B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=precision)) + geom_bar(stat='identity',fill="black") + ylab("Precision (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,102.5)  + figure_3_format  +  geom_text(aes(label=paste0(format(precision, nsmall = 1), "%")), vjust=0,nudge_y=1) 
+C <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=f1)) + geom_bar(stat='identity',fill="black") + ylab("F1 Statistic (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,102.5) + figure_3_format + geom_text(aes(label=paste0(format(f1, nsmall = 1), "%")), vjust=0,nudge_y=1) 
+D<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,102.5) + figure_3_format + geom_text(aes(label=paste0(format(accuracy, nsmall = 1), "%")), vjust=0,nudge_y=1) 
+E<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=lr_pos)) + geom_bar(stat='identity',fill="black") + ylab("Positive likelihood ratio") + xlab(NULL) + theme_bw_me+ ylim(NA,max(comparison_of_any_ESCRE_to_WGS_outcomes$lr_pos)+0.5) + figure_3_format + geom_text(aes(label=paste0(format(lr_pos, nsmall = 2))),vjust=0,nudge_y=0.15) 
 
 figure_3 <- cowplot::plot_grid(A,B,C,D,E,labels = "AUTO",ncol=3)
 figure_3
 ```
 
 ```{r}
-ggsave(plot = figure_3,filename = './figures/figure_2_diagnostic_statistics_species_prolonged_colonization.png',dpi = 600,width = 8,height = 9.25,bg='white')
+ggsave(plot = figure_3,filename = './figures/figure_2_diagnostic_statistics_species_prolonged_colonization.png',dpi = 900,width = 9.25,height = 9.25,bg='white')
 ```

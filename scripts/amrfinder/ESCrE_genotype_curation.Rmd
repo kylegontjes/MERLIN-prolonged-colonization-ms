@@ -31,23 +31,23 @@ sessionInfo()
 ```{r}
 df <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")  %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
 isolates <- df$genomic_id 
-amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.txt")  %>% subset(genomic_id %in% isolates)
+amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(genomic_id %in% isolates)
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% isolates)
 ```
 
 ```{r}
-blactam_info <-  amrfinder %>% subset(class == "BETA-LACTAM") %>% select(element_symbol,element_name,class,subclass) %>% distinct
+blactam_info <-  amrfinder %>% subset(class == "BETA-LACTAM") %>% select(element_symbol,element_symbol_renamed,element_name,class,subclass) %>% distinct
 paste0("Detected b-lactamase genes: ")
-sort(blactam_info$element_symbol)
+sort(blactam_info$element_symbol_renamed)
 
 paste0("Detected ESBL genes: ")
-ESBL_genes <- amrfinder[grepl("extended-spectrum",amrfinder$element_name),'element_symbol'] %>% unique %>% sort
+ESBL_genes <- amrfinder[grepl("extended-spectrum",amrfinder$element_name),'element_symbol_renamed'] %>% unique %>% sort
 sort(ESBL_genes)
 
 paste0("Summary information about these beta-lactamases")
 
 # Presence in isolates
-blactam_info$count <- sapply(blactam_info$element_symbol, FUN=function(x){
+blactam_info$count <- sapply(blactam_info$element_symbol_renamed, FUN=function(x){
   amrfinder_mat[[x]] %>% sum
 })
 blactam_info$proportion <- round(blactam_info$count / nrow(amrfinder_mat) * 100,2) 
@@ -59,11 +59,11 @@ blactam_info$blactam_class <- ifelse(grepl('class A',blactam_info$element_name),
                                                    ifelse(grepl('class D',blactam_info$element_name),"D","NA"))))
 
 # ESBL 
-blactam_info$ESBL <- ifelse(blactam_info$element_symbol %in% ESBL_genes,TRUE,FALSE)
+blactam_info$ESBL <- ifelse(blactam_info$element_symbol_renamed %in% ESBL_genes,TRUE,FALSE)
 
 # Carbapenemase
-BLA_carbapenem_genes <- amrfinder %>% subset(class =="BETA-LACTAM" & subclass=="CARBAPENEM") %>% .$element_symbol %>% unique %>% sort 
-blactam_info$carbapenemase <- ifelse(blactam_info$element_symbol %in% BLA_carbapenem_genes,T,F)
+BLA_carbapenem_genes <- amrfinder %>% subset(class =="BETA-LACTAM" & subclass=="CARBAPENEM") %>% .$element_symbol_renamed %>% unique %>% sort 
+blactam_info$carbapenemase <- ifelse(blactam_info$element_symbol_renamed %in% BLA_carbapenem_genes,T,F)
 
 # ampC_like
 blactam_info$ampC_like <- ifelse(blactam_info$blactam_class =="C",T,F)
@@ -72,14 +72,14 @@ blactam_info$ampC_like <- ifelse(blactam_info$blactam_class =="C",T,F)
 blactam_info$ESCrE <- ifelse(blactam_info$ESBL ==T | blactam_info$carbapenemase == T | blactam_info$ampC_like ==T, T,F)
 
 paste0("ESCrE genotypes:")
-blactam_info %>% subset(ESCrE ==T) %>% .$element_symbol %>% unique %>% sort
+blactam_info %>% subset(ESCrE ==T) %>% .$element_symbol_renamed %>% unique %>% sort
 
 paste0("Overall data:")
 
-blactam_info %>% select(-class) %>% arrange(-count) %>% gontjesr::favorite_kable()
+blactam_info %>% select(-class) %>%  arrange(element_symbol) %>% gontjesr::favorite_kable()
 
 # Save
-blactam_info <- blactam_info %>% arrange(element_symbol)
+blactam_info <- blactam_info %>% arrange(element_symbol_renamed)
 
 saveRDS(blactam_info,"./data/amrfinder/beta_lactamase_summary_index_cohort.RDS")
 ```

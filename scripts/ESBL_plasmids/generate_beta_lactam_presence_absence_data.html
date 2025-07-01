@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-06-30" />
+<meta name="date" content="2025-07-01" />
 
 <title>Generate Beta-lactam presence and location data for each isolate</title>
 
@@ -577,7 +577,7 @@ display: none;
 <h1 class="title toc-ignore">Generate Beta-lactam presence and location
 data for each isolate</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-06-30</h4>
+<h4 class="date">2025-07-01</h4>
 
 </div>
 
@@ -600,7 +600,7 @@ Sys.info()</code></pre>
                                                                                             version 
 &quot;Darwin Kernel Version 24.5.0: Tue Apr 22 19:53:26 PDT 2025; root:xnu-11417.121.6~2/RELEASE_X86_64&quot; 
                                                                                            nodename 
-                                                                                   &quot;msla0572.local&quot; 
+                                                                    &quot;macbookpro.wifi.med.umich.edu&quot; 
                                                                                             machine 
                                                                                            &quot;x86_64&quot; 
                                                                                               login 
@@ -646,58 +646,68 @@ loaded via a namespace (and not attached):
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
-<pre class="r"><code>df &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_metadata_final.RDS&quot;) %&gt;% subset(qc_pass == &quot;TRUE&quot; &amp; WGS_escre == TRUE)
+<pre class="r"><code>df &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS&quot;) %&gt;% subset(qc_pass == &quot;TRUE&quot; &amp; WGS_escre == TRUE)
 amrfinder_mat &lt;- readRDS(&quot;./data/amrfinder/amrfinder_matrix.RDS&quot;) %&gt;% subset(rownames(.) %in% df$genomic_id) %&gt;% select_if(colSums(.)&gt;0)
-amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.RDS&quot;)  %&gt;% subset(element_symbol %in% colnames(amrfinder_mat))
+amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.RDS&quot;)  %&gt;% subset(element_symbol_renamed %in% colnames(amrfinder_mat))
 ESCrE_genotype_info &lt;- readRDS(&quot;./data/amrfinder/beta_lactamase_summary_index_cohort.RDS&quot;) 
-mobsuite_gene_pres &lt;- readRDS(&quot;./data/ESBL_plasmids/amrfinder_mobsuite_gene_presence.RDS&quot;) %&gt;% subset(genomic_id %in% df$genomic_id) 
+mobsuite_gene_pres &lt;- readRDS(&quot;./data/ESBL_plasmids/amrfinder_mobsuite_beta_lactamase_presence.RDS&quot;) %&gt;% subset(genomic_id %in% df$genomic_id) 
 ESCrE_plasmid_clusters &lt;- readRDS(&quot;./data/ESBL_plasmids/amrfinder_ESCrE_contig_matrix.RDS&quot;) %&gt;% subset(rownames(.) %in% df$genomic_id) %&gt;% select_if(colSums(.)&gt;0) </code></pre>
 <pre class="r"><code>df &lt;- left_join(df,amrfinder_mat %&gt;% mutate(genomic_id = rownames(.))) %&gt;% left_join(ESCrE_plasmid_clusters %&gt;% mutate(genomic_id=rownames(.)))</code></pre>
 </div>
 <div id="get-bla-and-esbl-genes" class="section level1">
 <h1>Get BLA and ESBL genes</h1>
-<pre class="r"><code>bla_genes &lt;- ESCrE_genotype_info$element_symbol%&gt;% unique %&gt;% sort
-paste0(&quot;Number of beta-lactamase genes identified: &quot; , length(ESCrE_genotype_info$element_symbol %&gt;% unique))</code></pre>
-<pre><code>[1] &quot;Number of beta-lactamase genes identified: 27&quot;</code></pre>
-<pre class="r"><code>table(ESCrE_genotype_info$element_symbol,ESCrE_genotype_info$blactam_class) </code></pre>
-<pre><code>             
-              A C D
-  blaACT      0 1 0
-  blaACT-115  0 1 0
-  blaACT-17   0 1 0
-  blaACT-24   0 1 0
-  blaCMY      0 1 0
-  blaCMY-2    0 1 0
-  blaCMY-4    0 1 0
-  blaCTX-M    1 0 0
-  blaCTX-M-15 1 0 0
-  blaCTX-M-27 1 0 0
-  blaCTX-M-3  1 0 0
-  blaCTX-M-55 1 0 0
-  blaEC       0 1 0
-  blaEC-5     0 1 0
-  blaKPC-2    1 0 0
-  blaKPC-3    1 0 0
-  blaOXA-1    0 0 1
-  blaOXY-1-11 1 0 0
-  blaSHV      1 0 0
-  blaSHV-1    1 0 0
-  blaSHV-11   1 0 0
-  blaSHV-12   1 0 0
-  blaSHV-187  1 0 0
-  blaSHV-28   1 0 0
-  blaTEM      1 0 0
-  blaTEM-1    1 0 0
-  blaTEM-214  1 0 0</code></pre>
+<pre class="r"><code>bla_genes &lt;- ESCrE_genotype_info$element_symbol_renamed%&gt;% unique %&gt;% sort
+paste0(&quot;Number of beta-lactamase genes identified: &quot; , length(ESCrE_genotype_info$element_symbol_renamed %&gt;% unique))</code></pre>
+<pre><code>[1] &quot;Number of beta-lactamase genes identified: 36&quot;</code></pre>
+<pre class="r"><code>table(ESCrE_genotype_info$element_symbol_renamed,ESCrE_genotype_info$blactam_class) </code></pre>
+<pre><code>              
+               A C D
+  blaACT-115   0 1 0
+  blaACT-17    0 1 0
+  blaACT-24    0 1 0
+  blaACT-75*   0 1 0
+  blaCMY-13*   0 1 0
+  blaCMY-190*  0 1 0
+  blaCMY-2     0 1 0
+  blaCMY-25*   0 1 0
+  blaCMY-4     0 1 0
+  blaCMY-65*   0 1 0
+  blaCMY-67*   0 1 0
+  blaCTX-M-15  1 0 0
+  blaCTX-M-27  1 0 0
+  blaCTX-M-3   1 0 0
+  blaCTX-M-55  1 0 0
+  blaCTX-M-55* 1 0 0
+  blaEC        0 1 0
+  blaEC-15*    0 1 0
+  blaEC-5      0 1 0
+  blaEC-5*     0 1 0
+  blaEC-8*     0 1 0
+  blaKPC-2     1 0 0
+  blaKPC-3     1 0 0
+  blaOXA-1     0 0 1
+  blaOXY-1-11  1 0 0
+  blaSHV-1     1 0 0
+  blaSHV-1?    1 0 0
+  blaSHV-11    1 0 0
+  blaSHV-12    1 0 0
+  blaSHV-187   1 0 0
+  blaSHV-28    1 0 0
+  blaTEM-1     1 0 0
+  blaTEM-1?    1 0 0
+  blaTEM-1?*   1 0 0
+  blaTEM-105?* 1 0 0
+  blaTEM-214   1 0 0</code></pre>
 <pre class="r"><code>escre_genotypes &lt;- subset(ESCrE_genotype_info,ESCrE==T)
-ESCrE_genes = escre_genotypes$element_symbol %&gt;% sort %&gt;% unique
+ESCrE_genes = escre_genotypes$element_symbol_renamed %&gt;% sort %&gt;% unique
 paste0(&quot;ESCrE beta-lactamase genes identified: &quot; ,nrow(escre_genotypes)) </code></pre>
-<pre><code>[1] &quot;ESCrE beta-lactamase genes identified: 18&quot;</code></pre>
-<pre class="r"><code>escre_genotypes$element_symbol %&gt;% sort</code></pre>
-<pre><code> [1] &quot;blaACT&quot;      &quot;blaACT-115&quot;  &quot;blaACT-17&quot;   &quot;blaACT-24&quot;   &quot;blaCMY&quot;     
- [6] &quot;blaCMY-2&quot;    &quot;blaCMY-4&quot;    &quot;blaCTX-M&quot;    &quot;blaCTX-M-15&quot; &quot;blaCTX-M-27&quot;
-[11] &quot;blaCTX-M-3&quot;  &quot;blaCTX-M-55&quot; &quot;blaEC&quot;       &quot;blaEC-5&quot;     &quot;blaKPC-2&quot;   
-[16] &quot;blaKPC-3&quot;    &quot;blaOXY-1-11&quot; &quot;blaSHV-12&quot;  </code></pre>
+<pre><code>[1] &quot;ESCrE beta-lactamase genes identified: 25&quot;</code></pre>
+<pre class="r"><code>escre_genotypes$element_symbol_renamed %&gt;% sort</code></pre>
+<pre><code> [1] &quot;blaACT-115&quot;   &quot;blaACT-17&quot;    &quot;blaACT-24&quot;    &quot;blaACT-75*&quot;   &quot;blaCMY-13*&quot;  
+ [6] &quot;blaCMY-190*&quot;  &quot;blaCMY-2&quot;     &quot;blaCMY-25*&quot;   &quot;blaCMY-4&quot;     &quot;blaCMY-65*&quot;  
+[11] &quot;blaCMY-67*&quot;   &quot;blaCTX-M-15&quot;  &quot;blaCTX-M-27&quot;  &quot;blaCTX-M-3&quot;   &quot;blaCTX-M-55&quot; 
+[16] &quot;blaCTX-M-55*&quot; &quot;blaEC&quot;        &quot;blaEC-15*&quot;    &quot;blaEC-5&quot;      &quot;blaEC-5*&quot;    
+[21] &quot;blaEC-8*&quot;     &quot;blaKPC-2&quot;     &quot;blaKPC-3&quot;     &quot;blaOXY-1-11&quot;  &quot;blaSHV-12&quot;   </code></pre>
 </div>
 <div id="get-bla-and-esbl-data-on-plasmids-and-chromosome" class="section level1">
 <h1>Get BLA and ESBL data on plasmids and chromosome</h1>
@@ -753,20 +763,6 @@ prop_plasmid
 <tbody>
 <tr>
 <td style="text-align:left;">
-blaACT
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 blaACT-115
 </td>
 <td style="text-align:right;">
@@ -784,7 +780,7 @@ blaACT-115
 blaACT-17
 </td>
 <td style="text-align:right;">
-8
+3
 </td>
 <td style="text-align:right;">
 0
@@ -798,7 +794,91 @@ blaACT-17
 blaACT-24
 </td>
 <td style="text-align:right;">
-4
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaACT-75*
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY-13*
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY-190*
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY-25*
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY-65*
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY-67*
+</td>
+<td style="text-align:right;">
+1
 </td>
 <td style="text-align:right;">
 0
@@ -812,7 +892,21 @@ blaACT-24
 blaEC
 </td>
 <td style="text-align:right;">
-88
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaEC-15*
+</td>
+<td style="text-align:right;">
+1
 </td>
 <td style="text-align:right;">
 0
@@ -826,7 +920,35 @@ blaEC
 blaEC-5
 </td>
 <td style="text-align:right;">
-11
+8
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaEC-5*
+</td>
+<td style="text-align:right;">
+39
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaEC-8*
+</td>
+<td style="text-align:right;">
+17
 </td>
 <td style="text-align:right;">
 0
@@ -851,16 +973,16 @@ blaOXY-1-11
 </tr>
 <tr>
 <td style="text-align:left;">
-blaCMY
+blaCMY-2
 </td>
 <td style="text-align:right;">
-8
+4
 </td>
 <td style="text-align:right;">
 2
 </td>
 <td style="text-align:right;">
-20.00
+33.33
 </td>
 </tr>
 <tr>
@@ -868,27 +990,13 @@ blaCMY
 blaCTX-M-15
 </td>
 <td style="text-align:right;">
-34
+26
 </td>
 <td style="text-align:right;">
-32
+20
 </td>
 <td style="text-align:right;">
-48.48
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaCMY-2
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-55.56
+43.48
 </td>
 </tr>
 <tr>
@@ -896,32 +1004,18 @@ blaCMY-2
 blaCTX-M-27
 </td>
 <td style="text-align:right;">
-11
-</td>
-<td style="text-align:right;">
-21
-</td>
-<td style="text-align:right;">
-65.62
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaKPC-3
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
 7
 </td>
 <td style="text-align:right;">
-87.50
+14
+</td>
+<td style="text-align:right;">
+66.67
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-blaCTX-M
+blaCTX-M-3
 </td>
 <td style="text-align:right;">
 0
@@ -935,7 +1029,7 @@ blaCTX-M
 </tr>
 <tr>
 <td style="text-align:left;">
-blaCTX-M-3
+blaCTX-M-55*
 </td>
 <td style="text-align:right;">
 0
@@ -997,7 +1091,21 @@ blaKPC-2
 0
 </td>
 <td style="text-align:right;">
-5
+3
+</td>
+<td style="text-align:right;">
+100.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaKPC-3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3
 </td>
 <td style="text-align:right;">
 100.00

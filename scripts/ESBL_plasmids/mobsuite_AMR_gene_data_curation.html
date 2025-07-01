@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-06-30" />
+<meta name="date" content="2025-07-01" />
 
 <title>mobsuite_AMR_gene_data_curation</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">mobsuite_AMR_gene_data_curation</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-06-30</h4>
+<h4 class="date">2025-07-01</h4>
 
 </div>
 
@@ -375,7 +375,7 @@ Sys.info()</code></pre>
 ##                                                                                             version 
 ## &quot;Darwin Kernel Version 24.5.0: Tue Apr 22 19:53:26 PDT 2025; root:xnu-11417.121.6~2/RELEASE_X86_64&quot; 
 ##                                                                                            nodename 
-##                                                                                    &quot;msla0572.local&quot; 
+##                                                                     &quot;macbookpro.wifi.med.umich.edu&quot; 
 ##                                                                                             machine 
 ##                                                                                            &quot;x86_64&quot; 
 ##                                                                                               login 
@@ -424,7 +424,7 @@ Sys.info()</code></pre>
 <pre class="r"><code>df &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS&quot;)  %&gt;% subset(WGS_escre == TRUE &amp; qc_pass == TRUE) 
 isolates &lt;- df$genomic_id
 
-amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.txt&quot;)  %&gt;% subset(genomic_id %in% isolates)
+amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.RDS&quot;)  %&gt;% subset(genomic_id %in% isolates)
 amrfinder_mat &lt;- readRDS(&quot;./data/amrfinder/amrfinder_matrix.RDS&quot;) %&gt;% subset(rownames(.) %in% isolates)
 ESCrE_genotype_info &lt;- readRDS(&quot;./data/amrfinder/beta_lactamase_summary_index_cohort.RDS&quot;)
  
@@ -433,10 +433,10 @@ mobtyper &lt;- readRDS(&quot;./data/mobsuite/mobtyper.RDS&quot;)%&gt;% subset(ge
 </div>
 <div id="annotate-contigs-with-amrfinder-data" class="section level1">
 <h1>Annotate contigs with AMRFinder data</h1>
-<pre class="r"><code>genes &lt;- ESCrE_genotype_info$element_symbol %&gt;% unique %&gt;% sort
+<pre class="r"><code>genes &lt;- ESCrE_genotype_info$element_symbol_renamed %&gt;% unique %&gt;% sort
 
 annotate_contigs &lt;- function(gene,amrfinder_df,mobsuite_contig_df){
-  amrfinder_w_gene &lt;- amrfinder_df %&gt;% subset(element_symbol == gene)
+  amrfinder_w_gene &lt;- amrfinder_df %&gt;% subset(element_symbol_renamed == gene)
   contigs_w_gene &lt;- amrfinder_w_gene$contig_id %&gt;% sort %&gt;% unique
   pres &lt;- ifelse(mobsuite_contig_df$contig_id %in% contigs_w_gene,1,0)
   row &lt;- cbind.data.frame(pres) %&gt;% `colnames&lt;-`(c(gene)) 
@@ -447,8 +447,8 @@ gene_pres &lt;- lapply(genes,FUN=annotate_contigs,amrfinder_df = amrfinder,mobsu
 
 mobsuite_contigs &lt;- left_join(mobsuite_contigs,gene_pres)</code></pre>
 <pre><code>## Joining with `by = join_by(contig_id)`</code></pre>
-<pre class="r"><code>mobsuite_contigs$chromosome &lt;- ifelse(mobsuite_contigs$molecule_type == &quot;chromosome&quot;, 1, 0)
-mobsuite_contigs$plasmid &lt;- ifelse(mobsuite_contigs$molecule_type == &quot;plasmid&quot;, 1, 0) </code></pre>
+<pre class="r"><code>mobsuite_contigs$chromosome &lt;- ifelse(mobsuite_contigs$molecule_type == &quot;chromosome&quot;, T, F)
+mobsuite_contigs$plasmid &lt;- ifelse(mobsuite_contigs$molecule_type == &quot;plasmid&quot;, T, F) </code></pre>
 </div>
 <div id="contig-data" class="section level1">
 <h1>Contig data</h1>
@@ -495,9 +495,9 @@ mobsuite_gene_pres &lt;- lapply(qc_genomes,FUN=count_genes_mobsuite,genes=genes,
 </div>
 <div id="annotate-w-amr-blactam-categories" class="section level1">
 <h1>Annotate w/ AMR + Blactam categories</h1>
-<pre class="r"><code>AMR_genes &lt;- amrfinder %&gt;% subset(type ==&quot;AMR&quot;) %&gt;% .$element_symbol %&gt;% unique %&gt;% sort 
-BLA_genes &lt;- ESCrE_genotype_info$element_symbol %&gt;% unique %&gt;% sort
-ESCrE_genes &lt;- ESCrE_genotype_info %&gt;% subset(ESCrE ==T) %&gt;% .$element_symbol %&gt;% unique %&gt;% sort
+<pre class="r"><code>AMR_genes &lt;- amrfinder %&gt;% subset(type ==&quot;AMR&quot;) %&gt;% .$element_symbol_renamed %&gt;% unique %&gt;% sort 
+BLA_genes &lt;- ESCrE_genotype_info$element_symbol_renamed %&gt;% unique %&gt;% sort
+ESCrE_genes &lt;- ESCrE_genotype_info %&gt;% subset(ESCrE ==T) %&gt;% .$element_symbol_renamed %&gt;% unique %&gt;% sort
 
 mobsuite_gene_pres$AMR_contig &lt;- ifelse(mobsuite_gene_pres %&gt;% select(any_of(AMR_genes)) %&gt;% rowSums()&gt;0,T,F)
 mobsuite_gene_pres$BETA_LACTAM_contig &lt;- ifelse(mobsuite_gene_pres %&gt;% select(any_of(BLA_genes)) %&gt;% rowSums()&gt;0,T,F) 

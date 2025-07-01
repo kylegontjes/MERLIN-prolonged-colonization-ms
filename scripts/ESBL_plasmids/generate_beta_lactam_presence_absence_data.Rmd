@@ -29,11 +29,11 @@ sessionInfo()
 
 # Load data
 ```{r}
-df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(qc_pass == "TRUE" & WGS_escre == TRUE)
+df <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") %>% subset(qc_pass == "TRUE" & WGS_escre == TRUE)
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0)
-amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(element_symbol %in% colnames(amrfinder_mat))
+amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(element_symbol_renamed %in% colnames(amrfinder_mat))
 ESCrE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_index_cohort.RDS") 
-mobsuite_gene_pres <- readRDS("./data/ESBL_plasmids/amrfinder_mobsuite_gene_presence.RDS") %>% subset(genomic_id %in% df$genomic_id) 
+mobsuite_gene_pres <- readRDS("./data/ESBL_plasmids/amrfinder_mobsuite_beta_lactamase_presence.RDS") %>% subset(genomic_id %in% df$genomic_id) 
 ESCrE_plasmid_clusters <- readRDS("./data/ESBL_plasmids/amrfinder_ESCrE_contig_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0) 
 ```
 
@@ -43,14 +43,14 @@ df <- left_join(df,amrfinder_mat %>% mutate(genomic_id = rownames(.))) %>% left_
 
 # Get BLA and ESBL genes
 ```{r} 
-bla_genes <- ESCrE_genotype_info$element_symbol%>% unique %>% sort
-paste0("Number of beta-lactamase genes identified: " , length(ESCrE_genotype_info$element_symbol %>% unique))
-table(ESCrE_genotype_info$element_symbol,ESCrE_genotype_info$blactam_class) 
+bla_genes <- ESCrE_genotype_info$element_symbol_renamed%>% unique %>% sort
+paste0("Number of beta-lactamase genes identified: " , length(ESCrE_genotype_info$element_symbol_renamed %>% unique))
+table(ESCrE_genotype_info$element_symbol_renamed,ESCrE_genotype_info$blactam_class) 
 
 escre_genotypes <- subset(ESCrE_genotype_info,ESCrE==T)
-ESCrE_genes = escre_genotypes$element_symbol %>% sort %>% unique
+ESCrE_genes = escre_genotypes$element_symbol_renamed %>% sort %>% unique
 paste0("ESCrE beta-lactamase genes identified: " ,nrow(escre_genotypes)) 
-escre_genotypes$element_symbol %>% sort
+escre_genotypes$element_symbol_renamed %>% sort
 ```
 
 # Get BLA and ESBL data on plasmids and chromosome

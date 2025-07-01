@@ -33,7 +33,7 @@ sessionInfo()
 df <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")  %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
 isolates <- df$genomic_id
 
-amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.txt")  %>% subset(genomic_id %in% isolates)
+amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(genomic_id %in% isolates)
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% isolates)
 ESCrE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_index_cohort.RDS")
  
@@ -44,10 +44,10 @@ mobtyper <- readRDS("./data/mobsuite/mobtyper.RDS")%>% subset(genomic_id %in% is
 # Annotate contigs with AMRFinder data
 
 ```{r} 
-genes <- ESCrE_genotype_info$element_symbol %>% unique %>% sort
+genes <- ESCrE_genotype_info$element_symbol_renamed %>% unique %>% sort
 
 annotate_contigs <- function(gene,amrfinder_df,mobsuite_contig_df){
-  amrfinder_w_gene <- amrfinder_df %>% subset(element_symbol == gene)
+  amrfinder_w_gene <- amrfinder_df %>% subset(element_symbol_renamed == gene)
   contigs_w_gene <- amrfinder_w_gene$contig_id %>% sort %>% unique
   pres <- ifelse(mobsuite_contig_df$contig_id %in% contigs_w_gene,1,0)
   row <- cbind.data.frame(pres) %>% `colnames<-`(c(gene)) 
@@ -60,8 +60,8 @@ mobsuite_contigs <- left_join(mobsuite_contigs,gene_pres)
 ```
 
 ```{r}
-mobsuite_contigs$chromosome <- ifelse(mobsuite_contigs$molecule_type == "chromosome", 1, 0)
-mobsuite_contigs$plasmid <- ifelse(mobsuite_contigs$molecule_type == "plasmid", 1, 0) 
+mobsuite_contigs$chromosome <- ifelse(mobsuite_contigs$molecule_type == "chromosome", T, F)
+mobsuite_contigs$plasmid <- ifelse(mobsuite_contigs$molecule_type == "plasmid", T, F) 
 ```
 
 # Contig data
@@ -98,9 +98,9 @@ mobsuite_gene_pres <- lapply(qc_genomes,FUN=count_genes_mobsuite,genes=genes,mob
 
 # Annotate w/ AMR + Blactam categories
 ```{r}
-AMR_genes <- amrfinder %>% subset(type =="AMR") %>% .$element_symbol %>% unique %>% sort 
-BLA_genes <- ESCrE_genotype_info$element_symbol %>% unique %>% sort
-ESCrE_genes <- ESCrE_genotype_info %>% subset(ESCrE ==T) %>% .$element_symbol %>% unique %>% sort
+AMR_genes <- amrfinder %>% subset(type =="AMR") %>% .$element_symbol_renamed %>% unique %>% sort 
+BLA_genes <- ESCrE_genotype_info$element_symbol_renamed %>% unique %>% sort
+ESCrE_genes <- ESCrE_genotype_info %>% subset(ESCrE ==T) %>% .$element_symbol_renamed %>% unique %>% sort
 
 mobsuite_gene_pres$AMR_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(AMR_genes)) %>% rowSums()>0,T,F)
 mobsuite_gene_pres$BETA_LACTAM_contig <- ifelse(mobsuite_gene_pres %>% select(any_of(BLA_genes)) %>% rowSums()>0,T,F) 

@@ -71,6 +71,7 @@ prolonged_df <- left_join(any_prolonged,species_prolonged) %>% left_join(.,speci
 
 # Plasmid level
 ```{r}
+# Generic
 get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split){
   isolate_df <- subset(metadata,household==isolate)
   isolate_index <- subset(isolate_df,visit==0) %>% .[[variable]] %>% str_split(.,split) %>% unlist %>% subset(is.na(.)==F & .!='')
@@ -81,11 +82,7 @@ get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split
     isolate_one_month_same=0
     isolate_two_month_same=0
     index_at_1_and_or_2=0 
-    } else{
-     isolate_follow_up <- subset(isolate_df,visit>0) %>% .[[variable]]  %>% str_split(.,split) %>% unlist  
-  isolate_follow_up_same_any <- ifelse(sum(isolate_follow_up %in% isolate_index)>0,1,0)
-  isolate_baseline <- subset(isolate_df,visit==1)%>% .[[variable]]  %>% str_split(.,split) %>% unlist
-  isolate_baseline_same <- ifelse(sum(isolate_baseline %in% isolate_index)>0,1,0)
+    } else{ 
   isolate_one_month <- subset(isolate_df,visit==2) %>% .[[variable]]  %>% str_split(.,split) %>% unlist
   isolate_one_month_same <- ifelse(sum(isolate_one_month %in% isolate_index)>0,1,0)
   isolate_two_month <- subset(isolate_df,visit==3) %>% .[[variable]]  %>% str_split(.,split) %>% unlist 
@@ -93,30 +90,60 @@ get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split
   index_at_1_and_or_2 = ifelse(isolate_one_month_same==1 | isolate_two_month_same==1,1,0)
   }
  
-  results <- cbind.data.frame(household=isolate,isolate_follow_up_same_any,isolate_baseline_same,isolate_one_month_same,isolate_two_month_same,index_at_1_and_or_2)
+  results <- cbind.data.frame(household=isolate,isolate_one_month_same,isolate_two_month_same,index_at_1_and_or_2)
   colnames(results) <- c("household",paste0(colnames(results)[-1],"_",variable))
   return(results)
 }
 
-ESCrE_plasmid_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESCrE_plasmids',split=";") %>% do.call(rbind,.)
+# Plasmid aware
+get_prolonged_colonization_str_split_plasmid_aware <- function(isolate,metadata,chromosome_variable,plasmid_variable,split){
+  isolate_df <- subset(metadata,household==isolate)
+  isolate_index <- subset(isolate_df,visit==0) 
+  isolate_index_plasmid <- isolate_index[[plasmid_variable]] %>% str_split(.,split) %>% unlist %>% subset(is.na(.)==F & .!='')
+  isolate_index_chromosome <- isolate_index[[chromosome_variable]] %>% str_split(.,split) %>% unlist %>% subset(is.na(.)==F & .!='')
+    
+  if(length(c(isolate_index_plasmid,isolate_index_chromosome))==0){
+    isolate_follow_up_same_any=0
+    isolate_baseline_same=0
+    isolate_one_month_same=0
+    isolate_two_month_same=0
+    index_at_1_and_or_2=0 
+    }  else { 
+  isolate_one_month_plasmid <- subset(isolate_df,visit==2) %>% .[[plasmid_variable]]  %>% str_split(.,split) %>% unlist
+  isolate_one_month_chromosome <-  subset(isolate_df,visit==2) %>% .[[chromosome_variable]]  %>% str_split(.,split) %>% unlist
+  isolate_one_month_same <- ifelse(sum(isolate_index_plasmid %in% isolate_one_month_chromosome) | sum(isolate_index_chromosome %in% isolate_one_month_plasmid) >0 | sum(isolate_index_plasmid %in%isolate_one_month_plasmid ) >0,1,0)
+  
+  isolate_two_month_plasmid <- subset(isolate_df,visit==3) %>% .[[plasmid_variable]]  %>% str_split(.,split) %>% unlist
+  isolate_two_month_chromosome <-  subset(isolate_df,visit==3) %>% .[[chromosome_variable]]  %>% str_split(.,split) %>% unlist
+  isolate_two_month_same <- ifelse(sum(isolate_index_plasmid %in% isolate_two_month_chromosome) | sum(isolate_index_chromosome %in% isolate_two_month_plasmid) >0 | sum(isolate_index_plasmid %in%isolate_two_month_plasmid ) >0,1,0) 
+ 
+  index_at_1_and_or_2 <- ifelse(isolate_one_month_same==1 | isolate_two_month_same==1,1,0)
+    }
+  
+  results <- cbind.data.frame(household=isolate,isolate_one_month_same,isolate_two_month_same,index_at_1_and_or_2)
+  colnames(results) <- c("household",paste0(colnames(results)[-1],"_ESCrE_genes_plasmid_aware"))
+  
+  return(results)
+} 
 
+```
+
+
+```{r} 
 ESCrE_genes_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESCrE_genes',split=";") %>% do.call(rbind,.)
+ 
+ESCrE_plasmid_aware_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split_plasmid_aware,df_index,chromosome_variable='ESCrE_chromosome_genes',plasmid_variable = "ESCrE_plasmid_genes",split=";") %>% do.call(rbind,.)
 
-ESCrE_plasmidic_gene_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESCrE_plasmidic_genes',split=";") %>% do.call(rbind,.)
-
-prolonged_df <- left_join(prolonged_df,ESCrE_plasmid_sharing) %>% left_join(.,ESCrE_genes_sharing) %>% left_join(.,ESCrE_plasmidic_gene_sharing) 
+prolonged_df <- left_join(prolonged_df,ESCrE_genes_sharing)  %>% left_join(.,ESCrE_plasmid_aware_sharing)
 ```
 
 # Create merged datapoints
 ```{r}
-prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes ==1,1,0)
-
-prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_plasmidic_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_plasmidic_genes ==1,1,0)
-
-prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_plasmids <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_plasmids ==1,1,0)
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes ==1,1,0) 
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware ==1,1,0) 
 ```
 
-# save
+# Save
 ```{r}
 saveRDS(prolonged_df,'./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS')
 ```

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-06-30" />
+<meta name="date" content="2025-07-01" />
 
 <title>Summarise amrfinder results</title>
 
@@ -576,7 +576,7 @@ display: none;
 
 <h1 class="title toc-ignore">Summarise amrfinder results</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-06-30</h4>
+<h4 class="date">2025-07-01</h4>
 
 </div>
 
@@ -599,7 +599,7 @@ Sys.info()</code></pre>
 ##                                                                                             version 
 ## &quot;Darwin Kernel Version 24.5.0: Tue Apr 22 19:53:26 PDT 2025; root:xnu-11417.121.6~2/RELEASE_X86_64&quot; 
 ##                                                                                            nodename 
-##                                                                                    &quot;msla0572.local&quot; 
+##                                                                     &quot;macbookpro.wifi.med.umich.edu&quot; 
 ##                                                                                             machine 
 ##                                                                                            &quot;x86_64&quot; 
 ##                                                                                               login 
@@ -647,28 +647,30 @@ Sys.info()</code></pre>
 <h1>Load data</h1>
 <pre class="r"><code>df &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS&quot;)  %&gt;% subset(WGS_escre == TRUE &amp; qc_pass == TRUE) 
 isolates &lt;- df$genomic_id 
-amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.txt&quot;)  %&gt;% subset(genomic_id %in% isolates)
+amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.RDS&quot;)  %&gt;% subset(genomic_id %in% isolates)
 amrfinder_mat &lt;- readRDS(&quot;./data/amrfinder/amrfinder_matrix.RDS&quot;) %&gt;% subset(rownames(.) %in% isolates)</code></pre>
-<pre class="r"><code>blactam_info &lt;-  amrfinder %&gt;% subset(class == &quot;BETA-LACTAM&quot;) %&gt;% select(element_symbol,element_name,class,subclass) %&gt;% distinct
+<pre class="r"><code>blactam_info &lt;-  amrfinder %&gt;% subset(class == &quot;BETA-LACTAM&quot;) %&gt;% select(element_symbol,element_symbol_renamed,element_name,class,subclass) %&gt;% distinct
 paste0(&quot;Detected b-lactamase genes: &quot;)</code></pre>
 <pre><code>## [1] &quot;Detected b-lactamase genes: &quot;</code></pre>
-<pre class="r"><code>sort(blactam_info$element_symbol)</code></pre>
-<pre><code>##  [1] &quot;blaACT&quot;      &quot;blaACT-115&quot;  &quot;blaACT-17&quot;   &quot;blaACT-24&quot;   &quot;blaCMY&quot;     
-##  [6] &quot;blaCMY-2&quot;    &quot;blaCMY-4&quot;    &quot;blaCTX-M&quot;    &quot;blaCTX-M-15&quot; &quot;blaCTX-M-27&quot;
-## [11] &quot;blaCTX-M-3&quot;  &quot;blaCTX-M-55&quot; &quot;blaEC&quot;       &quot;blaEC-5&quot;     &quot;blaKPC-2&quot;   
-## [16] &quot;blaKPC-3&quot;    &quot;blaOXA-1&quot;    &quot;blaOXY-1-11&quot; &quot;blaSHV&quot;      &quot;blaSHV-1&quot;   
-## [21] &quot;blaSHV-11&quot;   &quot;blaSHV-12&quot;   &quot;blaSHV-187&quot;  &quot;blaSHV-28&quot;   &quot;blaTEM&quot;     
-## [26] &quot;blaTEM-1&quot;    &quot;blaTEM-214&quot;</code></pre>
+<pre class="r"><code>sort(blactam_info$element_symbol_renamed)</code></pre>
+<pre><code>##  [1] &quot;blaACT-115&quot;   &quot;blaACT-17&quot;    &quot;blaACT-24&quot;    &quot;blaACT-75*&quot;   &quot;blaCMY-13*&quot;  
+##  [6] &quot;blaCMY-190*&quot;  &quot;blaCMY-2&quot;     &quot;blaCMY-25*&quot;   &quot;blaCMY-4&quot;     &quot;blaCMY-65*&quot;  
+## [11] &quot;blaCMY-67*&quot;   &quot;blaCTX-M-15&quot;  &quot;blaCTX-M-27&quot;  &quot;blaCTX-M-3&quot;   &quot;blaCTX-M-55&quot; 
+## [16] &quot;blaCTX-M-55*&quot; &quot;blaEC&quot;        &quot;blaEC-15*&quot;    &quot;blaEC-5&quot;      &quot;blaEC-5*&quot;    
+## [21] &quot;blaEC-8*&quot;     &quot;blaKPC-2&quot;     &quot;blaKPC-3&quot;     &quot;blaOXA-1&quot;     &quot;blaOXY-1-11&quot; 
+## [26] &quot;blaSHV-1&quot;     &quot;blaSHV-1?&quot;    &quot;blaSHV-11&quot;    &quot;blaSHV-12&quot;    &quot;blaSHV-187&quot;  
+## [31] &quot;blaSHV-28&quot;    &quot;blaTEM-1&quot;     &quot;blaTEM-1?&quot;    &quot;blaTEM-1?*&quot;   &quot;blaTEM-105?*&quot;
+## [36] &quot;blaTEM-214&quot;</code></pre>
 <pre class="r"><code>paste0(&quot;Detected ESBL genes: &quot;)</code></pre>
 <pre><code>## [1] &quot;Detected ESBL genes: &quot;</code></pre>
-<pre class="r"><code>ESBL_genes &lt;- amrfinder[grepl(&quot;extended-spectrum&quot;,amrfinder$element_name),&#39;element_symbol&#39;] %&gt;% unique %&gt;% sort
+<pre class="r"><code>ESBL_genes &lt;- amrfinder[grepl(&quot;extended-spectrum&quot;,amrfinder$element_name),&#39;element_symbol_renamed&#39;] %&gt;% unique %&gt;% sort
 sort(ESBL_genes)</code></pre>
-<pre><code>## [1] &quot;blaCMY-2&quot;    &quot;blaCTX-M&quot;    &quot;blaCTX-M-15&quot; &quot;blaCTX-M-27&quot; &quot;blaCTX-M-3&quot; 
-## [6] &quot;blaCTX-M-55&quot; &quot;blaOXY-1-11&quot; &quot;blaSHV-12&quot;</code></pre>
+<pre><code>## [1] &quot;blaCMY-2&quot;     &quot;blaCTX-M-15&quot;  &quot;blaCTX-M-27&quot;  &quot;blaCTX-M-3&quot;   &quot;blaCTX-M-55&quot; 
+## [6] &quot;blaCTX-M-55*&quot; &quot;blaOXY-1-11&quot;  &quot;blaSHV-12&quot;</code></pre>
 <pre class="r"><code>paste0(&quot;Summary information about these beta-lactamases&quot;)</code></pre>
 <pre><code>## [1] &quot;Summary information about these beta-lactamases&quot;</code></pre>
 <pre class="r"><code># Presence in isolates
-blactam_info$count &lt;- sapply(blactam_info$element_symbol, FUN=function(x){
+blactam_info$count &lt;- sapply(blactam_info$element_symbol_renamed, FUN=function(x){
   amrfinder_mat[[x]] %&gt;% sum
 })
 blactam_info$proportion &lt;- round(blactam_info$count / nrow(amrfinder_mat) * 100,2) 
@@ -680,11 +682,11 @@ blactam_info$blactam_class &lt;- ifelse(grepl(&#39;class A&#39;,blactam_info$ele
                                                    ifelse(grepl(&#39;class D&#39;,blactam_info$element_name),&quot;D&quot;,&quot;NA&quot;))))
 
 # ESBL 
-blactam_info$ESBL &lt;- ifelse(blactam_info$element_symbol %in% ESBL_genes,TRUE,FALSE)
+blactam_info$ESBL &lt;- ifelse(blactam_info$element_symbol_renamed %in% ESBL_genes,TRUE,FALSE)
 
 # Carbapenemase
-BLA_carbapenem_genes &lt;- amrfinder %&gt;% subset(class ==&quot;BETA-LACTAM&quot; &amp; subclass==&quot;CARBAPENEM&quot;) %&gt;% .$element_symbol %&gt;% unique %&gt;% sort 
-blactam_info$carbapenemase &lt;- ifelse(blactam_info$element_symbol %in% BLA_carbapenem_genes,T,F)
+BLA_carbapenem_genes &lt;- amrfinder %&gt;% subset(class ==&quot;BETA-LACTAM&quot; &amp; subclass==&quot;CARBAPENEM&quot;) %&gt;% .$element_symbol_renamed %&gt;% unique %&gt;% sort 
+blactam_info$carbapenemase &lt;- ifelse(blactam_info$element_symbol_renamed %in% BLA_carbapenem_genes,T,F)
 
 # ampC_like
 blactam_info$ampC_like &lt;- ifelse(blactam_info$blactam_class ==&quot;C&quot;,T,F)
@@ -694,19 +696,23 @@ blactam_info$ESCrE &lt;- ifelse(blactam_info$ESBL ==T | blactam_info$carbapenema
 
 paste0(&quot;ESCrE genotypes:&quot;)</code></pre>
 <pre><code>## [1] &quot;ESCrE genotypes:&quot;</code></pre>
-<pre class="r"><code>blactam_info %&gt;% subset(ESCrE ==T) %&gt;% .$element_symbol %&gt;% unique %&gt;% sort</code></pre>
-<pre><code>##  [1] &quot;blaACT&quot;      &quot;blaACT-115&quot;  &quot;blaACT-17&quot;   &quot;blaACT-24&quot;   &quot;blaCMY&quot;     
-##  [6] &quot;blaCMY-2&quot;    &quot;blaCMY-4&quot;    &quot;blaCTX-M&quot;    &quot;blaCTX-M-15&quot; &quot;blaCTX-M-27&quot;
-## [11] &quot;blaCTX-M-3&quot;  &quot;blaCTX-M-55&quot; &quot;blaEC&quot;       &quot;blaEC-5&quot;     &quot;blaKPC-2&quot;   
-## [16] &quot;blaKPC-3&quot;    &quot;blaOXY-1-11&quot; &quot;blaSHV-12&quot;</code></pre>
+<pre class="r"><code>blactam_info %&gt;% subset(ESCrE ==T) %&gt;% .$element_symbol_renamed %&gt;% unique %&gt;% sort</code></pre>
+<pre><code>##  [1] &quot;blaACT-115&quot;   &quot;blaACT-17&quot;    &quot;blaACT-24&quot;    &quot;blaACT-75*&quot;   &quot;blaCMY-13*&quot;  
+##  [6] &quot;blaCMY-190*&quot;  &quot;blaCMY-2&quot;     &quot;blaCMY-25*&quot;   &quot;blaCMY-4&quot;     &quot;blaCMY-65*&quot;  
+## [11] &quot;blaCMY-67*&quot;   &quot;blaCTX-M-15&quot;  &quot;blaCTX-M-27&quot;  &quot;blaCTX-M-3&quot;   &quot;blaCTX-M-55&quot; 
+## [16] &quot;blaCTX-M-55*&quot; &quot;blaEC&quot;        &quot;blaEC-15*&quot;    &quot;blaEC-5&quot;      &quot;blaEC-5*&quot;    
+## [21] &quot;blaEC-8*&quot;     &quot;blaKPC-2&quot;     &quot;blaKPC-3&quot;     &quot;blaOXY-1-11&quot;  &quot;blaSHV-12&quot;</code></pre>
 <pre class="r"><code>paste0(&quot;Overall data:&quot;)</code></pre>
 <pre><code>## [1] &quot;Overall data:&quot;</code></pre>
-<pre class="r"><code>blactam_info %&gt;% select(-class) %&gt;% arrange(-count) %&gt;% gontjesr::favorite_kable()</code></pre>
+<pre class="r"><code>blactam_info %&gt;% select(-class) %&gt;%  arrange(element_symbol) %&gt;% gontjesr::favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>
 <tr>
 <th style="text-align:left;">
 element_symbol
+</th>
+<th style="text-align:left;">
+element_symbol_renamed
 </th>
 <th style="text-align:left;">
 element_name
@@ -740,615 +746,10 @@ ESCrE
 <tbody>
 <tr>
 <td style="text-align:left;">
-blaEC
-</td>
-<td style="text-align:left;">
-BlaEC family class C beta-lactamase
-</td>
-<td style="text-align:left;">
-BETA-LACTAM
-</td>
-<td style="text-align:right;">
-60
-</td>
-<td style="text-align:right;">
-60.61
-</td>
-<td style="text-align:left;">
-C
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-extended-spectrum class A beta-lactamase CTX-M-15
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-46
-</td>
-<td style="text-align:right;">
-46.46
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaTEM-1
-</td>
-<td style="text-align:left;">
-broad-spectrum class A beta-lactamase TEM-1
-</td>
-<td style="text-align:left;">
-BETA-LACTAM
-</td>
-<td style="text-align:right;">
-36
-</td>
-<td style="text-align:right;">
-36.36
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaCTX-M-27
-</td>
-<td style="text-align:left;">
-extended-spectrum class A beta-lactamase CTX-M-27
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-21
-</td>
-<td style="text-align:right;">
-21.21
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaOXA-1
-</td>
-<td style="text-align:left;">
-oxacillin-hydrolyzing class D beta-lactamase OXA-1
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-14
-</td>
-<td style="text-align:right;">
-14.14
-</td>
-<td style="text-align:left;">
-D
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaEC-5
-</td>
-<td style="text-align:left;">
-cephalosporin-hydrolyzing class C beta-lactamase EC-5
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-8.08
-</td>
-<td style="text-align:left;">
-C
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaCMY-2
-</td>
-<td style="text-align:left;">
-extended-spectrum class C beta-lactamase CMY-2
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-6.06
-</td>
-<td style="text-align:left;">
-C
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaCMY
-</td>
-<td style="text-align:left;">
-CMY-2 family class C beta-lactamase
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-6.06
-</td>
-<td style="text-align:left;">
-C
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaSHV-1
-</td>
-<td style="text-align:left;">
-broad-spectrum class A beta-lactamase SHV-1
-</td>
-<td style="text-align:left;">
-BETA-LACTAM
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-4.04
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaTEM
-</td>
-<td style="text-align:left;">
-TEM family class A beta-lactamase
-</td>
-<td style="text-align:left;">
-BETA-LACTAM
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-4.04
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaSHV-187
-</td>
-<td style="text-align:left;">
-broad-spectrum class A beta-lactamase SHV-187
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-3.03
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaACT-24
-</td>
-<td style="text-align:left;">
-cephalosporin-hydrolyzing class C beta-lactamase ACT-24
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-3.03
-</td>
-<td style="text-align:left;">
-C
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaKPC-3
-</td>
-<td style="text-align:left;">
-carbapenem-hydrolyzing class A beta-lactamase KPC-3
-</td>
-<td style="text-align:left;">
-CARBAPENEM
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-3.03
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaACT-17
-</td>
-<td style="text-align:left;">
-cephalosporin-hydrolyzing class C beta-lactamase ACT-17
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-3.03
-</td>
-<td style="text-align:left;">
-C
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaKPC-2
-</td>
-<td style="text-align:left;">
-carbapenem-hydrolyzing class A beta-lactamase KPC-2
-</td>
-<td style="text-align:left;">
-CARBAPENEM
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-3.03
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaSHV-28
-</td>
-<td style="text-align:left;">
-broad-spectrum class A beta-lactamase SHV-28
-</td>
-<td style="text-align:left;">
-BETA-LACTAM
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-3.03
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaCMY-4
-</td>
-<td style="text-align:left;">
-class C beta-lactamase CMY-4
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-3.03
-</td>
-<td style="text-align:left;">
-C
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaCTX-M-55
-</td>
-<td style="text-align:left;">
-extended-spectrum class A beta-lactamase CTX-M-55
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-2.02
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaSHV-11
-</td>
-<td style="text-align:left;">
-broad-spectrum class A beta-lactamase SHV-11
-</td>
-<td style="text-align:left;">
-BETA-LACTAM
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1.01
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 blaACT
+</td>
+<td style="text-align:left;">
+blaACT-75*
 </td>
 <td style="text-align:left;">
 ACT family cephalosporin-hydrolyzing class C beta-lactamase
@@ -1380,101 +781,8 @@ TRUE
 </tr>
 <tr>
 <td style="text-align:left;">
-blaSHV-12
+blaACT-115
 </td>
-<td style="text-align:left;">
-extended-spectrum class A beta-lactamase SHV-12
-</td>
-<td style="text-align:left;">
-CEFIDEROCOL/CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1.01
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaCTX-M-3
-</td>
-<td style="text-align:left;">
-extended-spectrum class A beta-lactamase CTX-M-3
-</td>
-<td style="text-align:left;">
-CEPHALOSPORIN
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1.01
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaTEM-214
-</td>
-<td style="text-align:left;">
-class A beta-lactamase TEM-214
-</td>
-<td style="text-align:left;">
-BETA-LACTAM
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1.01
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-</tr>
-<tr>
 <td style="text-align:left;">
 blaACT-115
 </td>
@@ -1508,10 +816,608 @@ TRUE
 </tr>
 <tr>
 <td style="text-align:left;">
-blaSHV
+blaACT-17
 </td>
 <td style="text-align:left;">
-SHV family class A beta-lactamase
+blaACT-17
+</td>
+<td style="text-align:left;">
+cephalosporin-hydrolyzing class C beta-lactamase ACT-17
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3.03
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+cephalosporin-hydrolyzing class C beta-lactamase ACT-24
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3.03
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY
+</td>
+<td style="text-align:left;">
+blaCMY-65*
+</td>
+<td style="text-align:left;">
+CMY-2 family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2.02
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY
+</td>
+<td style="text-align:left;">
+blaCMY-190*
+</td>
+<td style="text-align:left;">
+CMY-2 family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY
+</td>
+<td style="text-align:left;">
+blaCMY-25*
+</td>
+<td style="text-align:left;">
+CMY-2 family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY
+</td>
+<td style="text-align:left;">
+blaCMY-67*
+</td>
+<td style="text-align:left;">
+CMY-2 family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY
+</td>
+<td style="text-align:left;">
+blaCMY-13*
+</td>
+<td style="text-align:left;">
+CMY-2 family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY-2
+</td>
+<td style="text-align:left;">
+blaCMY-2
+</td>
+<td style="text-align:left;">
+extended-spectrum class C beta-lactamase CMY-2
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+6.06
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY-4
+</td>
+<td style="text-align:left;">
+blaCMY-4
+</td>
+<td style="text-align:left;">
+class C beta-lactamase CMY-4
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3.03
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCTX-M
+</td>
+<td style="text-align:left;">
+blaCTX-M-55*
+</td>
+<td style="text-align:left;">
+CTX-M family extended-spectrum class A beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+extended-spectrum class A beta-lactamase CTX-M-15
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+46
+</td>
+<td style="text-align:right;">
+46.46
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCTX-M-27
+</td>
+<td style="text-align:left;">
+blaCTX-M-27
+</td>
+<td style="text-align:left;">
+extended-spectrum class A beta-lactamase CTX-M-27
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+21.21
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCTX-M-3
+</td>
+<td style="text-align:left;">
+blaCTX-M-3
+</td>
+<td style="text-align:left;">
+extended-spectrum class A beta-lactamase CTX-M-3
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCTX-M-55
+</td>
+<td style="text-align:left;">
+blaCTX-M-55
+</td>
+<td style="text-align:left;">
+extended-spectrum class A beta-lactamase CTX-M-55
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2.02
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+blaEC-8*
+</td>
+<td style="text-align:left;">
+BlaEC family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+17.17
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+blaEC-5*
+</td>
+<td style="text-align:left;">
+BlaEC family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+39
+</td>
+<td style="text-align:right;">
+39.39
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+BlaEC family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3.03
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+blaEC-15*
+</td>
+<td style="text-align:left;">
+BlaEC family class C beta-lactamase
 </td>
 <td style="text-align:left;">
 BETA-LACTAM
@@ -1523,7 +1429,147 @@ BETA-LACTAM
 1.01
 </td>
 <td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaEC-5
+</td>
+<td style="text-align:left;">
+blaEC-5
+</td>
+<td style="text-align:left;">
+cephalosporin-hydrolyzing class C beta-lactamase EC-5
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+8.08
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaKPC-2
+</td>
+<td style="text-align:left;">
+blaKPC-2
+</td>
+<td style="text-align:left;">
+carbapenem-hydrolyzing class A beta-lactamase KPC-2
+</td>
+<td style="text-align:left;">
+CARBAPENEM
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3.03
+</td>
+<td style="text-align:left;">
 A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaKPC-3
+</td>
+<td style="text-align:left;">
+blaKPC-3
+</td>
+<td style="text-align:left;">
+carbapenem-hydrolyzing class A beta-lactamase KPC-3
+</td>
+<td style="text-align:left;">
+CARBAPENEM
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3.03
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaOXA-1
+</td>
+<td style="text-align:left;">
+blaOXA-1
+</td>
+<td style="text-align:left;">
+oxacillin-hydrolyzing class D beta-lactamase OXA-1
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:right;">
+14.14
+</td>
+<td style="text-align:left;">
+D
 </td>
 <td style="text-align:left;">
 FALSE
@@ -1539,6 +1585,9 @@ FALSE
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+blaOXY-1-11
+</td>
 <td style="text-align:left;">
 blaOXY-1-11
 </td>
@@ -1572,13 +1621,121 @@ TRUE
 </tr>
 <tr>
 <td style="text-align:left;">
-blaCTX-M
+blaSHV
 </td>
 <td style="text-align:left;">
-CTX-M family extended-spectrum class A beta-lactamase
+blaSHV-1?
 </td>
 <td style="text-align:left;">
-CEPHALOSPORIN
+SHV family class A beta-lactamase
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaSHV-1
+</td>
+<td style="text-align:left;">
+blaSHV-1
+</td>
+<td style="text-align:left;">
+broad-spectrum class A beta-lactamase SHV-1
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4.04
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaSHV-11
+</td>
+<td style="text-align:left;">
+blaSHV-11
+</td>
+<td style="text-align:left;">
+broad-spectrum class A beta-lactamase SHV-11
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaSHV-12
+</td>
+<td style="text-align:left;">
+blaSHV-12
+</td>
+<td style="text-align:left;">
+extended-spectrum class A beta-lactamase SHV-12
+</td>
+<td style="text-align:left;">
+CEFIDEROCOL/CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
 1
@@ -1602,10 +1759,255 @@ FALSE
 TRUE
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+blaSHV-187
+</td>
+<td style="text-align:left;">
+blaSHV-187
+</td>
+<td style="text-align:left;">
+broad-spectrum class A beta-lactamase SHV-187
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3.03
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaSHV-28
+</td>
+<td style="text-align:left;">
+blaSHV-28
+</td>
+<td style="text-align:left;">
+broad-spectrum class A beta-lactamase SHV-28
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3.03
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaTEM
+</td>
+<td style="text-align:left;">
+blaTEM-1?
+</td>
+<td style="text-align:left;">
+TEM family class A beta-lactamase
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2.02
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaTEM
+</td>
+<td style="text-align:left;">
+blaTEM-1?*
+</td>
+<td style="text-align:left;">
+TEM family class A beta-lactamase
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2.02
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaTEM
+</td>
+<td style="text-align:left;">
+blaTEM-105?*
+</td>
+<td style="text-align:left;">
+TEM family class A beta-lactamase
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2.02
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaTEM-1
+</td>
+<td style="text-align:left;">
+blaTEM-1
+</td>
+<td style="text-align:left;">
+broad-spectrum class A beta-lactamase TEM-1
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:right;">
+36.36
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaTEM-214
+</td>
+<td style="text-align:left;">
+blaTEM-214
+</td>
+<td style="text-align:left;">
+class A beta-lactamase TEM-214
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
 </tbody>
 </table>
 <pre class="r"><code># Save
-blactam_info &lt;- blactam_info %&gt;% arrange(element_symbol)
+blactam_info &lt;- blactam_info %&gt;% arrange(element_symbol_renamed)
 
 saveRDS(blactam_info,&quot;./data/amrfinder/beta_lactamase_summary_index_cohort.RDS&quot;)</code></pre>
 </div>
