@@ -55,7 +55,7 @@ table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged
 convert_tableone_into_df(dataset=prolonged_colonization_df,vars = "index_at_1_and_or_2_ESCrE_genes",strata= "index_at_1_and_or_2_Species_ST_cluster",factorVars = "index_at_1_and_or_2_ESCrE_genes",outcome_names = c("Not same strain","Same strain"))
 ```
 
-# Two many were linked by plasmid
+# How many were linked by plasmid?
 ```{r}
 paste0("Strain vs. Plasmid-linked ESCrE genes")
 table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware,dnn=c("Strain","Plasmid-linked ESCrE"))  

@@ -1,5 +1,5 @@
 ---
-title: "Data Cleaning Step 5- Add QCD data to de-duplicated metadata"
+title: "Data Cleaning Step 5 - Add QCD data to de-duplicated metadata"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -67,7 +67,7 @@ metadata$specimen_category <- ifelse(metadata$specimen %in% c("Bath 1","Bath 2",
                                                   ifelse(metadata$specimen %in% c("Stool 1A","Stool 2A","Stool 3A"),"Human","Unknown")))
 
 metadata$individual_id <- paste0(metadata$household,"_",metadata$specimen)
-metadata$index <-  grepl('hi',metadata$location_or_participant) | grepl("MER",metadata$household_number_recode)
+metadata$index <-  c(grepl('hi',metadata$location_or_participant) & metadata$specimen_category == "Human") | grepl("MER",metadata$household_number_recode) 
 metadata$isolate_name <- paste0(metadata$household,"_",metadata$visit,"_",metadata$specimen)
 ```
 
@@ -79,4 +79,3 @@ colnames(metadata_clean) <- gsub("\\.|\\.\\.\\.","_",colnames(metadata_clean))
 saveRDS(metadata_clean,'./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS')
 write.csv(metadata_clean,'./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.csv')
 ```
-

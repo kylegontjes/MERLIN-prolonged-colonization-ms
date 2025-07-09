@@ -35,14 +35,47 @@ sessionInfo()
 ```{r } 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
 prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS")
+clinical_prolonged_colonization <- read_csv("./data/prolonged_colonization/merlin_prolonged_colonization.csv")
 ```
-
+ 
 ```{r}
 ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & WGS_escre==T) %>% .$household
 paste0("Number of subjects with index specimens positive: ", length(ESCrE_index_positive_households))
 paste0("Proportion of subjects with index specimens positive: ", length(ESCrE_index_positive_households) / 40)
 ```
 
+# How many of the MALDI-level prolonged colonization had sequencing?
+```{r}
+clinical_definition_prolonged <- clinical_prolonged_colonization %>% subset(prolonged_colonization==1) %>% .[["household_number"]]
+paste0("How many of the prolonged colonization episodes we had their index sequenced: ", length(clinical_definition_prolonged))
+
+paste0("How many of the clinical definition did we have qc-passing WGS escre genome?")
+table(clinical_definition_prolonged %in% ESCrE_index_positive_households) 
+```
+
+# Data for the individuals w/ MALDI-level prolonged colonization with sequencing
+```{r}
+prolonged_melt <- reshape2::melt(prolonged_colonization_df %>% subset(household %in% clinical_definition_prolonged) %>%  select(household,index_at_1_and_or_2_WGS_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster,index_at_1_and_or_2_ESCrE_genes,index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes,index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware),id.vars="household")
+prolonged_melt$value <- factor(prolonged_melt$value,levels = c(0,1))
+prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_WGS_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Sequence type','index_at_1_and_or_2_Species_ST_cluster'='Strain','index_at_1_and_or_2_ESCrE_genes'='ESCrE gene','index_at_1_and_or_2_ESCrE_plasmidic_genes'= 'Plasmidic ESCrE gene','index_at_1_and_or_2_ESCrE_plasmids'= 'ESCrE plasmid',
+  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes'='Strain + ESCrE gene',
+  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware'='Strain + plasmid-linked ESCrE gene')
+
+prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value)) %>% favorite_kable()
+```
+
+# Data from individuals without MALDI-predicted prolonged colonization
+```{r}
+prolonged_melt <- reshape2::melt(prolonged_colonization_df %>% subset(!household %in% clinical_definition_prolonged) %>%  select(household,index_at_1_and_or_2_WGS_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster,index_at_1_and_or_2_ESCrE_genes,index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes,index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware),id.vars="household")
+prolonged_melt$value <- factor(prolonged_melt$value,levels = c(0,1))
+prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_WGS_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Sequence type','index_at_1_and_or_2_Species_ST_cluster'='Strain','index_at_1_and_or_2_ESCrE_genes'='ESCrE gene','index_at_1_and_or_2_ESCrE_plasmidic_genes'= 'Plasmidic ESCrE gene','index_at_1_and_or_2_ESCrE_plasmids'= 'ESCrE plasmid',
+  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes'='Strain + ESCrE gene',
+  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware'='Strain + plasmid-linked ESCrE gene')
+
+prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value)) %>% favorite_kable()
+```
+
+# Overall data
 ```{r}
 prolonged_melt <- reshape2::melt(prolonged_colonization_df %>% select(household,index_at_1_and_or_2_WGS_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster,index_at_1_and_or_2_ESCrE_genes,index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes,index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware),id.vars="household")
 prolonged_melt$value <- factor(prolonged_melt$value,levels = c(0,1))
