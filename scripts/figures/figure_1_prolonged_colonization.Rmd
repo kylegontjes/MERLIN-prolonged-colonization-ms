@@ -1,5 +1,5 @@
 ---
-title: "Figure 2: Prolonged colonization across molecular definitions"
+title: "Figure 1: Prolonged colonization across molecular definitions"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -50,11 +50,11 @@ prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summar
 ```{r,fig.width=6,fig.height=7.5}
 summary_data <- prolonged_melt%>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value))  
 
-figure_2 <- ggplot(data=prolonged_melt) + geom_bar(aes(x=variable,fill=value)) + xlab("") + ylab("Count") +  geom_text(data=summary_data,aes(x=variable,y = n,label=n), vjust=0,nudge_y=0.5,color ='black',size = 5)  + prolonged_colonization_scale + theme_bw_me + figure_2_format 
+figure_1 <- ggplot(data=prolonged_melt) + geom_bar(aes(x=variable,fill=value)) + xlab("") + ylab("Count") +  geom_text(data=summary_data,aes(x=variable,y = n,label=n), vjust=0,nudge_y=0.5,color ='black',size = 5)  + prolonged_colonization_scale + theme_bw_me + figure_1_format 
 
-figure_2
+figure_1
 ```
 
 ```{r}
-ggsave(plot = figure_2,filename = './figures/figure_2_prolonged_colonization.png', dpi = 900, width = 6, height = 7.5,bg='white')
+ggsave(plot = figure_1,filename = './figures/figure_1_prolonged_colonization.png', dpi = 900, width = 6, height = 7.5,bg='white')
 ```
