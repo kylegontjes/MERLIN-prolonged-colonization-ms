@@ -7,8 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 require(knitr)
-opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
-opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
@@ -61,7 +61,7 @@ get_prolonged_colonization <- function(isolate,metadata,variable){
   return(results)
 }
 
-any_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='WGS_escre') %>% do.call(rbind,.)
+any_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='WGS_escre') %>% do.call(rbind,.) 
 species_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species') %>% do.call(rbind,.)
 species_ST_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species_ST') %>% do.call(rbind,.)
 species_ST_cluster_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species_ST_cluster') %>% do.call(rbind,.)
@@ -130,11 +130,13 @@ get_prolonged_colonization_str_split_plasmid_aware <- function(isolate,metadata,
 
 
 ```{r} 
+maldi_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='maldi',split=",") %>% do.call(rbind,.)
+
 ESCrE_genes_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESCrE_genes',split=";") %>% do.call(rbind,.)
  
 ESCrE_plasmid_aware_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split_plasmid_aware,df_index,chromosome_variable='ESCrE_chromosome_genes',plasmid_variable = "ESCrE_plasmid_genes",split=";") %>% do.call(rbind,.)
 
-prolonged_df <- left_join(prolonged_df,ESCrE_genes_sharing)  %>% left_join(.,ESCrE_plasmid_aware_sharing)
+prolonged_df <- left_join(prolonged_df,ESCrE_genes_sharing)  %>% left_join(.,ESCrE_plasmid_aware_sharing) %>% left_join(.,maldi_sharing)
 ```
 
 # Create merged datapoints
@@ -147,5 +149,3 @@ prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware <-
 ```{r}
 saveRDS(prolonged_df,'./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS')
 ```
-
-

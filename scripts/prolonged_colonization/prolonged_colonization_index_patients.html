@@ -422,21 +422,114 @@ loaded via a namespace (and not attached):
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
+<pre class="r"><code>df_index &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS&quot;) 
+plasmid_data &lt;- readRDS(&quot;./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS&quot;) %&gt;% subset(genomic_id %in% df_index$genomic_id)
+
+df_index &lt;- left_join(df_index,plasmid_data)</code></pre>
 </div>
 <div id="positive-specimens" class="section level1">
 <h1>Positive specimens</h1>
+<pre class="r"><code>ESCrE_index_positive_households &lt;- df_index %&gt;% subset(visit ==0 &amp; WGS_escre==T) %&gt;% .$household</code></pre>
 </div>
 <div id="species-level" class="section level1">
 <h1>Species level</h1>
+<pre class="r"><code>get_prolonged_colonization &lt;- function(isolate,metadata,variable){
+  isolate_df &lt;- subset(metadata,household==isolate)
+  isolate_index &lt;- subset(isolate_df,visit==0) %&gt;% .[[variable]]
+  isolate_follow_up &lt;- subset(isolate_df,visit&gt;0)
+  isolate_follow_up_same_any &lt;- ifelse(sum(isolate_follow_up[[variable]] == isolate_index)&gt;0,1,0)
+  isolate_baseline &lt;- subset(isolate_df,visit==1)
+  isolate_baseline_same &lt;- ifelse(sum(isolate_baseline[[variable]] == isolate_index)&gt;0,1,0)
+  isolate_one_month &lt;- subset(isolate_df,visit==2)
+  isolate_one_month_same &lt;- ifelse(sum(isolate_one_month[[variable]] == isolate_index)&gt;0,1,0)
+  isolate_two_month &lt;- subset(isolate_df,visit==3)
+  isolate_two_month_same &lt;- ifelse(sum(isolate_two_month[[variable]] == isolate_index)&gt;0,1,0)
+  index_at_1_and_or_2 = ifelse(isolate_one_month_same==1 | isolate_two_month_same==1,1,0)
+   
+  results &lt;- cbind.data.frame(household=isolate,isolate_baseline_same,isolate_one_month_same,isolate_two_month_same,index_at_1_and_or_2)
+  colnames(results) &lt;- c(&quot;household&quot;,paste0(colnames(results)[-1],&quot;_&quot;,variable))
+  return(results)
+}
+
+any_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;WGS_escre&#39;) %&gt;% do.call(rbind,.) 
+species_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;Species&#39;) %&gt;% do.call(rbind,.)
+species_ST_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;Species_ST&#39;) %&gt;% do.call(rbind,.)
+species_ST_cluster_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;Species_ST_cluster&#39;) %&gt;% do.call(rbind,.)
+
+prolonged_df &lt;- left_join(any_prolonged,species_prolonged) %&gt;% left_join(.,species_ST_prolonged) %&gt;% left_join(.,species_ST_cluster_prolonged)</code></pre>
 </div>
 <div id="plasmid-level" class="section level1">
 <h1>Plasmid level</h1>
+<pre class="r"><code># Generic
+get_prolonged_colonization_str_split &lt;- function(isolate,metadata,variable,split){
+  isolate_df &lt;- subset(metadata,household==isolate)
+  isolate_index &lt;- subset(isolate_df,visit==0) %&gt;% .[[variable]] %&gt;% str_split(.,split) %&gt;% unlist %&gt;% subset(is.na(.)==F &amp; .!=&#39;&#39;)
+  
+  if(length(isolate_index)==0){
+    isolate_follow_up_same_any=0
+    isolate_baseline_same=0
+    isolate_one_month_same=0
+    isolate_two_month_same=0
+    index_at_1_and_or_2=0 
+    } else{ 
+  isolate_one_month &lt;- subset(isolate_df,visit==2) %&gt;% .[[variable]]  %&gt;% str_split(.,split) %&gt;% unlist
+  isolate_one_month_same &lt;- ifelse(sum(isolate_one_month %in% isolate_index)&gt;0,1,0)
+  isolate_two_month &lt;- subset(isolate_df,visit==3) %&gt;% .[[variable]]  %&gt;% str_split(.,split) %&gt;% unlist 
+  isolate_two_month_same &lt;- ifelse(sum(isolate_two_month %in% isolate_index)&gt;0,1,0)
+  index_at_1_and_or_2 = ifelse(isolate_one_month_same==1 | isolate_two_month_same==1,1,0)
+  }
+ 
+  results &lt;- cbind.data.frame(household=isolate,isolate_one_month_same,isolate_two_month_same,index_at_1_and_or_2)
+  colnames(results) &lt;- c(&quot;household&quot;,paste0(colnames(results)[-1],&quot;_&quot;,variable))
+  return(results)
+}
+
+# Plasmid aware
+get_prolonged_colonization_str_split_plasmid_aware &lt;- function(isolate,metadata,chromosome_variable,plasmid_variable,split){
+  isolate_df &lt;- subset(metadata,household==isolate)
+  isolate_index &lt;- subset(isolate_df,visit==0) 
+  isolate_index_plasmid &lt;- isolate_index[[plasmid_variable]] %&gt;% str_split(.,split) %&gt;% unlist %&gt;% subset(is.na(.)==F &amp; .!=&#39;&#39;)
+  isolate_index_chromosome &lt;- isolate_index[[chromosome_variable]] %&gt;% str_split(.,split) %&gt;% unlist %&gt;% subset(is.na(.)==F &amp; .!=&#39;&#39;)
+    
+  if(length(c(isolate_index_plasmid,isolate_index_chromosome))==0){
+    isolate_follow_up_same_any=0
+    isolate_baseline_same=0
+    isolate_one_month_same=0
+    isolate_two_month_same=0
+    index_at_1_and_or_2=0 
+    }  else { 
+  isolate_one_month_plasmid &lt;- subset(isolate_df,visit==2) %&gt;% .[[plasmid_variable]]  %&gt;% str_split(.,split) %&gt;% unlist
+  isolate_one_month_chromosome &lt;-  subset(isolate_df,visit==2) %&gt;% .[[chromosome_variable]]  %&gt;% str_split(.,split) %&gt;% unlist
+  isolate_one_month_same &lt;- ifelse(sum(isolate_index_plasmid %in% isolate_one_month_chromosome) | sum(isolate_index_chromosome %in% isolate_one_month_plasmid) &gt;0 | sum(isolate_index_plasmid %in%isolate_one_month_plasmid ) &gt;0,1,0)
+  
+  isolate_two_month_plasmid &lt;- subset(isolate_df,visit==3) %&gt;% .[[plasmid_variable]]  %&gt;% str_split(.,split) %&gt;% unlist
+  isolate_two_month_chromosome &lt;-  subset(isolate_df,visit==3) %&gt;% .[[chromosome_variable]]  %&gt;% str_split(.,split) %&gt;% unlist
+  isolate_two_month_same &lt;- ifelse(sum(isolate_index_plasmid %in% isolate_two_month_chromosome) | sum(isolate_index_chromosome %in% isolate_two_month_plasmid) &gt;0 | sum(isolate_index_plasmid %in%isolate_two_month_plasmid ) &gt;0,1,0) 
+ 
+  index_at_1_and_or_2 &lt;- ifelse(isolate_one_month_same==1 | isolate_two_month_same==1,1,0)
+    }
+  
+  results &lt;- cbind.data.frame(household=isolate,isolate_one_month_same,isolate_two_month_same,index_at_1_and_or_2)
+  colnames(results) &lt;- c(&quot;household&quot;,paste0(colnames(results)[-1],&quot;_ESCrE_genes_plasmid_aware&quot;))
+  
+  return(results)
+} </code></pre>
+<pre class="r"><code>maldi_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable=&#39;maldi&#39;,split=&quot;,&quot;) %&gt;% do.call(rbind,.)
+
+ESCrE_genes_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable=&#39;ESCrE_genes&#39;,split=&quot;;&quot;) %&gt;% do.call(rbind,.)
+ 
+ESCrE_plasmid_aware_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split_plasmid_aware,df_index,chromosome_variable=&#39;ESCrE_chromosome_genes&#39;,plasmid_variable = &quot;ESCrE_plasmid_genes&quot;,split=&quot;;&quot;) %&gt;% do.call(rbind,.)
+
+prolonged_df &lt;- left_join(prolonged_df,ESCrE_genes_sharing)  %&gt;% left_join(.,ESCrE_plasmid_aware_sharing) %&gt;% left_join(.,maldi_sharing)</code></pre>
 </div>
 <div id="create-merged-datapoints" class="section level1">
 <h1>Create merged datapoints</h1>
+<pre class="r"><code>prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes &lt;- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes ==1,1,0) 
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware &lt;- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware ==1,1,0) </code></pre>
 </div>
 <div id="save" class="section level1">
 <h1>Save</h1>
+<pre class="r"><code>saveRDS(prolonged_df,&#39;./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS&#39;)</code></pre>
 </div>
 
 
