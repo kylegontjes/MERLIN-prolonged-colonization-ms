@@ -1,5 +1,5 @@
 ---
-title: "Figure 3: Accuracy of species-level evaluation of prolonged colonization"
+title: "Supplemental Figure 2: Accuracy of species-level evaluation of prolonged colonization"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -76,7 +76,7 @@ get_marginal_stats <- function(feature,outcome){
 }
 ```
 
-```{r,fig.height=9.25,fig.width=9.25}
+```{r,fig.height=9.75,fig.width=9.75}
 outcomes <- c('index_at_1_and_or_2_Species_ST','index_at_1_and_or_2_Species_ST_cluster','index_at_1_and_or_2_ESCrE_genes','index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes',"index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware")
 
 comparison_of_any_ESCRE_to_WGS_outcomes <- lapply(outcomes,FUN=function(x){
@@ -91,15 +91,13 @@ comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- recode(comparison_of_a
 comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()
   
 A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity (%)") + xlab(NULL)+ theme_bw_me+ ylim(NA,102.5)  + figure_2_format  +   geom_text(aes(label=paste0(format(spec, nsmall = 1), "%")), vjust=0,nudge_y=1) 
-B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=precision)) + geom_bar(stat='identity',fill="black") + ylab("Precision (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,102.5)  + figure_2_format  +  geom_text(aes(label=paste0(format(precision, nsmall = 1), "%")), vjust=0,nudge_y=1) 
-C <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=f1)) + geom_bar(stat='identity',fill="black") + ylab("F1 score (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,102.5) + figure_2_format + geom_text(aes(label=paste0(format(f1, nsmall = 1), "%")), vjust=0,nudge_y=1) 
-D<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,102.5) + figure_2_format + geom_text(aes(label=paste0(format(accuracy, nsmall = 1), "%")), vjust=0,nudge_y=1) 
-E<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=lr_pos)) + geom_bar(stat='identity',fill="black") + ylab("Positive likelihood ratio") + xlab(NULL) + theme_bw_me+ ylim(NA,max(comparison_of_any_ESCRE_to_WGS_outcomes$lr_pos)+0.5) + figure_2_format + geom_text(aes(label=paste0(format(lr_pos, nsmall = 2))),vjust=0,nudge_y=0.15) 
+B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=precision)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,102.5)  + figure_2_format  +  geom_text(aes(label=paste0(format(precision, nsmall = 1), "%")), vjust=0,nudge_y=1)  
+C<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,102.5) + figure_2_format + geom_text(aes(label=paste0(format(accuracy, nsmall = 1), "%")), vjust=0,nudge_y=1)  
 
-figure_2 <- cowplot::plot_grid(A,B,C,D,E,labels = "AUTO",ncol=3)
+figure_2 <- cowplot::plot_grid(A,B,C,labels = "AUTO",ncol=2)
 figure_2
 ```
 
 ```{r}
-ggsave(plot = figure_2,filename = './figures/figure_2_diagnostic_statistics_species_prolonged_colonization.png',dpi = 900,width = 9.25,height = 9.25,bg='white')
+ggsave(plot = figure_2,filename = './figures/s_figure_2_diagnostic_statistics_species_prolonged_colonization.png',dpi = 900,width = 9.75,height = 9.75,bg='white')
 ```
