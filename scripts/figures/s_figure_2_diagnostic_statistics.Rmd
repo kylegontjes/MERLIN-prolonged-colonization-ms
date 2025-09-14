@@ -90,9 +90,9 @@ comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- recode(comparison_of_a
 
 comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()
   
-A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity (%)") + xlab(NULL)+ theme_bw_me+ ylim(NA,102.5)  + figure_2_format  +   geom_text(aes(label=paste0(format(spec, nsmall = 1), "%")), vjust=0,nudge_y=1) 
-B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=precision)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,102.5)  + figure_2_format  +  geom_text(aes(label=paste0(format(precision, nsmall = 1), "%")), vjust=0,nudge_y=1)  
-C<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,102.5) + figure_2_format + geom_text(aes(label=paste0(format(accuracy, nsmall = 1), "%")), vjust=0,nudge_y=1)  
+A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity (%)") + xlab(NULL)+ theme_bw_me+ ylim(NA,100.1)  + figure_2_format  +   geom_text(aes(label=paste0(format(spec, nsmall = 1), "%")), vjust=0,nudge_y=1) 
+B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=precision)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1)  + figure_2_format  +  geom_text(aes(label=paste0(format(precision, nsmall = 1), "%")), vjust=0,nudge_y=1)  
+C<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1) + figure_2_format + geom_text(aes(label=paste0(format(accuracy, nsmall = 1), "%")), vjust=0,nudge_y=1)  
 
 figure_2 <- cowplot::plot_grid(A,B,C,labels = "AUTO",ncol=2)
 figure_2
