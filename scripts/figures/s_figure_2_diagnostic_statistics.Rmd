@@ -76,7 +76,7 @@ get_marginal_stats <- function(feature,outcome){
 }
 ```
 
-```{r,fig.height=9.75,fig.width=9.75}
+```{r,fig.height=9.75,fig.width=7.8}
 outcomes <- c('index_at_1_and_or_2_Species_ST','index_at_1_and_or_2_Species_ST_cluster','index_at_1_and_or_2_ESCrE_genes','index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes',"index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware")
 
 comparison_of_any_ESCRE_to_WGS_outcomes <- lapply(outcomes,FUN=function(x){
@@ -99,5 +99,5 @@ figure_2
 ```
 
 ```{r}
-ggsave(plot = figure_2,filename = './figures/s_figure_2_diagnostic_statistics_species_prolonged_colonization.png',dpi = 900,width = 9.75,height = 9.75,bg='white')
+ggsave(plot = figure_2,filename = './figures/s_figure_2_diagnostic_statistics_species_prolonged_colonization.png',dpi = 900,width = 7.8,height = 9.75,bg='white')
 ```
