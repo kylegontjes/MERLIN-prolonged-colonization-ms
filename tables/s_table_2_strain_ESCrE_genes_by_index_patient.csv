@@ -1,7 +1,7 @@
-Household,Visit,Strain,Plasmids,ESCrE genes,Chromosomal ESCrE genes,Plasmidic ESCrE genes,ESCrE plasmids
+Household,Visit,Strain,Plasmids,ESCrE genes,Chromosomal ESCrE genes,Plasmid-linked ESCrE genes,ESCrE plasmids
 100H,0,Escherichia coli ST 973 Singleton,"AA474, AA579","blaCMY-2, blaEC-8*",blaEC-8*,blaCMY-2,AA474
-100H,2,Escherichia coli ST 38 Cluster 2,"AA337, AA579, AA977, AB687","blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*",blaCTX-M-15,
-100H,3,Escherichia coli ST 38 Cluster 2,"AA337, AA579, AA977, AB595, AB687","blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*",blaCTX-M-15,
+100H,2,Escherichia coli ST 38 Cluster 2,"AA337, AA579, AA977, AB687","blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*",,
+100H,3,Escherichia coli ST 38 Cluster 2,"AA337, AA579, AA977, AB595, AB687","blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*",,
 109H,0,Escherichia coli ST 1193 Cluster 2,"AA171, AA174, AA352, AA474, AA476, AA579, AB443, AB685, AB687, AC511, AC748, novel_236e327b6e945ee035c1ec7620c2e90b, novel_274ddd5d9a0e3df059f68299b2ade951, novel_814bae8c63a91243fd0f1c6e54e29348","blaCTX-M-27, blaEC-5",blaEC-5,blaCTX-M-27,AA474
 109H,1,Escherichia coli ST 1193 Cluster 2,"AA171, AA174, AA579, AB443, AB685, AC511, AC748","blaCTX-M-27, blaEC-5",blaEC-5,blaCTX-M-27,AA171
 109H,2,Escherichia coli ST 1193 Cluster 2,"AA171, AA174, AA579, AB443, AB685, AC511, AC748","blaCTX-M-27, blaEC-5",blaEC-5,blaCTX-M-27,AA171
@@ -9,34 +9,33 @@ Household,Visit,Strain,Plasmids,ESCrE genes,Chromosomal ESCrE genes,Plasmidic ES
 118H,1,Escherichia coli ST 216 Singleton,"AA474, AA552, AA833","blaEC-15*, blaKPC-3",blaEC-15*,blaKPC-3,AA552
 118H,1,Klebsiella pneumoniae ST 6602 Singleton,"AA275, AA552, AB685, AC082",blaKPC-3,,blaKPC-3,AA552
 118H,3,Escherichia coli ST 73 Singleton,"AA337, AA552","blaEC-5, blaKPC-3",blaEC-5,blaKPC-3,AA552
-126H,0,Escherichia coli ST 4118 Cluster 1,"AA474, AA581","blaCMY-2, blaEC-8*","blaCMY-2, blaEC-8*",blaCMY-2,
-126H,1,Escherichia coli ST 4118 Cluster 1,"AA474, AA581","blaCMY-2, blaEC-8*","blaCMY-2, blaEC-8*",blaCMY-2,
-126H,2,Escherichia coli ST 4118 Cluster 1,"AA474, AA581, AA747","blaCMY-2, blaEC-8*","blaCMY-2, blaEC-8*",blaCMY-2,
-126H,3,Escherichia coli ST 4118 Cluster 1,"AA474, AA581","blaCMY-2, blaEC-8*","blaCMY-2, blaEC-8*",blaCMY-2,
+126H,0,Escherichia coli ST 4118 Cluster 1,"AA474, AA581","blaCMY-2, blaEC-8*","blaCMY-2, blaEC-8*",,
+126H,1,Escherichia coli ST 4118 Cluster 1,"AA474, AA581","blaCMY-2, blaEC-8*","blaCMY-2, blaEC-8*",,
+126H,2,Escherichia coli ST 4118 Cluster 1,"AA474, AA581, AA747","blaCMY-2, blaEC-8*","blaCMY-2, blaEC-8*",,
+126H,3,Escherichia coli ST 4118 Cluster 1,"AA474, AA581","blaCMY-2, blaEC-8*","blaCMY-2, blaEC-8*",,
 130H,0,Escherichia coli ST 38 Cluster 1,"AA142, AA372, AA579, AB685","blaCTX-M-15, blaEC-8*",blaEC-8*,blaCTX-M-15,AA372
-130H,1,Escherichia coli ST 38 Cluster 1,"AA282, AA579, AB685, AC741","blaCMY-4, blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*","blaCMY-4, blaCTX-M-15",AA282
-130H,2,Escherichia coli ST 38 Cluster 1,"AA282, AA579, AB685","blaCMY-4, blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*","blaCMY-4, blaCTX-M-15",AA282
-130H,3,Escherichia coli ST 38 Cluster 1,"AA142, AA282, AA579, AB685, AC741","blaCMY-4, blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*","blaCMY-4, blaCTX-M-15",AA282
+130H,1,Escherichia coli ST 38 Cluster 1,"AA282, AA579, AB685, AC741","blaCMY-4, blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*",blaCMY-4,AA282
+130H,2,Escherichia coli ST 38 Cluster 1,"AA282, AA579, AB685","blaCMY-4, blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*",blaCMY-4,AA282
+130H,3,Escherichia coli ST 38 Cluster 1,"AA142, AA282, AA579, AB685, AC741","blaCMY-4, blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*",blaCMY-4,AA282
 151H,0,Klebsiella pneumoniae ST 45 Singleton,"AA275, AA450",,,,
 151H,1,Klebsiella pneumoniae ST 29 Cluster 1,AA452,blaCTX-M-15,,blaCTX-M-15,AA452
-151H,3,Klebsiella pneumoniae ST 29 Cluster 1,AA452,blaCTX-M-15,,blaCTX-M-15,AA452
-160H,1,Escherichia coli ST 38 Singleton,"AA374, AA474","blaCMY-2, blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*","blaCMY-2, blaCTX-M-15",AA474
+160H,1,Escherichia coli ST 38 Singleton,"AA374, AA474","blaCMY-2, blaCTX-M-15, blaEC-8*","blaCTX-M-15, blaEC-8*",blaCMY-2,AA474
 166H,1,Escherichia coli ST 131 Cluster 6,"AA171, AA336, AA474, AA579, AB228, AB443, AB685, AC511, AC748","blaCTX-M-27, blaEC-5*",blaEC-5*,blaCTX-M-27,AA474
 166H,2,Escherichia coli ST 131 Cluster 6,"AA171, AA336, AA474, AB228, AB685, AC748","blaCTX-M-27, blaEC-5*",blaEC-5*,blaCTX-M-27,AA171
 166H,3,Escherichia coli ST 131 Cluster 6,"AA161, AA171, AA336, AA474, AB228, AB685, AC748","blaCTX-M-27, blaEC-5*",blaEC-5*,blaCTX-M-27,AA171
 168H,0,Klebsiella pneumoniae ST 20 Singleton,,,,,
-168H,1,Escherichia coli ST 131 Cluster 3,"AA337, novel_5d1ea3302989a0609d13de4e98b5b1aa","blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",blaCTX-M-27,
-168H,2,Escherichia coli ST 131 Cluster 3,"AA337, novel_f6308afd395808e70ab8ea14046ca670","blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",blaCTX-M-27,
-168H,3,Escherichia coli ST 131 Cluster 3,"AA315, AA352","blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",blaCTX-M-27,
-169H,0,Escherichia coli ST 131 Cluster 1,"AA171, AA172, AA579, AB687, AC748","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
+168H,1,Escherichia coli ST 131 Cluster 3,"AA337, novel_5d1ea3302989a0609d13de4e98b5b1aa","blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",,
+168H,2,Escherichia coli ST 131 Cluster 3,"AA337, novel_f6308afd395808e70ab8ea14046ca670","blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",,
+168H,3,Escherichia coli ST 131 Cluster 3,"AA315, AA352","blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",,
+169H,0,Escherichia coli ST 131 Cluster 1,"AA171, AA172, AA579, AB687, AC748","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
 169H,2,Escherichia coli ST 131 Cluster 11,AA324,"blaCTX-M-15, blaEC-5*",blaEC-5*,blaCTX-M-15,AA324
-169H,3,Escherichia coli ST 131 Cluster 11,"AA173, AA324","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
+169H,3,Escherichia coli ST 131 Cluster 11,"AA173, AA324","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
 182H,0,Citrobacter portucalensis ST Unknown Singleton,,blaCMY-13*,blaCMY-13*,,
 182H,2,Citrobacter portucalensis ST 13 Singleton,,blaCMY-25*,blaCMY-25*,,
-198H,0,Escherichia coli ST 131 Cluster 1,"AA171, AA579, AC748","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
-198H,1,Escherichia coli ST 131 Cluster 1,"AA190, AA336, AA579, AB687, AC512, AC748","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
-198H,2,Escherichia coli ST 131 Cluster 1,"AA336, AA579, AC512, AC748","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
-198H,3,Escherichia coli ST 131 Cluster 1,"AA190, AA336, AA579, AC512, AC748","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
+198H,0,Escherichia coli ST 131 Cluster 1,"AA171, AA579, AC748","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
+198H,1,Escherichia coli ST 131 Cluster 1,"AA190, AA336, AA579, AB687, AC512, AC748","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
+198H,2,Escherichia coli ST 131 Cluster 1,"AA336, AA579, AC512, AC748","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
+198H,3,Escherichia coli ST 131 Cluster 1,"AA190, AA336, AA579, AC512, AC748","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
 1H,0,Escherichia coli ST 69 Singleton,"AA277, AA337, AA474, AA553, AA579, AA619, AA977, AC431, novel_79f30b0d6dbdbf76081706ab79ee0ca0","blaCTX-M-15, blaEC-8*",blaEC-8*,blaCTX-M-15,AA474
 1H,1,Escherichia coli ST 6321 Cluster 1,"AA110, AA378, AA474, AA579, AA619, AA977, AB685, AC431","blaCTX-M-15, blaEC-8*",blaEC-8*,blaCTX-M-15,AA378
 1H,1,Klebsiella pneumoniae ST 45 Cluster 1,"AA031, AA110, AA123, AA277, AB531, AC082, AD094",blaCTX-M-15,,blaCTX-M-15,AA277
@@ -55,14 +54,14 @@ Household,Visit,Strain,Plasmids,ESCrE genes,Chromosomal ESCrE genes,Plasmidic ES
 293H,1,Escherichia coli ST 131 Cluster 2,"AA171, AA977, AB685","blaCTX-M-27, blaEC-5*",blaEC-5*,blaCTX-M-27,AA171
 293H,2,Escherichia coli ST 131 Cluster 2,"AA171, AA977, AB685","blaCTX-M-27, blaEC-5*",blaEC-5*,blaCTX-M-27,AA171
 293H,3,Escherichia coli ST 131 Cluster 2,"AA171, AA977, AB685","blaCTX-M-27, blaEC-5*",blaEC-5*,blaCTX-M-27,AA171
-320H,0,Escherichia coli ST 131 Cluster 4,AA337,"blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
-320H,1,Escherichia coli ST 131 Cluster 4,AA337,"blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
-320H,2,Escherichia coli ST 131 Cluster 4,AA337,"blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
-320H,3,Escherichia coli ST 131 Cluster 4,AA337,"blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
-320H,3,Escherichia coli ST 131 Cluster 4,AA337,"blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
-345H,0,Escherichia coli ST 131 Cluster 7,"AA171, AA174","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
-345H,1,Escherichia coli ST 131 Cluster 7,"AA171, AA174","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
-345H,2,Escherichia coli ST 131 Cluster 7,"AA171, AA174","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
+320H,0,Escherichia coli ST 131 Cluster 4,AA337,"blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
+320H,1,Escherichia coli ST 131 Cluster 4,AA337,"blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
+320H,2,Escherichia coli ST 131 Cluster 4,AA337,"blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
+320H,3,Escherichia coli ST 131 Cluster 4,AA337,"blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
+320H,3,Escherichia coli ST 131 Cluster 4,AA337,"blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
+345H,0,Escherichia coli ST 131 Cluster 7,"AA171, AA174","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
+345H,1,Escherichia coli ST 131 Cluster 7,"AA171, AA174","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
+345H,2,Escherichia coli ST 131 Cluster 7,"AA171, AA174","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
 345H,3,Escherichia coli ST 131 Cluster 7,,,,,
 370H,0,Escherichia coli ST 3306 Singleton,,blaEC-5*,blaEC-5*,,
 387H,0,Enterobacter hormaechei ST 78 Cluster 1,"AB040, AB169, AC542",blaACT-24,blaACT-24,,
@@ -72,26 +71,26 @@ Household,Visit,Strain,Plasmids,ESCrE genes,Chromosomal ESCrE genes,Plasmidic ES
 394H,0,Enterobacter hormaechei ST 45 Singleton,"AA424, AA523, AB040, AE430, novel_58bf5b5de73eff86afc3ef5829ceb7ce",blaACT-17,blaACT-17,,
 395H,0,Enterobacter hormaechei ST 45 Cluster 1,"AA419, AA424, AB040",blaACT-17,blaACT-17,,
 395H,3,Enterobacter hormaechei ST 45 Cluster 1,"AA419, AA424, AB040",blaACT-17,blaACT-17,,
-399H,0,Escherichia coli ST 131 Cluster 8,AA337,"blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",blaCTX-M-27,
-399H,1,Escherichia coli ST 131 Cluster 8,AA337,"blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",blaCTX-M-27,
-399H,2,Escherichia coli ST 131 Cluster 8,AA337,"blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",blaCTX-M-27,
-399H,3,Escherichia coli ST 131 Cluster 8,"AA002, AA337, novel_6d376b67d5de7de7561485045887729d","blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",blaCTX-M-27,
+399H,0,Escherichia coli ST 131 Cluster 8,AA337,"blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",,
+399H,1,Escherichia coli ST 131 Cluster 8,AA337,"blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",,
+399H,2,Escherichia coli ST 131 Cluster 8,AA337,"blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",,
+399H,3,Escherichia coli ST 131 Cluster 8,"AA002, AA337, novel_6d376b67d5de7de7561485045887729d","blaCTX-M-27, blaEC-5*","blaCTX-M-27, blaEC-5*",,
 409H,0,Citrobacter freundii ST Unknown Singleton,AB130,blaCMY-67*,blaCMY-67*,,
 431H,0,Escherichia coli ST 1236 Singleton,"AA002, AA176","blaCTX-M-3, blaEC-5*",blaEC-5*,blaCTX-M-3,AA002
 445H,0,Klebsiella pneumoniae ST 15 Cluster 1,"AA024, AA277, AA810, AB687, AD092, AG600, novel_c4cbcd9229542950b70cf3873d91ead5",blaCTX-M-15,,blaCTX-M-15,AA277
 445H,2,Klebsiella pneumoniae ST 15 Cluster 1,"AA277, AA452, AB687, AG600",blaCTX-M-15,,blaCTX-M-15,AA452
 445H,3,Klebsiella pneumoniae ST 15 Cluster 1,"AA450, AA554, AB687",blaCTX-M-15,,blaCTX-M-15,AA554
-449H,0,Escherichia coli ST 131 Singleton,"AA336, AB233, AD158","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",blaCTX-M-15,
+449H,0,Escherichia coli ST 131 Singleton,"AA336, AB233, AD158","blaCTX-M-15, blaEC-5*","blaCTX-M-15, blaEC-5*",,
 49H,0,Escherichia coli ST 744 Cluster 1,"AA176, AB065, AB233, AB714, novel_360ee3544ec2ea0f520a6839fe2fd8f9","blaCTX-M-55, blaEC",blaEC,blaCTX-M-55,AB714
 49H,1,Escherichia coli ST 744 Cluster 1,"AA175, AA176, AA327, AA473, AB065, AB233, AG658",blaEC,blaEC,,
 49H,2,Escherichia coli ST 744 Cluster 1,"AA175, AA327, AA474, AB065, AB233, AC770, AD312",blaEC,blaEC,,
 4H,0,Escherichia coli ST 69 Singleton,"AA977, AC026","blaCTX-M-55, blaEC-8*",blaEC-8*,blaCTX-M-55,AC026
 4H,1,Enterobacter hormaechei ST 974 Singleton,"AA422, AA424","blaACT-115, blaCTX-M-15",blaACT-115,blaCTX-M-15,AA424
-55H,0,Klebsiella pneumoniae ST 628 Singleton,AA277,blaCTX-M-15,blaCTX-M-15,blaCTX-M-15,
-64H,0,Klebsiella pneumoniae ST 323 Cluster 1,"AA276, AB045, AB049, AG456",blaCTX-M-15,blaCTX-M-15,blaCTX-M-15,
-64H,2,Klebsiella pneumoniae ST 323 Cluster 1,"AA276, AB045, AC302",blaCTX-M-15,blaCTX-M-15,blaCTX-M-15,
-64H,3,Klebsiella pneumoniae ST 323 Cluster 1,"AA276, AB045",blaCTX-M-15,blaCTX-M-15,blaCTX-M-15,
-72H,0,Escherichia coli ST 1193 Cluster 1,"AA171, AA174, AA190, AB443, AB685, AC748","blaCTX-M-15, blaCTX-M-27, blaEC-5","blaCTX-M-15, blaEC-5","blaCTX-M-15, blaCTX-M-27",AA174
+55H,0,Klebsiella pneumoniae ST 628 Singleton,AA277,blaCTX-M-15,blaCTX-M-15,,
+64H,0,Klebsiella pneumoniae ST 323 Cluster 1,"AA276, AB045, AB049, AG456",blaCTX-M-15,blaCTX-M-15,,
+64H,2,Klebsiella pneumoniae ST 323 Cluster 1,"AA276, AB045, AC302",blaCTX-M-15,blaCTX-M-15,,
+64H,3,Klebsiella pneumoniae ST 323 Cluster 1,"AA276, AB045",blaCTX-M-15,blaCTX-M-15,,
+72H,0,Escherichia coli ST 1193 Cluster 1,"AA171, AA174, AA190, AB443, AB685, AC748","blaCTX-M-15, blaCTX-M-27, blaEC-5","blaCTX-M-15, blaEC-5",blaCTX-M-27,AA174
 72H,1,Escherichia coli ST 1193 Cluster 1,"AA190, AA352, AB443, AB685, AC748","blaCTX-M-27, blaEC-5",blaEC-5,blaCTX-M-27,AA352
 72H,3,Escherichia coli ST 1193 Cluster 1,"AA190, AA352, AB443, AB595, AB685, AC748","blaCTX-M-27, blaEC-5",blaEC-5,blaCTX-M-27,AA352
 91H,0,Escherichia coli ST 131 Cluster 5,"AA147, AA579, AA735, AA977, AB445, AB688, AC748, AE235","blaCTX-M-15, blaEC-5*",blaEC-5*,blaCTX-M-15,AA735
