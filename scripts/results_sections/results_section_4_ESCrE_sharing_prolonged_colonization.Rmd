@@ -61,7 +61,27 @@ paste0("Strain vs. Plasmid-linked ESCrE genes")
 table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware,dnn=c("Strain","Plasmid-linked ESCrE"))  
 
 paste0("ESCrE vs. Plasmid-linked ESCrE genes")
-table(prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware,dnn=c("ESCrE","Plasmid-linked ESCrE"))  
+table(prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware,dnn=c("ESCrE genes","Plasmid-linked ESCrE"))  
+```
+
+## Nine linked to plasmid
+```{r,results='asis'}
+plasmid_linked_ESCrE_ <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_aware==1) %>% .$household
+
+lapply(plasmid_linked_ESCrE_,FUN=function(x){
+  
+  df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
+}) %>% lapply(.,gontjesr::favorite_kable)
+```
+
+## Ten ESCrE sharing, but not linked to plasmid
+```{r,results='asis'}
+not_plasmid_linked_ESCrE_ <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_aware==0) %>% .$household
+
+lapply(not_plasmid_linked_ESCrE_,FUN=function(x){
+  
+  df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
+}) %>% lapply(.,gontjesr::favorite_kable)
 ```
 
 # Example cases explained by ESCrE but not strain
