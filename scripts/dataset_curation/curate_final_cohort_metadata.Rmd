@@ -1,5 +1,5 @@
 ---
-title: "Data Cleaning Step 6- Curate final metadata"
+title: "Data Cleaning Step 6 - Curate final metadata"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -33,9 +33,18 @@ sessionInfo()
 df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") 
 cluster_25_SNPs <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_25_SNP_clusters.RDS")
 ecoli_phylogroup <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS")
+simplified_metadata_for_sra <- read_csv("./Analysis/data/merlin_metadata_simple_20250930.csv") %>% distinct
 ``` 
 
-# Merge cluster data
+# Integrate cluster data
+## Edit metadata
+```{r}
+df$ST <- ifelse(df$ST =="-","Unknown",df$ST) 
+df$Species_ST <- paste0(df$Species," ST ",df$ST) %>% trimws(.,"both")
+```
+
+## Left join merge with cluster data
+
 ```{r}
 df <- left_join(df,cluster_25_SNPs)
 ```
@@ -52,6 +61,58 @@ get_clermont_data <- function(genomic_id, clermont_data){
     }
 }
 df$ecoli_phylogroup <- sapply(df$genomic_id, get_clermont_data, clermont_data = ecoli_phylogroup)
+```
+
+# Merge simplified metadata for SRA
+```{r}
+# Simplified variable
+simplified_metadata_for_sra$merging_variable <- ifelse(is.na(simplified_metadata_for_sra$specimen_id)==F,simplified_metadata_for_sra$specimen_id,
+                                                       ifelse(is.na(simplified_metadata_for_sra$specimen_id) & simplified_metadata_for_sra$merlin_subject_id == "merlin_55_hi" & simplified_metadata_for_sra$household_numeric ==55, "MERLIN_55_hi_clinical",
+                                                              ifelse(is.na(simplified_metadata_for_sra$specimen_id) & simplified_metadata_for_sra$merlin_subject_id == "merlin_460_hpd1" & simplified_metadata_for_sra$household_numeric ==460 & simplified_metadata_for_sra$visit == 3 & simplified_metadata_for_sra$specimen_type == "PetNape1AC1","MERLIN_460_3_PN1AC1",NA)))
+  
+simplified_metadata_for_sra$merging_variable <- paste0(simplified_metadata_for_sra$merging_variable,"_visit_",simplified_metadata_for_sra$visit)
+
+# df variable
+df$merging_variable <-  ifelse(is.na(df$lab_vantage_s_number)==F,df$lab_vantage_s_number,
+                                                       ifelse(is.na(df$lab_vantage_s_number) & df$isolate_id == "55H" & df$household_number =='MER_78',"MERLIN_55_hi_clinical",
+                                                              ifelse(is.na(df$lab_vantage_s_number) & df$isolate_id == "Pet Nape 1A C1" & df$household_number =='460H' & df$visit == 3 & df$location_or_participant == "460hpd1","MERLIN_460_3_PN1AC1",NA)))
+
+df$merging_variable <- paste0(df$merging_variable,"_visit_",df$visit)
+
+df <- left_join(df,simplified_metadata_for_sra)
+```
+
+# Organize dataset
+```{r} 
+## Household
+df$household <- ifelse(grepl("MER",df$household_number_recode), df$isolate_id,df$household_number_recode) %>% gsub("h","H",.)
+## Specimen
+df$specimen <- ifelse(grepl("MER",df$household_number_recode),"Stool 1A",df$isolate_id) %>% gsub("C1|C2|C3","",.)  %>% trimws(.,"both")  %>% gsub("\\)|pink|00784|01240|01238|00794|00792|\\(","",.) %>% trimws(.,"both")  %>% gsub("Petnape","Pet Nape",.) %>% trimws(.,"both") %>% gsub("Petstool","Pet Stool",.) %>% trimws(.,"both") 
+
+df$specimen_category <- ifelse(df$specimen %in% c("Bath 1","Bath 2","Kitchen","Living Room","Washing Machine"),"Environment",
+                                           ifelse(df$specimen %in% c("Pet Nape 1A","Pet Nape 2A","Pet Nape 3A","Pet Stool 1A","Pet Stool 2A"),"Pet",
+                                                  ifelse(df$specimen %in% c("Stool 1A","Stool 2A","Stool 3A"),"Human","Unknown")))
+
+## Individual subject ID
+df$MERLIN_subject_id <- gsub('merlin',"MERLIN",df$merlin_subject_id) %>% gsub("113hpd1","hpd1",.)
+df$subject_category <- str_split(string = df$MERLIN_subject_id,"_",simplify=T) %>% .[,3]
+df$subject_category_simplified <- ifelse(df$subject_category == 'hi','Index',
+                                     ifelse(df$subject_category %in% c("bath1","bath2",'bath2c1'),"Bath",
+                                            ifelse(df$subject_category %in% c("hf1",'hf2'),"Female housemate",
+                                                   ifelse(df$subject_category %in% c("hm1"),"Male housemate",
+                                                          ifelse(df$subject_category %in% c("hpc","hpc1","hpc2","hpc3"),"Cat",
+                                                                 ifelse(df$subject_category %in% c("hpd","hpd1","hpd2"),"Dog",
+                                                                        ifelse(df$subject_category %in% c("hs"),"Other housemate",
+                                                                               ifelse(df$subject_category %in% c("kitchen"),"Kitchen",
+                                                                                                                 ifelse(df$subject_category %in% c("livingroom"),"Living room",
+                                                                                                                        ifelse(df$subject_category %in% c("washingmachine"),"Washing machine","Other"))))))))))
+df$subject_category_recode <- gsub("^hi$","Index",df$subject_category) %>% gsub("bath","Bath ",.) %>% gsub("hf","Female housemate ",.) %>% gsub("hm","Male housemate ",.) %>% gsub("hpc","Cat ",.) %>% gsub("hpd","Dog ",.) %>% gsub('hs','Other housemate',.) %>% gsub("kitchen","Kitchen",.) %>% gsub("livingroom","Living room",.) %>% gsub("washingmachine","Washing machine",.) %>% gsub("c1","",.)
+   
+## Index status
+df$index <-  df$subject_category == 'hi' 
+
+# Isolate name
+df$isolate_name <- paste0(df$MERLIN_subject_id,"_",df$visit,"_",df$specimen)
 ```
 
 # Save

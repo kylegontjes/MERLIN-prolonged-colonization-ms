@@ -29,8 +29,8 @@ sessionInfo()
 
 # Load data
 ```{r}
-df <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")  %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
-isolates <- df$genomic_id 
+df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") 
+isolates <- subset(df,WGS_escre == TRUE & qc_pass == TRUE) %>% .$genomic_id 
 amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(genomic_id %in% isolates)
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% isolates)
 ```
@@ -81,5 +81,10 @@ blactam_info %>% select(-class) %>%  arrange(element_symbol) %>% gontjesr::favor
 # Save
 blactam_info <- blactam_info %>% arrange(element_symbol_renamed)
 
-saveRDS(blactam_info,"./data/amrfinder/beta_lactamase_summary_index_cohort.RDS")
 ```
+
+# Save
+```{r}
+saveRDS(blactam_info,file="./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS")
+```
+

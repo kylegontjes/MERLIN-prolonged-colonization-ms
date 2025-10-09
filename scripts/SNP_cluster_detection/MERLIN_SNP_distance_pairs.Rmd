@@ -28,11 +28,12 @@ sessionInfo()
 
 # Load data
 ```{r} 
-df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") %>% subset(WGS_escre==T & qc_pass==T)
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(WGS_escre==T & qc_pass==T)
 ``` 
 
 ```{r}
 species <- table(df$Species) %>% subset(.>1)  %>% names
+
 species_simple <- str_split(string = species,pattern = " ",simplify = T) %>% apply(.,1,FUN=function(x){
   genus <- x[1] %>% substr(.,1,1)  %>% tolower()
   species <- x[2]
@@ -102,11 +103,11 @@ update_pair_types_w_info <- function(pair_types_df,df,voi){
 ```
 
 ```{r}
-voi = c("household","Species","Species_ST","specimen",'visit','specimen_category','individual_id')
+voi = c("household","Species","Species_ST","specimen",'visit','specimen_category','isolate_name','MERLIN_subject_id')
 
 pairtype_datasets <- pbmcapply::pbmclapply(species_simple,FUN=function(x){ 
   data <- get(paste0(x,"_data"))
-  get_pair_types_mat(data$df,data$mat,type="hospital_location",voi=voi)   
+  get_pair_types_mat(data$df,data$mat,type="type",voi=voi)   
 },mc.cores=6) %>% `names<-`(species_simple)
 
 # Overall

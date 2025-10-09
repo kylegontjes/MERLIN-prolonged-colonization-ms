@@ -11,9 +11,9 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-05-28" />
+<meta name="date" content="2025-10-09" />
 
-<title>Data Cleaning Step 2 - Curate QCD data</title>
+<title>Data Cleaning Step 2 - Curate the sequencing [QCD] data</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,9 +350,10 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Data Cleaning Step 2 - Curate QCD data</h1>
+<h1 class="title toc-ignore">Data Cleaning Step 2 - Curate the
+sequencing [QCD] data</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-05-28</h4>
+<h4 class="date">2025-10-09</h4>
 
 </div>
 
@@ -367,26 +368,26 @@ invisible(lapply(packages,library,character.only=T,quietly=T))
 # Print environment
 set.seed(45) 
 Sys.info()</code></pre>
-<pre><code>##                                                                                             sysname 
-##                                                                                            &quot;Darwin&quot; 
-##                                                                                             release 
-##                                                                                            &quot;24.5.0&quot; 
-##                                                                                             version 
-## &quot;Darwin Kernel Version 24.5.0: Tue Apr 22 19:53:26 PDT 2025; root:xnu-11417.121.6~2/RELEASE_X86_64&quot; 
-##                                                                                            nodename 
-##                                                                                    &quot;msla0572.local&quot; 
-##                                                                                             machine 
-##                                                                                            &quot;x86_64&quot; 
-##                                                                                               login 
-##                                                                                              &quot;root&quot; 
-##                                                                                                user 
-##                                                                                          &quot;kgontjes&quot; 
-##                                                                                      effective_user 
-##                                                                                          &quot;kgontjes&quot;</code></pre>
+<pre><code>##                                                                                                     sysname 
+##                                                                                                    &quot;Darwin&quot; 
+##                                                                                                     release 
+##                                                                                                    &quot;24.6.0&quot; 
+##                                                                                                     version 
+## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
+##                                                                                                    nodename 
+##                                                                                            &quot;msla0572.local&quot; 
+##                                                                                                     machine 
+##                                                                                                    &quot;x86_64&quot; 
+##                                                                                                       login 
+##                                                                                                      &quot;root&quot; 
+##                                                                                                        user 
+##                                                                                                  &quot;kgontjes&quot; 
+##                                                                                              effective_user 
+##                                                                                                  &quot;kgontjes&quot;</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.5.0 (2025-04-11)
+<pre><code>## R version 4.5.1 (2025-06-13)
 ## Platform: x86_64-apple-darwin20
-## Running under: macOS Sequoia 15.5
+## Running under: macOS Sequoia 15.7
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -402,20 +403,20 @@ Sys.info()</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
-##  [5] purrr_1.0.4     readr_2.1.5     tidyr_1.3.1     tibble_3.2.1   
+##  [1] lubridate_1.9.4 forcats_1.0.1   stringr_1.5.2   dplyr_1.1.4    
+##  [5] purrr_1.1.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
 ##  [9] ggplot2_3.5.2   tidyverse_2.0.0 knitr_1.50     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.0     tidyselect_1.2.1  
+##  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.1     tidyselect_1.2.1  
 ##  [5] jquerylib_0.1.4    scales_1.4.0       yaml_2.3.10        fastmap_1.2.0     
-##  [9] R6_2.6.1           generics_0.1.4     bslib_0.9.0        pillar_1.10.2     
+##  [9] R6_2.6.1           generics_0.1.4     bslib_0.9.0        pillar_1.11.1     
 ## [13] RColorBrewer_1.1-3 tzdb_0.5.0         rlang_1.1.6        cachem_1.1.0      
-## [17] stringi_1.8.7      xfun_0.52          sass_0.4.10        timechange_0.3.0  
-## [21] cli_3.6.5          withr_3.0.2        magrittr_2.0.3     digest_0.6.37     
-## [25] grid_4.5.0         rstudioapi_0.17.1  hms_1.1.3          lifecycle_1.0.4   
-## [29] vctrs_0.6.5        evaluate_1.0.3     glue_1.8.0         farver_2.1.2      
-## [33] rmarkdown_2.29     tools_4.5.0        pkgconfig_2.0.3    htmltools_0.5.8.1</code></pre>
+## [17] stringi_1.8.7      xfun_0.53          sass_0.4.10        timechange_0.3.0  
+## [21] cli_3.6.5          withr_3.0.2        magrittr_2.0.4     digest_0.6.37     
+## [25] grid_4.5.1         rstudioapi_0.17.1  hms_1.1.3          lifecycle_1.0.4   
+## [29] vctrs_0.6.5        evaluate_1.0.5     glue_1.8.0         farver_2.1.2      
+## [33] rmarkdown_2.29     tools_4.5.1        pkgconfig_2.0.3    htmltools_0.5.8.1</code></pre>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
@@ -427,11 +428,13 @@ colnames(master_qc) &lt;- colnames(master_qc) %&gt;% gsub(&quot;\\.|\\.\\.\\.&qu
 <pre class="r"><code># Genomic ID
 master_qc$genomic_id &lt;- master_qc$Sample
 # Pass QC
-master_qc$qc_pass &lt;- ifelse(master_qc$QC_Check==&#39;PASS&#39;, TRUE, FALSE) </code></pre>
+master_qc$qc_pass &lt;- ifelse(master_qc$QC_Check==&#39;PASS&#39;, TRUE, FALSE) 
+# Genus
+master_qc$Genus &lt;- str_split(master_qc$Species,&quot; &quot;,simplify=T) %&gt;% .[,1]</code></pre>
 </div>
 <div id="escre-wgs-call" class="section level1">
 <h1>ESCrE WGS Call</h1>
-<pre class="r"><code>escre_list &lt;- read_csv(&quot;../data/INTEGRATE_MERLIN_WGS_Species_calls_030925_LLC.csv&quot;) %&gt;% subset(Enterobacterales ==T)%&gt;% .$Species</code></pre>
+<pre class="r"><code>escre_species_calls &lt;- read_csv(&quot;../data/INTEGRATE_MERLIN_WGS_Species_calls_030925_LLC.csv&quot;) </code></pre>
 <pre><code>## Rows: 75 Columns: 4
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -441,7 +444,8 @@ master_qc$qc_pass &lt;- ifelse(master_qc$QC_Check==&#39;PASS&#39;, TRUE, FALSE) 
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>escre_list</code></pre>
+<pre class="r"><code>escre_list &lt;- c(escre_species_calls %&gt;% subset(Enterobacterales ==T)%&gt;% .$Species,&quot;Kluyvera sichuanensis&quot;)
+escre_list</code></pre>
 <pre><code>##  [1] &quot;Citrobacter amalonaticus&quot;   &quot;Citrobacter europaeus&quot;     
 ##  [3] &quot;Citrobacter farmeri&quot;        &quot;Citrobacter freundii&quot;      
 ##  [5] &quot;Citrobacter koseri&quot;         &quot;Citrobacter portucalensis&quot; 
@@ -457,11 +461,12 @@ master_qc$qc_pass &lt;- ifelse(master_qc$QC_Check==&#39;PASS&#39;, TRUE, FALSE) 
 ## [25] &quot;Morganella morganii&quot;        &quot;Proteus mirabilis&quot;         
 ## [27] &quot;Providencia stuartii&quot;       &quot;Raoultella ornithinolytica&quot;
 ## [29] &quot;Serratia liquefaciens&quot;      &quot;Serratia marcescens&quot;       
-## [31] &quot;Serratia nematodiphila&quot;     &quot;Serratia nevei&quot;</code></pre>
+## [31] &quot;Serratia nematodiphila&quot;     &quot;Serratia nevei&quot;            
+## [33] &quot;Kluyvera sichuanensis&quot;</code></pre>
 <pre class="r"><code>master_qc$WGS_escre &lt;- ifelse(master_qc$Species %in% escre_list,T,F)</code></pre>
 </div>
-<div id="get-sequencing-run-specimen-belonged-to" class="section level1">
-<h1>Get sequencing run specimen belonged to</h1>
+<div id="get-the-specimens-sequencing-run" class="section level1">
+<h1>Get the specimen’s sequencing run</h1>
 <pre class="r"><code>run_11270_ES &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_11270-ES/DemuxStats_11270-ES.csv&#39;) %&gt;% subset(grepl(&quot;MERLIN&quot;,Description))%&gt;% mutate(run = &#39;11270-ES&#39;)
 run_9200_LL &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_9200-LL/DemuxStats_9200-LL_updated.csv&#39;) %&gt;% mutate(run = &#39;9200-LL&#39;)
 run_9200_LL_PurePlex &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_9200-LL_PurePlex/DemuxStats_9200-LL.csv&#39;)%&gt;% mutate(run = &#39;9200-LL_PurePlex&#39;)
@@ -481,12 +486,13 @@ get_sequencing_run &lt;- function(isolate,sequencing_record){
 
 master_qc$sequencing_run &lt;- sapply(master_qc$Sample,get_sequencing_run,sequencing_run_records)</code></pre>
 </div>
-<div id="save" class="section level1">
-<h1>Save</h1>
+<div id="save-the-data" class="section level1">
+<h1>Save the data</h1>
 <pre class="r"><code># All
 saveRDS(master_qc,&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS&quot;)
+
 # QC passing and not negative controls
-master_qc_passing &lt;- subset(master_qc,qc_pass==T &amp; grepl(&quot;NEG_CTL&quot;,genomic_id)==F)
+master_qc_passing &lt;- subset(master_qc,qc_pass == T &amp; grepl(&quot;NEG_CTL&quot;,genomic_id) == F)
 saveRDS(master_qc_passing,&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_passing.RDS&quot;)</code></pre>
 </div>
 

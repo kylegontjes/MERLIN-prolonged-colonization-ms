@@ -1,5 +1,5 @@
 ---
-title: "Generate Beta-lactam presence and location data for each isolate"
+title: "Generate Beta-lactam presence and location data for each index isolate"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -29,10 +29,10 @@ sessionInfo()
 
 # Load data
 ```{r}
-df <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") %>% subset(qc_pass == "TRUE" & WGS_escre == TRUE)
+df <-  readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")   %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0)
 amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(element_symbol_renamed %in% colnames(amrfinder_mat))
-ESCrE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_index_cohort.RDS") 
+ESCrE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS")  %>% subset(element_symbol_renamed %in% colnames(amrfinder_mat))
 mobsuite_gene_pres <- readRDS("./data/ESBL_plasmids/amrfinder_mobsuite_beta_lactamase_presence.RDS") %>% subset(genomic_id %in% df$genomic_id) 
 ESCrE_plasmid_clusters <- readRDS("./data/ESBL_plasmids/amrfinder_ESCrE_contig_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0) 
 ```

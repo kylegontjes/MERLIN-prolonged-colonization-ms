@@ -53,24 +53,6 @@ qcd_results <- rbind(qcd_entries,qcd_entries_failed)
 
 metadata <- left_join(metadata, qcd_results)
 ```
- 
-
-# Clean dataframe  
-```{r} 
-metadata$household <- ifelse(grepl("MER",metadata$household_number_recode), metadata$isolate_id,metadata$household_number_recode) %>% gsub("h","H",.)
-metadata$ST <- ifelse(metadata$ST =="-","Unknown",metadata$ST) 
-metadata$Species_ST <- paste0(metadata$Species," ST ",metadata$ST) %>% trimws(.,"both")
-metadata$specimen <- ifelse(grepl("MER",metadata$household_number_recode),"Stool 1A",metadata$isolate_id)%>% gsub("C1|C2|C3","",.)  %>% trimws(.,"both")  %>% gsub("\\)|pink|00784|01240|01238|00794|00792|\\(","",.) %>% trimws(.,"both")  %>% gsub("Petnape","Pet Nape",.) %>% trimws(.,"both") %>% gsub("Petstool","Pet Stool",.) %>% trimws(.,"both")
-
-metadata$specimen_category <- ifelse(metadata$specimen %in% c("Bath 1","Bath 2","Kitchen","Living Room","Washing Machine"),"Environmnent",
-                                           ifelse(metadata$specimen %in% c("Pet Nape 1A","Pet Nape 2A","Pet Nape 3A","Pet Stool 1A","Pet Stool 2A"),"Pet",
-                                                  ifelse(metadata$specimen %in% c("Stool 1A","Stool 2A","Stool 3A"),"Human","Unknown")))
-
-metadata$individual_id <- paste0(metadata$household,"_",metadata$specimen)
-metadata$index <-  c(grepl('hi',metadata$location_or_participant) & metadata$specimen_category == "Human") | grepl("MER",metadata$household_number_recode) 
-metadata$isolate_name <- paste0(metadata$household,"_",metadata$visit,"_",metadata$specimen)
-```
-
 
 ```{r}
 metadata_clean <- metadata %>% select(-no_correct_platemap,-WGS_qc_pass_runs_num,-WGS_qc_pass_ids_num)

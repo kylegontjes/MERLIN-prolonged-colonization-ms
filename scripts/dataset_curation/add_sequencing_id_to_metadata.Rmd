@@ -42,17 +42,19 @@ sequencing_IMPALA_plate$Sequencing.plate <- gsub("Sequencing plate ","Sequencing
 ```
 
 # Fix one bad entry in IMPALA plate
+## Trim the whitespace!!!
 ```{r}
 sequencing_IMPALA_plate$Sample.ID <- ifelse(sequencing_IMPALA_plate$Sample.ID == '118H V2 B1 C1 ','118H V2 B1 C1', sequencing_IMPALA_plate$Sample.ID)
 ```
 
-# Merge sequencing data
+# Merge sequencing lookup data from MERLIN and IMPALA plates
 ```{r}
 sequencing <- rbind(sequencing_MERLIN_plates, sequencing_IMPALA_plate)
 paste0("Initial number of sequenced genomes: ", nrow(sequencing))
 ```
 
 # Load original and new platemaps
+## Reason: The original platemap location was present in metadata, but the isolates were not sequenced in that position as AGC collapsed plates (see new platemaps)
 ## Function
 ```{r}
 load_plate_map <- function(path,sheet,name){
@@ -79,6 +81,7 @@ platemap_consolidated_2 <- load_plate_map(consolidated_path,2,eight)
 platemap_consolidated_3 <- load_plate_map(consolidated_path,3,eight)
 platemap_consolidated_4 <- load_plate_map(consolidated_path,4,eight)
 ```
+
 # Parse platemaps
 ```{r}
 parse_map <- function(map,num){
@@ -110,8 +113,9 @@ old_map_sum_4 <- parse_map(platemap_original_4,"4")
 old_map_sum_5 <- parse_map(platemap_original_5,"5")
 
 oldmap <- rbind(old_map_sum_1,old_map_sum_2,old_map_sum_3,old_map_sum_4,old_map_sum_5)
-oldmap$map_name <- trimws(oldmap$map_name,"both")
-oldmap <- oldmap
+
+# Cleaning
+oldmap$map_name <- trimws(oldmap$map_name,"both") 
 
 oldmap$map_name <- ifelse(oldmap$map_name == "MER 210  (345H) V1 WM","MER 210 (345H) V1 WM",oldmap$map_name)
 ```
@@ -133,9 +137,9 @@ new_map_sum_3 <- parse_map(platemap_consolidated_3,"3")
 new_map_sum_4 <- parse_map(platemap_consolidated_4,"4")
 newmap <- rbind(new_map_sum_1,new_map_sum_2,new_map_sum_3,new_map_sum_4) 
 
+# Cleaning
 newmap$map_name <- trimws(newmap$map_name,"both")
 ```
-
 
 # Parse Evan's sequencing map dataframe generated from the lookup tables
 ```{r}
@@ -144,7 +148,7 @@ parse_sequencing_map <- function(string){
   batch <- split[,1] %>% str_split(.," ",simplify=T) %>% .[,3]
   num <- split[,1] %>% str_split(.," ",simplify=T) %>% .[,4]%>% as.numeric 
   ro <- split[,2] %>% str_split(.,"-",simplify = T) %>% .[,1] %>% trimws(.,"both")
-  col <-split[,2] %>% str_split(.,"-",simplify = T) %>% .[,2] %>% trimws(.,"both")%>% as.numeric
+  col <-split[,2] %>% str_split(.,"-",simplify = T) %>% .[,2] %>% trimws(.,"both") %>% as.numeric
   dataframe <- cbind(Sequencing.plate = string,batch = batch,plate_final=num,column_final=col,row_final=ro) %>% as.data.frame
   return(dataframe)
 }
@@ -152,6 +156,8 @@ parse_sequencing_map <- function(string){
 sequencing_plate_data <- lapply(sequencing$Sequencing.plate,FUN=parse_sequencing_map) %>% do.call(rbind,.) %>% as.data.frame
 
 sequencing <- left_join(sequencing,sequencing_plate_data)  
+
+# Cleaning
 sequencing$Sample.ID <- trimws(sequencing$Sample.ID,"both")
 sequencing$map_name <- sequencing$Sample.ID
 ```
@@ -163,18 +169,21 @@ newmap_not_same_sequencing <- newmap$map_name[!newmap$map_name %in% sequencing$S
 paste0("Strains not in Evan's consolidated map & the sequencing metadata list")
 newmap_not_same_sequencing
 
+paste0("Reason for issue: Double white space between MER 210 and (345H)")
 newmap$map_name <- ifelse(newmap$map_name == "MER 210  (345H) V1 WM","MER 210 (345H) V1 WM",newmap$map_name)
 
-paste0("This fix harmonized the consolidated map with the sequencing map: ")
+paste0("This fix harmonized the consolidated map with the sequencing map!")
+paste0("Number of isolates not in sequencing map: ")
 newmap$map_name[!newmap$map_name %in% sequencing$Sample.ID]  %>% length
 ```
 
-# Edit Evan's platemap info to match stragglers
+# Edit Evan's platemap info to match stragglers not mapping properly
 ```{r}
 # Merge PS 2A -> PS2A
 newmap$map_name <- ifelse(newmap$map_name == "126H V3 PS 2A C1 (00837)","126H V3 PS2A C1 (00837)",newmap$map_name)
+
 # 118H* V1 B1 C1 -> 
-##Remove the *
+## Remove the *
 newmap$map_name <-  ifelse(newmap$map_name == "118H* V1 B1 C1","118H V1 B1 C1",newmap$map_name)  
 oldmap$map_name <- ifelse(oldmap$map_name == "118H* V1 B1 C1","118H V1 B1 C1",oldmap$map_name)  
 sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "118H* V1 B1 C1","118H V1 B1 C1",sequencing$Sample.ID)  
@@ -199,7 +208,7 @@ newmap$map_name <- ifelse(newmap$map_name=="MER 209 (320H) V1 PN 2A C1","MER 209
 sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "MER 209 (320H) V1 PN 2A C1","MER 209 (320H) V1 PN1AC1",sequencing$Sample.ID)  
 sequencing$map_name <- ifelse(sequencing$map_name == "MER 209 (320H) V1 PN 2A C1","MER 209 (320H) V1 PN1AC1",sequencing$map_name)  
 
-# 91H V2 PN 1A C1 03281 - multiple isolates w/ name, remove the barcode callout
+# 91H V2 PN 1A C1 03281 - multiple isolates w/ name, remove the barcode
 ## 91H V2 PN1A C1 (00522) - > 91H V2 PN1A C1
 oldmap$map_name <- ifelse(oldmap$map_name=="91H V2 PN1A C1 (00522)","91H V2 PN1A C1",oldmap$map_name)
 newmap$map_name <- ifelse(newmap$map_name=="91H V2 PN1A C1 (00522)","91H V2 PN1A C1",newmap$map_name)
@@ -223,12 +232,12 @@ newmap$map_name <- ifelse(newmap$map_name=="445H V3 S1A C2","445H V3 S1A",newmap
 sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "445H V3 S1A C2","445H V3 S1A",sequencing$Sample.ID)  
 sequencing$map_name <- ifelse(sequencing$map_name == "445H V3 S1A C2","445H V3 S1A",sequencing$map_name)  
 
-#  345H V3 S1A C1
-## Change plate location from G9 to G8
+# 370H V2 PN 1A C2
+## Change plate location from G9 to G8 - Appears to have been fixed
 metadata$position <-  ifelse(metadata$position=="G9" & metadata$plate=="5" & metadata$household_number_recode =="370H","G8",metadata$position) 
 
 # 238H V1 B1 C1
-## Change plate location from D6 to D7 
+## Change plate location from D6 to D7 - Appears to have been fixed
 metadata$position <-  ifelse(metadata$position=="D6" & metadata$plate=="1" & metadata$household_number_recode =="238H","D7",metadata$position) 
 
 # 238H V1 K C1 (00843) - Two multiple entries in platemap with different barcode, but same sample info
@@ -241,7 +250,7 @@ sequencing$map_name <- ifelse(sequencing$map_name == "238H V1 K C1 (00843)","238
 oldmap$map_name <- ifelse(oldmap$map_name=="238H V1 K C1 (01240)","238H V1 K C1",oldmap$map_name)
 newmap$map_name <- ifelse(newmap$map_name=="238H V1 K C1 (01240)","238H V1 K C1",newmap$map_name)
 sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "238H V1 K C1 (01240)","238H V1 K C1",sequencing$Sample.ID)  
-sequencing$map_name <- ifelse(sequencing$map_name == "238H V1 K C1 (01240)","238H V1 K C1",sequencing$map_name)  
+sequencing$map_name <- ifelse(sequencing$map_name == "238H V1 K C1 (01240)","238H V1 K C1",sequencing$map_name)
 
 # 293H V3 B1 C2 - Two multiple entries in platemap, but only one in metadata
 ## 293H V3 B1 C1 - > 293H V3 B1
@@ -262,7 +271,7 @@ sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == '182H V2 S1A C1 (01238)',
 sequencing$map_name <- ifelse(sequencing$map_name == '182H V2 S1A C1 (01238)','182H V2 S1A C1',sequencing$map_name) 
 ```
 
-# Merge with impala data
+# Merge with IMPALA plate's data
 ```{r}
 get_impala_info <- function(sequencing_IMPALA_plate_row){ 
   map_name <- sequencing_IMPALA_plate_row[['Sample.ID']]
@@ -280,8 +289,7 @@ IMPALA_map <- apply(sequencing_IMPALA_plate,1,get_impala_info) %>% do.call(rbind
 ```
 
 # Add impala data to old map 
-```{r}
-# Merge with metadata
+```{r} 
 oldmap <- rbind(oldmap,IMPALA_map)
 ```
 
@@ -355,6 +363,7 @@ paste0("Number of metadata entires: ", nrow(qc_summary))
 qc_summary$WGS_qc_pass_runs_num <- sapply(qc_summary$WGS_qc_pass,FUN=function(x){
   str_split(string = x,pattern = ';') %>% unlist %>% subset(.,.==TRUE) %>% length
 })
+
 qc_summary$WGS_qc_pass_ids_num <- sapply(qc_summary$genomic_id_qc_pass,FUN=function(x){
   str_split(string = x,pattern = ';') %>% unlist %>% subset(.!= "") %>% length
 })  

@@ -1,5 +1,6 @@
 ---
 title: "Data Cleaning Step 1 - Curate raw MERLIN metadata"
+author: "Kyle Gontjes"
 output: html_document
 date: "`r Sys.Date()`"
 ---
@@ -7,7 +8,8 @@ date: "`r Sys.Date()`"
 Note:
 1. Received new data on 03/20/25
 2. Received update with plate data on 3/27/25
-2. Received update with final plate data on 4/01/25
+3. Received update with final plate data on 4/01/25 
+4. Fix 168H location_or_participant variable to match SRA metadata on 10/7/25
 
 ```{r setup, include=FALSE}
 require(knitr)
@@ -59,6 +61,7 @@ metadata$household_number_recode <- recode(metadata$household_number,'49h' = '49
 ```
 
 # Edit specific isolates with coding differences 
+## Specifically to enable proper merging with metadata
 ```{r}
 # 113H_2_Pet Stool 1A C1: Remove C1
 metadata$isolate_id_recode <- ifelse(metadata$household_number_recode=="113H" & metadata$visit ==2 & metadata$isolate_id == "Pet Stool 1A C1", "Pet Stool 1A",metadata$isolate_id_recode)
@@ -79,14 +82,16 @@ metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "197H" 
 metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "151H" & metadata$visit == 3 & metadata$isolate_id == "Living Room C1","Living Room", metadata$isolate_id_recode)
 
 metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "151H" & metadata$visit == 3 & metadata$isolate_id == "Washing Machine C1","Washing Machine", metadata$isolate_id_recode)
-```
 
-# Create useful and parsable tag for isolates
-```{r}
-# Metadata
-metadata$isolate_info <- ifelse(grepl("MER", metadata$household_number_recode)==T, paste0(metadata$isolate_id,"_i"), paste0(metadata$household_number_recode, "_",metadata$visit, "_",metadata$isolate_id_recode))
+# 168H: ensure participant ID is correct
+### NEW CHANGE October 2025
+## 168hi
+metadata$location_or_participant <- ifelse(metadata$household_number=="168H" & metadata$visit ==1 & metadata$location_or_participant =='166hi',"168hi",metadata$location_or_participant)
+## 168hm1
+metadata$location_or_participant <- ifelse(metadata$household_number=="168H" & metadata$isolate_id =="Stool 2A C1" & metadata$location_or_participant =='166hf1',"168hm1",metadata$location_or_participant)
 ```
-
+ 
+# Save metadata
 ```{r}
 saveRDS(metadata,"./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.RDS")
 write_csv(metadata,"./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.csv")

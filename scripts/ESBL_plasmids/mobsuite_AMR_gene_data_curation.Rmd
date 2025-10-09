@@ -30,12 +30,12 @@ sessionInfo()
 # Load data
 
 ```{r}  
-df <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")  %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
+df <-  readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS")   %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
 isolates <- df$genomic_id
 
 amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(genomic_id %in% isolates)
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% isolates)
-ESCrE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_index_cohort.RDS")
+ESCrE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS")
  
 mobsuite_contigs <- readRDS("./data/mobsuite/mobsuite_contigs.RDS") %>% subset(genomic_id%in% isolates)
 mobtyper <- readRDS("./data/mobsuite/mobtyper.RDS")%>% subset(genomic_id %in% isolates)

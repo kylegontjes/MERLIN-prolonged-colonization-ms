@@ -32,7 +32,7 @@ sessionInfo()
 # Load data
 
 ```{r cars} 
-df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS")  %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
+df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
 ```
 
 # Curate mobsuite data

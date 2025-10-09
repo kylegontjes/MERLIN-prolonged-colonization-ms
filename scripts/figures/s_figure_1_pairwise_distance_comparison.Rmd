@@ -41,23 +41,22 @@ overall_pair_types <- readRDS("./data/SNP_distance/MERLIN_SNP_distance_pairs_dat
 update_pair_types_df_w_questions <- function(pair_types_df){
   index_cases <- ifelse(pair_types_df$visit1==0 & pair_types_df$visit2==0,T,F)
   same_household <- ifelse(pair_types_df$household1==pair_types_df$household2,T,F)
-  same_household_visit <- ifelse(pair_types_df$household1==pair_types_df$household2 & pair_types_df$visit1==pair_types_df$visit2,T,F)
-  same_specimen <- ifelse(pair_types_df$specimen1==pair_types_df$specimen2,T,F)
-  same_individual <- ifelse(pair_types_df$individual_id1==pair_types_df$individual_id2,T,F)
+  same_household_visit <- ifelse(pair_types_df$household1==pair_types_df$household2 & pair_types_df$visit1==pair_types_df$visit2,T,F) 
+  same_individual <- ifelse(pair_types_df$MERLIN_subject_id1==pair_types_df$MERLIN_subject_id2,T,F)
   ST_pair <- ifelse(pair_types_df$Species_ST1==pair_types_df$Species_ST2,T,F)
   same_specimen_category <- ifelse(pair_types_df$specimen_category1 ==pair_types_df$specimen_category2,T,F)
   both_human <- ifelse(pair_types_df$specimen_category1 == "Human" & pair_types_df$specimen_category2 == "Human",T,F)
   both_pet <- ifelse(pair_types_df$specimen_category1 == "Pet" & pair_types_df$specimen_category2 == "Pet",T,F)
   both_env <- ifelse(pair_types_df$specimen_category1 == "Environment" & pair_types_df$specimen_category2 == "Environment",T,F)  
   
-  dataset <- cbind(pair_types_df,index_cases=index_cases,same_household=same_household,same_household_visit=same_household_visit,same_specimen=same_specimen,ST_pair=ST_pair,same_specimen_category=same_specimen_category,same_individual=same_individual,both_human=both_human,both_pet=both_pet,both_env=both_env)
+  dataset <- cbind(pair_types_df,index_cases=index_cases,same_household=same_household,same_household_visit=same_household_visit,ST_pair=ST_pair,same_specimen_category=same_specimen_category,same_individual=same_individual,both_human=both_human,both_pet=both_pet,both_env=both_env)
   return(dataset)
 }
 ```
 
 ```{r,fig.width=8,fig.height=5}
 overall_pair_types <- overall_pair_types %>% update_pair_types_df_w_questions
-overall_pair_types_index <- subset(overall_pair_types,individual_id1 %in%  df_index$individual_id & individual_id2 %in% df_index$individual_id )
+overall_pair_types_index <- subset(overall_pair_types,MERLIN_subject_id1 %in%  df_index$MERLIN_subject_id & MERLIN_subject_id2 %in% df_index$MERLIN_subject_id )
 
 overall_pair_types_index <- as.data.frame(overall_pair_types_index)
 overall_pair_types_index$pairwise_dist <- as.numeric(overall_pair_types_index$pairwise_dist)

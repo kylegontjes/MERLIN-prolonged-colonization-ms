@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-05-28" />
+<meta name="date" content="2025-10-09" />
 
 <title>Data Cleaning Step 4- Remove duplicates</title>
 
@@ -577,7 +577,7 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 4- Remove
 duplicates</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-05-28</h4>
+<h4 class="date">2025-10-09</h4>
 
 </div>
 
@@ -592,26 +592,26 @@ invisible(lapply(packages,library,character.only=T,quietly=T))
 # Print environment
 set.seed(45) 
 Sys.info()</code></pre>
-<pre><code>##                                                                                             sysname 
-##                                                                                            &quot;Darwin&quot; 
-##                                                                                             release 
-##                                                                                            &quot;24.5.0&quot; 
-##                                                                                             version 
-## &quot;Darwin Kernel Version 24.5.0: Tue Apr 22 19:53:26 PDT 2025; root:xnu-11417.121.6~2/RELEASE_X86_64&quot; 
-##                                                                                            nodename 
-##                                                                                    &quot;msla0572.local&quot; 
-##                                                                                             machine 
-##                                                                                            &quot;x86_64&quot; 
-##                                                                                               login 
-##                                                                                              &quot;root&quot; 
-##                                                                                                user 
-##                                                                                          &quot;kgontjes&quot; 
-##                                                                                      effective_user 
-##                                                                                          &quot;kgontjes&quot;</code></pre>
+<pre><code>##                                                                                                     sysname 
+##                                                                                                    &quot;Darwin&quot; 
+##                                                                                                     release 
+##                                                                                                    &quot;24.6.0&quot; 
+##                                                                                                     version 
+## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
+##                                                                                                    nodename 
+##                                                                                            &quot;msla0572.local&quot; 
+##                                                                                                     machine 
+##                                                                                                    &quot;x86_64&quot; 
+##                                                                                                       login 
+##                                                                                                      &quot;root&quot; 
+##                                                                                                        user 
+##                                                                                                  &quot;kgontjes&quot; 
+##                                                                                              effective_user 
+##                                                                                                  &quot;kgontjes&quot;</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.5.0 (2025-04-11)
+<pre><code>## R version 4.5.1 (2025-06-13)
 ## Platform: x86_64-apple-darwin20
-## Running under: macOS Sequoia 15.5
+## Running under: macOS Sequoia 15.7
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -627,32 +627,34 @@ Sys.info()</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] kableExtra_1.4.0 ape_5.8-1        lubridate_1.9.4  forcats_1.0.0   
-##  [5] stringr_1.5.1    dplyr_1.1.4      purrr_1.0.4      readr_2.1.5     
-##  [9] tidyr_1.3.1      tibble_3.2.1     ggplot2_3.5.2    tidyverse_2.0.0 
+##  [1] kableExtra_1.4.0 ape_5.8-1        lubridate_1.9.4  forcats_1.0.1   
+##  [5] stringr_1.5.2    dplyr_1.1.4      purrr_1.1.0      readr_2.1.5     
+##  [9] tidyr_1.3.1      tibble_3.3.0     ggplot2_3.5.2    tidyverse_2.0.0 
 ## [13] knitr_1.50      
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.0     Rcpp_1.0.14       
-##  [5] tidyselect_1.2.1   xml2_1.3.8         parallel_4.5.0     jquerylib_0.1.4   
-##  [9] systemfonts_1.2.2  scales_1.4.0       yaml_2.3.10        fastmap_1.2.0     
-## [13] lattice_0.22-7     R6_2.6.1           generics_0.1.4     svglite_2.1.3     
-## [17] bslib_0.9.0        pillar_1.10.2      RColorBrewer_1.1-3 tzdb_0.5.0        
-## [21] rlang_1.1.6        cachem_1.1.0       stringi_1.8.7      xfun_0.52         
-## [25] sass_0.4.10        viridisLite_0.4.2  timechange_0.3.0   cli_3.6.5         
-## [29] withr_3.0.2        magrittr_2.0.3     digest_0.6.37      grid_4.5.0        
-## [33] rstudioapi_0.17.1  hms_1.1.3          nlme_3.1-168       lifecycle_1.0.4   
-## [37] vctrs_0.6.5        evaluate_1.0.3     glue_1.8.0         farver_2.1.2      
-## [41] rmarkdown_2.29     tools_4.5.0        pkgconfig_2.0.3    htmltools_0.5.8.1</code></pre>
+##  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.1     Rcpp_1.1.0        
+##  [5] tidyselect_1.2.1   xml2_1.4.0         parallel_4.5.1     jquerylib_0.1.4   
+##  [9] textshaping_1.0.3  systemfonts_1.2.3  scales_1.4.0       yaml_2.3.10       
+## [13] fastmap_1.2.0      lattice_0.22-7     R6_2.6.1           generics_0.1.4    
+## [17] svglite_2.2.1      bslib_0.9.0        pillar_1.11.1      RColorBrewer_1.1-3
+## [21] tzdb_0.5.0         rlang_1.1.6        cachem_1.1.0       stringi_1.8.7     
+## [25] xfun_0.53          sass_0.4.10        viridisLite_0.4.2  timechange_0.3.0  
+## [29] cli_3.6.5          withr_3.0.2        magrittr_2.0.4     digest_0.6.37     
+## [33] grid_4.5.1         rstudioapi_0.17.1  hms_1.1.3          nlme_3.1-168      
+## [37] lifecycle_1.0.4    vctrs_0.6.5        evaluate_1.0.5     glue_1.8.0        
+## [41] farver_2.1.2       rmarkdown_2.29     tools_4.5.1        pkgconfig_2.0.3   
+## [45] htmltools_0.5.8.1</code></pre>
 </div>
 <div id="load-metadata" class="section level1">
 <h1>Load metadata</h1>
 <pre class="r"><code>metadata &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id.RDS&quot;)
 qcd &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS&quot;)
-sequencing_MERLIN_plates &lt;- read.delim(&quot;../../Sequence_data/metadata/sample_lookup/2023-08-24_MERLIN_genome_sample_lookup.txt&quot;) </code></pre>
+sequencing_MERLIN_plates &lt;- read.delim(&quot;../../Sequence_data/metadata/sample_lookup/2023-08-24_MERLIN_genome_sample_lookup.txt&quot;)  
+sequencing_MERLIN_plates$Sequencing.plate &lt;- gsub(&quot;Sequencing plate &quot;,&quot;Sequencing plate MERLIN &quot;, sequencing_MERLIN_plates$Sequencing.plate)   </code></pre>
 </div>
-<div id="get-escre-data" class="section level1">
-<h1>Get ESCRE data</h1>
+<div id="get-escre-qc-passing-genome-data" class="section level1">
+<h1>Get ESCRE qc-passing genome data</h1>
 <pre class="r"><code>get_escre_data &lt;- function(passing_genomes){
   genomes &lt;- str_split(passing_genomes,pattern = &quot;;&quot;) %&gt;% unlist %&gt;% as.vector()
   qcd_sub &lt;- subset(qcd, Sample %in% genomes &amp; WGS_escre ==TRUE &amp; qc_pass==TRUE)
@@ -672,8 +674,10 @@ metadata$genomic_id_qc_pass_escre_num &lt;-  sapply(metadata$genomic_id_qc_pass_
 
 metadata$genomic_id &lt;- metadata$genomic_id_qc_pass_escre</code></pre>
 </div>
-<div id="deal-with-the-16-duplicates" class="section level1">
-<h1>Deal with the 16 duplicates</h1>
+<div id="identify-and-deal-with-the-duplicates" class="section level1">
+<h1>Identify and deal with the duplicates</h1>
+<div id="note-some-duplicate-rows-existed" class="section level2">
+<h2>Note: Some duplicate rows existed</h2>
 <pre class="r"><code>table(metadata$genomic_id_qc_pass_escre_num )</code></pre>
 <pre><code>## 
 ##   0   1   2   3 
@@ -681,6 +685,9 @@ metadata$genomic_id &lt;- metadata$genomic_id_qc_pass_escre</code></pre>
 <pre class="r"><code>metadata_duplicates &lt;- subset(metadata,genomic_id_qc_pass_escre_num &gt; 1)
 paste0(&quot;Number of duplicates: &quot;, nrow(metadata_duplicates))</code></pre>
 <pre><code>## [1] &quot;Number of duplicates: 16&quot;</code></pre>
+<pre class="r"><code>paste0(&quot;Number of unique QC passing duplicates eduplicates: &quot;, length(metadata_duplicates$genomic_id_qc_pass_escre %&gt;% unique))</code></pre>
+<pre><code>## [1] &quot;Number of unique QC passing duplicates eduplicates: 14&quot;</code></pre>
+</div>
 </div>
 <div id="distance-data" class="section level1">
 <h1>Distance data</h1>
@@ -741,6 +748,11 @@ duplicates_qc &lt;- lapply(duplicates,FUN=function(x){
 </div>
 <div id="merlin_128merlin_45" class="section level1">
 <h1>1. MERLIN_128;MERLIN_45</h1>
+<div id="story-they-are-the-same-1-snp-difference" class="section level2">
+<h2>Story: They are the same, 1 SNP difference</h2>
+</div>
+<div id="choice-keep-128" class="section level2">
+<h2>Choice: Keep 128</h2>
 <pre class="r"><code>MERLIN_128_MERLIN_45 &lt;- duplicates_qc[[duplicates[1]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -847,6 +859,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -945,6 +960,9 @@ MERLIN_128
 TRUE
 </td>
 <td style="text-align:left;">
+Escherichia
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1041,6 +1059,9 @@ MERLIN_45
 TRUE
 </td>
 <td style="text-align:left;">
+Escherichia
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1053,8 +1074,14 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_45&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[1],gsub(&quot;MERLIN_45&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_148-merlin_193" class="section level1">
 <h1>2. MERLIN_148 MERLIN_193</h1>
+<div id="story-they-are-the-same-0-snp-difference" class="section level2">
+<h2>Story: They are the same, 0 SNP difference</h2>
+</div>
+<div id="choice-keep-193" class="section level2">
+<h2>Choice: Keep 193</h2>
 <pre class="r"><code>MERLIN_148_MERLIN_193 &lt;- duplicates_qc[[duplicates[2]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -1161,6 +1188,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -1259,6 +1289,9 @@ MERLIN_193
 TRUE
 </td>
 <td style="text-align:left;">
+Escherichia
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1355,6 +1388,9 @@ MERLIN_148
 TRUE
 </td>
 <td style="text-align:left;">
+Escherichia
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1367,8 +1403,14 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_148&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[2],gsub(&quot;MERLIN_148&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_210-merlin_198" class="section level1">
 <h1>3. MERLIN_210 MERLIN_198</h1>
+<div id="story-they-are-the-same-1-snp-difference-1" class="section level2">
+<h2>Story: They are the same, 1 SNP difference</h2>
+</div>
+<div id="choice-keep-210" class="section level2">
+<h2>Choice: Keep 210</h2>
 <pre class="r"><code>MERLIN_210_MERLIN_198 &lt;- duplicates_qc[[duplicates[3]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -1475,6 +1517,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -1573,6 +1618,9 @@ MERLIN_210
 TRUE
 </td>
 <td style="text-align:left;">
+Klebsiella
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1669,6 +1717,9 @@ MERLIN_198
 TRUE
 </td>
 <td style="text-align:left;">
+Klebsiella
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1681,8 +1732,14 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_198&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[3],gsub(&quot;MERLIN_198&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_265-merlin_181" class="section level1">
 <h1>4. MERLIN_265 MERLIN_181</h1>
+<div id="story-they-are-the-same-0-snp-difference-1" class="section level2">
+<h2>Story: They are the same, 0 SNP difference</h2>
+</div>
+<div id="choice-keep-265" class="section level2">
+<h2>Choice: Keep 265</h2>
 <pre class="r"><code>MERLIN_265_MERLIN_181 &lt;- duplicates_qc[[duplicates[4]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -1789,6 +1846,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -1887,6 +1947,9 @@ MERLIN_265
 TRUE
 </td>
 <td style="text-align:left;">
+Escherichia
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1983,6 +2046,9 @@ MERLIN_181
 TRUE
 </td>
 <td style="text-align:left;">
+Escherichia
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -1995,8 +2061,14 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_181&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[4],gsub(&quot;MERLIN_181&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_23-merlin_34" class="section level1">
 <h1>5. MERLIN_23 MERLIN_34</h1>
+<div id="story-they-are-the-same-0-snp-difference-2" class="section level2">
+<h2>Story: They are the same, 0 SNP difference</h2>
+</div>
+<div id="choice-keep-34" class="section level2">
+<h2>Choice: Keep 34</h2>
 <pre class="r"><code>MERLIN_23_MERLIN_34 &lt;- duplicates_qc[[duplicates[5]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -2103,6 +2175,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -2202,6 +2277,9 @@ MERLIN_34
 TRUE
 </td>
 <td style="text-align:left;">
+Citrobacter
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -2299,6 +2377,9 @@ MERLIN_23
 TRUE
 </td>
 <td style="text-align:left;">
+Citrobacter
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -2309,15 +2390,21 @@ TRUE
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_23&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_23&quot;</code></pre>
-<pre class="r"><code>MERLIN_23_plate &lt;- sequencing_MERLIN_plates %&gt;% subset(Genome.ID == &quot;MERLIN_23&quot;) %&gt;% .$Sequencing.plate %&gt;% str_split(.,&quot;,&quot;,simplify=T) %&gt;% .[,1] %&gt;% gsub(&quot;Sequencing plate &quot;,&quot;&quot;,.)
+<pre class="r"><code>MERLIN_23_plate &lt;- sequencing_MERLIN_plates %&gt;% subset(Genome.ID == &quot;MERLIN_23&quot;) %&gt;% .$Sequencing.plate %&gt;% str_split(.,&quot;,&quot;,simplify=T) %&gt;% .[,1] %&gt;% gsub(&quot;Sequencing plate MERLIN &quot;,&quot;&quot;,.)
 MERLIN_23_position &lt;- sequencing_MERLIN_plates %&gt;% subset(Genome.ID == &quot;MERLIN_23&quot;) %&gt;% .$Sequencing.plate %&gt;% str_split(.,&quot;,&quot;,simplify=T) %&gt;% .[,2] %&gt;% gsub(&quot; |-&quot;,&quot;&quot;,.)
 MERLIN_23_metadata_entry &lt;- metadata %&gt;% subset(plate == MERLIN_23_plate &amp; position ==MERLIN_23_position) %&gt;% .$isolate_id
 
 metadata &lt;- metadata %&gt;% subset(isolate_id != MERLIN_23_metadata_entry)
 metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[5],gsub(&quot;MERLIN_23&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_105-merlin_273" class="section level1">
 <h1>6. MERLIN_105 MERLIN_273</h1>
+<div id="story-they-are-virtually-the-same-5-snp-difference" class="section level2">
+<h2>Story: They are virtually the same, 5 SNP difference</h2>
+</div>
+<div id="choice-keep-105" class="section level2">
+<h2>Choice: Keep 105</h2>
 <pre class="r"><code>MERLIN_105_MERLIN_273 &lt;- duplicates_qc[[duplicates[6]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -2424,6 +2511,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -2522,6 +2612,9 @@ MERLIN_105
 TRUE
 </td>
 <td style="text-align:left;">
+Klebsiella
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -2618,6 +2711,9 @@ MERLIN_273
 TRUE
 </td>
 <td style="text-align:left;">
+Klebsiella
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -2630,10 +2726,14 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_273&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[6],gsub(&quot;MERLIN_273&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_13-merlin_19" class="section level1">
 <h1>7. MERLIN_13 MERLIN_19</h1>
-<div id="note-different-species" class="section level2">
-<h2>Note: Different species</h2>
+<div id="story-they-are-different-species" class="section level2">
+<h2>Story: They are different species</h2>
+</div>
+<div id="choice-dulicate-rows-and-split-up" class="section level2">
+<h2>Choice: Dulicate rows and split up!</h2>
 <pre class="r"><code>MERLIN_13_MERLIN_19 &lt;- duplicates_qc[[duplicates[7]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -2655,6 +2755,11 @@ metadata$genomic_id &lt;- ifelse(metadata$map_name == MERLIN_13_MERLIN_19_mapnam
 </div>
 <div id="merlin_35-merlin_46" class="section level1">
 <h1>8. MERLIN_35 MERLIN_46</h1>
+<div id="story-they-are-the-same---1-snp-difference" class="section level2">
+<h2>Story: They are the same - 1 SNP difference</h2>
+</div>
+<div id="choice-keep-merlin_46" class="section level2">
+<h2>Choice: Keep MERLIN_46</h2>
 <pre class="r"><code>MERLIN_35_MERLIN_46 &lt;- duplicates_qc[[duplicates[8]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -2761,6 +2866,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -2859,6 +2967,9 @@ MERLIN_46
 TRUE
 </td>
 <td style="text-align:left;">
+Enterobacter
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -2955,6 +3066,9 @@ MERLIN_35
 TRUE
 </td>
 <td style="text-align:left;">
+Enterobacter
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -2967,8 +3081,14 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_35&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[8],gsub(&quot;MERLIN_35&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_re_3-merlin_289" class="section level1">
 <h1>9. MERLIN_RE_3 MERLIN_289</h1>
+<div id="story-they-are-the-same---0-snp-difference" class="section level2">
+<h2>Story: They are the same - 0 SNP difference</h2>
+</div>
+<div id="choice-keep-merlin_re_3" class="section level2">
+<h2>Choice: Keep MERLIN_RE_3</h2>
 <pre class="r"><code>MERLIN_RE_3_MERLIN_289 &lt;- duplicates_qc[[duplicates[9]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -3075,6 +3195,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -3173,6 +3296,9 @@ MERLIN_RE_3
 TRUE
 </td>
 <td style="text-align:left;">
+Escherichia
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -3269,6 +3395,9 @@ MERLIN_289
 TRUE
 </td>
 <td style="text-align:left;">
+Escherichia
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -3281,10 +3410,14 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_289&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[9],gsub(&quot;MERLIN_289&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_211-merlin_246" class="section level1">
 <h1>10. MERLIN_211 MERLIN_246</h1>
-<div id="note-very-different" class="section level2">
-<h2>Note very different!</h2>
+<div id="story-they-are-very-different" class="section level2">
+<h2>Story: They are very different!</h2>
+</div>
+<div id="choice-split-metadata-in-two" class="section level2">
+<h2>Choice: Split metadata in two!</h2>
 <pre class="r"><code>MERLIN_211_MERLIN_246 &lt;- duplicates_qc[[duplicates[10]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -3306,6 +3439,11 @@ metadata &lt;- subset(metadata,!metadata$genomic_id_qc_pass %in% duplicates[10])
 </div>
 <div id="merlin_234-merlin_233" class="section level1">
 <h1>11. MERLIN_234 MERLIN_233</h1>
+<div id="story-they-are-close-enough---25-snp-different-different" class="section level2">
+<h2>Story: They are close enough - 25 SNP different different!</h2>
+</div>
+<div id="choice-keep-234" class="section level2">
+<h2>Choice: Keep 234</h2>
 <pre class="r"><code>MERLIN_234_MERLIN_233 &lt;- duplicates_qc[[duplicates[11]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -3412,6 +3550,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -3510,6 +3651,9 @@ MERLIN_234
 TRUE
 </td>
 <td style="text-align:left;">
+Klebsiella
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -3606,6 +3750,9 @@ MERLIN_233
 TRUE
 </td>
 <td style="text-align:left;">
+Klebsiella
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -3618,8 +3765,14 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_233&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[11],gsub(&quot;MERLIN_233&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_120-merlin_287" class="section level1">
 <h1>12. MERLIN_120 MERLIN_287</h1>
+<div id="story-they-are-very-similar-1-snp-difference" class="section level2">
+<h2>Story: They are very similar 1 SNP difference</h2>
+</div>
+<div id="choice-keep-287" class="section level2">
+<h2>Choice: Keep 287</h2>
 <pre class="r"><code>MERLIN_120_MERLIN_287 &lt;- duplicates_qc[[duplicates[12]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -3726,6 +3879,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -3824,6 +3980,9 @@ MERLIN_287
 TRUE
 </td>
 <td style="text-align:left;">
+Klebsiella
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -3920,6 +4079,9 @@ MERLIN_120
 TRUE
 </td>
 <td style="text-align:left;">
+Klebsiella
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -3932,8 +4094,14 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_120&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[12],gsub(&quot;MERLIN_120&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_118-merlin_87" class="section level1">
 <h1>13. MERLIN_118 MERLIN_87</h1>
+<div id="story-they-are-very-similar-1-snp-difference-1" class="section level2">
+<h2>Story: They are very similar 1 SNP difference</h2>
+</div>
+<div id="choice-keep-87" class="section level2">
+<h2>Choice: Keep 87</h2>
 <pre class="r"><code>MERLIN_118_MERLIN_87 &lt;- duplicates_qc[[duplicates[13]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -4040,6 +4208,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -4138,6 +4309,9 @@ MERLIN_87
 TRUE
 </td>
 <td style="text-align:left;">
+Klebsiella
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -4234,6 +4408,9 @@ MERLIN_118
 TRUE
 </td>
 <td style="text-align:left;">
+Klebsiella
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -4246,8 +4423,14 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_118&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[13],gsub(&quot;MERLIN_118&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
+</div>
 <div id="merlin_re_8-merlin_294-merlin_61" class="section level1">
 <h1>14. MERLIN_RE_8 MERLIN_294 MERLIN_61</h1>
+<div id="story-they-are-very-similar-1-2-snp-differences" class="section level2">
+<h2>Story: They are very similar 1-2 SNP differences</h2>
+</div>
+<div id="choice-keep-61" class="section level2">
+<h2>Choice: Keep 61</h2>
 <pre class="r"><code>MERLIN_RE_8_MERLIN_294_MERLIN_61 &lt;- duplicates_qc[[duplicates[14]]]
 
 paste0(&quot;Species: &quot;)</code></pre>
@@ -4355,6 +4538,9 @@ genomic_id
 qc_pass
 </th>
 <th style="text-align:left;">
+Genus
+</th>
+<th style="text-align:left;">
 WGS_escre
 </th>
 <th style="text-align:left;">
@@ -4453,6 +4639,9 @@ MERLIN_61
 TRUE
 </td>
 <td style="text-align:left;">
+Citrobacter
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -4547,6 +4736,9 @@ MERLIN_294
 </td>
 <td style="text-align:left;">
 TRUE
+</td>
+<td style="text-align:left;">
+Citrobacter
 </td>
 <td style="text-align:left;">
 TRUE
@@ -4645,6 +4837,9 @@ MERLIN_RE_8
 TRUE
 </td>
 <td style="text-align:left;">
+Citrobacter
+</td>
+<td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
@@ -4660,13 +4855,20 @@ TRUE
 <pre><code>## [1] &quot;Drop MERLIN_294 MERLIN_RE_8&quot;</code></pre>
 <pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[14],gsub(&quot;MERLIN_294&quot;,&quot;&quot;,metadata$genomic_id)  %&gt;% gsub(&quot;MERLIN_RE_8&quot;,&quot;&quot;,.),metadata$genomic_id)  </code></pre>
 </div>
-<div id="edit-the-genomic-id" class="section level1">
-<h1>Edit the genomic id</h1>
-<pre class="r"><code>metadata$genomic_id &lt;- trimws(metadata$genomic_id,&#39;both&#39;,&quot;;&quot;)
+</div>
+<div id="curate-the-final-genomic_id-variable" class="section level1">
+<h1>Curate the final genomic_id variable</h1>
+<div id="for-non-escre-the-qc-passing-ids-are-provided.-if-no-qc-passing-ids-exist-the-overall-list-of-that-samples-genome-ids-are-provided" class="section level2">
+<h2>For non-ESCrE, the qc-passing IDs are provided. If no qc-passing IDs
+exist, the overall list of that sample’s genome IDs are provided</h2>
+<pre class="r"><code># Trim whitespace
+metadata$genomic_id &lt;- trimws(metadata$genomic_id,&#39;both&#39;,&quot;;&quot;)
+# Add the genomic IDs for qc failing genomes that only have failing genomes
 metadata$genomic_id &lt;- ifelse(metadata$genomic_id==&#39;&#39; &amp; metadata$WGS_qc_pass_ids_num &gt; 0,metadata$genomic_id_qc_pass,metadata$genomic_id)
 metadata$genomic_id &lt;- ifelse(metadata$genomic_id==&#39;&#39; &amp; metadata$WGS_qc_pass_ids_num == 0,metadata$Genome_ID,metadata$genomic_id)
 
 saveRDS(metadata,&quot;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed.RDS&quot;)</code></pre>
+</div>
 </div>
 
 

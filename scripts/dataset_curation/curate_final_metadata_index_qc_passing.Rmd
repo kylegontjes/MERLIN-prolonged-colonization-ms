@@ -31,9 +31,17 @@ sessionInfo()
 # Update - changed from 30 to 25 SNP threshold
 
 ```{r}  
+# Overall dataset
 df <- readRDS("/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS")
+paste0("Number of overall isolates: ",nrow(df))
+
+# QC passing ESCrE genomes
 df_qc_passing <-  df %>% subset(qc_pass=="TRUE" & WGS_escre==TRUE)
+paste0("Number of overall ESCrE qc-passing isolates: ",nrow(df_qc_passing))
+
+# Index isolates
 df_index <- subset(df_qc_passing, index==TRUE)
+paste0("Number of index isolates: ",nrow(df_index))
 ```
 
 # Save

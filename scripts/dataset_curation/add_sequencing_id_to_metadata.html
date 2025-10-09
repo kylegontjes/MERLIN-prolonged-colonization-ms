@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-05-28" />
+<meta name="date" content="2025-10-09" />
 
 <title>Data Cleaning Step 3- Platemap Harmonization with Metadata</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 3- Platemap
 Harmonization with Metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-05-28</h4>
+<h4 class="date">2025-10-09</h4>
 
 </div>
 
@@ -370,26 +370,26 @@ invisible(lapply(packages,library,character.only=T,quietly=T))
 # Print environment
 set.seed(45) 
 Sys.info()</code></pre>
-<pre><code>##                                                                                             sysname 
-##                                                                                            &quot;Darwin&quot; 
-##                                                                                             release 
-##                                                                                            &quot;24.5.0&quot; 
-##                                                                                             version 
-## &quot;Darwin Kernel Version 24.5.0: Tue Apr 22 19:53:26 PDT 2025; root:xnu-11417.121.6~2/RELEASE_X86_64&quot; 
-##                                                                                            nodename 
-##                                                                                    &quot;msla0572.local&quot; 
-##                                                                                             machine 
-##                                                                                            &quot;x86_64&quot; 
-##                                                                                               login 
-##                                                                                              &quot;root&quot; 
-##                                                                                                user 
-##                                                                                          &quot;kgontjes&quot; 
-##                                                                                      effective_user 
-##                                                                                          &quot;kgontjes&quot;</code></pre>
+<pre><code>##                                                                                                     sysname 
+##                                                                                                    &quot;Darwin&quot; 
+##                                                                                                     release 
+##                                                                                                    &quot;24.6.0&quot; 
+##                                                                                                     version 
+## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
+##                                                                                                    nodename 
+##                                                                                            &quot;msla0572.local&quot; 
+##                                                                                                     machine 
+##                                                                                                    &quot;x86_64&quot; 
+##                                                                                                       login 
+##                                                                                                      &quot;root&quot; 
+##                                                                                                        user 
+##                                                                                                  &quot;kgontjes&quot; 
+##                                                                                              effective_user 
+##                                                                                                  &quot;kgontjes&quot;</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.5.0 (2025-04-11)
+<pre><code>## R version 4.5.1 (2025-06-13)
 ## Platform: x86_64-apple-darwin20
-## Running under: macOS Sequoia 15.5
+## Running under: macOS Sequoia 15.7
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -405,20 +405,20 @@ Sys.info()</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
-##  [5] purrr_1.0.4     readr_2.1.5     tidyr_1.3.1     tibble_3.2.1   
+##  [1] lubridate_1.9.4 forcats_1.0.1   stringr_1.5.2   dplyr_1.1.4    
+##  [5] purrr_1.1.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
 ##  [9] ggplot2_3.5.2   tidyverse_2.0.0 knitr_1.50     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.0     tidyselect_1.2.1  
+##  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.1     tidyselect_1.2.1  
 ##  [5] jquerylib_0.1.4    scales_1.4.0       yaml_2.3.10        fastmap_1.2.0     
-##  [9] R6_2.6.1           generics_0.1.4     bslib_0.9.0        pillar_1.10.2     
+##  [9] R6_2.6.1           generics_0.1.4     bslib_0.9.0        pillar_1.11.1     
 ## [13] RColorBrewer_1.1-3 tzdb_0.5.0         rlang_1.1.6        cachem_1.1.0      
-## [17] stringi_1.8.7      xfun_0.52          sass_0.4.10        timechange_0.3.0  
-## [21] cli_3.6.5          withr_3.0.2        magrittr_2.0.3     digest_0.6.37     
-## [25] grid_4.5.0         rstudioapi_0.17.1  hms_1.1.3          lifecycle_1.0.4   
-## [29] vctrs_0.6.5        evaluate_1.0.3     glue_1.8.0         farver_2.1.2      
-## [33] rmarkdown_2.29     tools_4.5.0        pkgconfig_2.0.3    htmltools_0.5.8.1</code></pre>
+## [17] stringi_1.8.7      xfun_0.53          sass_0.4.10        timechange_0.3.0  
+## [21] cli_3.6.5          withr_3.0.2        magrittr_2.0.4     digest_0.6.37     
+## [25] grid_4.5.1         rstudioapi_0.17.1  hms_1.1.3          lifecycle_1.0.4   
+## [29] vctrs_0.6.5        evaluate_1.0.5     glue_1.8.0         farver_2.1.2      
+## [33] rmarkdown_2.29     tools_4.5.1        pkgconfig_2.0.3    htmltools_0.5.8.1</code></pre>
 </div>
 <div id="load-metdadata" class="section level1">
 <h1>Load metdadata</h1>
@@ -438,16 +438,24 @@ sequencing_IMPALA_plate$Sequencing.plate &lt;- gsub(&quot;Sequencing plate &quot
 </div>
 <div id="fix-one-bad-entry-in-impala-plate" class="section level1">
 <h1>Fix one bad entry in IMPALA plate</h1>
+<div id="trim-the-whitespace" class="section level2">
+<h2>Trim the whitespace!!!</h2>
 <pre class="r"><code>sequencing_IMPALA_plate$Sample.ID &lt;- ifelse(sequencing_IMPALA_plate$Sample.ID == &#39;118H V2 B1 C1 &#39;,&#39;118H V2 B1 C1&#39;, sequencing_IMPALA_plate$Sample.ID)</code></pre>
 </div>
-<div id="merge-sequencing-data" class="section level1">
-<h1>Merge sequencing data</h1>
+</div>
+<div id="merge-sequencing-lookup-data-from-merlin-and-impala-plates" class="section level1">
+<h1>Merge sequencing lookup data from MERLIN and IMPALA plates</h1>
 <pre class="r"><code>sequencing &lt;- rbind(sequencing_MERLIN_plates, sequencing_IMPALA_plate)
 paste0(&quot;Initial number of sequenced genomes: &quot;, nrow(sequencing))</code></pre>
 <pre><code>## [1] &quot;Initial number of sequenced genomes: 302&quot;</code></pre>
 </div>
 <div id="load-original-and-new-platemaps" class="section level1">
 <h1>Load original and new platemaps</h1>
+<div id="reason-the-original-platemap-location-was-present-in-metadata-but-the-isolates-were-not-sequenced-in-that-position-as-agc-collapsed-plates-see-new-platemaps" class="section level2">
+<h2>Reason: The original platemap location was present in metadata, but
+the isolates were not sequenced in that position as AGC collapsed plates
+(see new platemaps)</h2>
+</div>
 <div id="function" class="section level2">
 <h2>Function</h2>
 <pre class="r"><code>load_plate_map &lt;- function(path,sheet,name){
@@ -608,8 +616,9 @@ old_map_sum_4 &lt;- parse_map(platemap_original_4,&quot;4&quot;)
 old_map_sum_5 &lt;- parse_map(platemap_original_5,&quot;5&quot;)
 
 oldmap &lt;- rbind(old_map_sum_1,old_map_sum_2,old_map_sum_3,old_map_sum_4,old_map_sum_5)
-oldmap$map_name &lt;- trimws(oldmap$map_name,&quot;both&quot;)
-oldmap &lt;- oldmap
+
+# Cleaning
+oldmap$map_name &lt;- trimws(oldmap$map_name,&quot;both&quot;) 
 
 oldmap$map_name &lt;- ifelse(oldmap$map_name == &quot;MER 210  (345H) V1 WM&quot;,&quot;MER 210 (345H) V1 WM&quot;,oldmap$map_name)</code></pre>
 </div>
@@ -629,6 +638,7 @@ new_map_sum_3 &lt;- parse_map(platemap_consolidated_3,&quot;3&quot;)
 new_map_sum_4 &lt;- parse_map(platemap_consolidated_4,&quot;4&quot;)
 newmap &lt;- rbind(new_map_sum_1,new_map_sum_2,new_map_sum_3,new_map_sum_4) 
 
+# Cleaning
 newmap$map_name &lt;- trimws(newmap$map_name,&quot;both&quot;)</code></pre>
 </div>
 </div>
@@ -640,7 +650,7 @@ tables</h1>
   batch &lt;- split[,1] %&gt;% str_split(.,&quot; &quot;,simplify=T) %&gt;% .[,3]
   num &lt;- split[,1] %&gt;% str_split(.,&quot; &quot;,simplify=T) %&gt;% .[,4]%&gt;% as.numeric 
   ro &lt;- split[,2] %&gt;% str_split(.,&quot;-&quot;,simplify = T) %&gt;% .[,1] %&gt;% trimws(.,&quot;both&quot;)
-  col &lt;-split[,2] %&gt;% str_split(.,&quot;-&quot;,simplify = T) %&gt;% .[,2] %&gt;% trimws(.,&quot;both&quot;)%&gt;% as.numeric
+  col &lt;-split[,2] %&gt;% str_split(.,&quot;-&quot;,simplify = T) %&gt;% .[,2] %&gt;% trimws(.,&quot;both&quot;) %&gt;% as.numeric
   dataframe &lt;- cbind(Sequencing.plate = string,batch = batch,plate_final=num,column_final=col,row_final=ro) %&gt;% as.data.frame
   return(dataframe)
 }
@@ -649,7 +659,8 @@ sequencing_plate_data &lt;- lapply(sequencing$Sequencing.plate,FUN=parse_sequenc
 
 sequencing &lt;- left_join(sequencing,sequencing_plate_data)  </code></pre>
 <pre><code>## Joining with `by = join_by(Sequencing.plate)`</code></pre>
-<pre class="r"><code>sequencing$Sample.ID &lt;- trimws(sequencing$Sample.ID,&quot;both&quot;)
+<pre class="r"><code># Cleaning
+sequencing$Sample.ID &lt;- trimws(sequencing$Sample.ID,&quot;both&quot;)
 sequencing$map_name &lt;- sequencing$Sample.ID</code></pre>
 </div>
 <div id="clean-evans-consolidated-map-w-sequencing-list" class="section level1">
@@ -660,19 +671,25 @@ paste0(&quot;Strains not in Evan&#39;s consolidated map &amp; the sequencing met
 <pre><code>## [1] &quot;Strains not in Evan&#39;s consolidated map &amp; the sequencing metadata list&quot;</code></pre>
 <pre class="r"><code>newmap_not_same_sequencing</code></pre>
 <pre><code>## [1] &quot;MER 210  (345H) V1 WM&quot;</code></pre>
+<pre class="r"><code>paste0(&quot;Reason for issue: Double white space between MER 210 and (345H)&quot;)</code></pre>
+<pre><code>## [1] &quot;Reason for issue: Double white space between MER 210 and (345H)&quot;</code></pre>
 <pre class="r"><code>newmap$map_name &lt;- ifelse(newmap$map_name == &quot;MER 210  (345H) V1 WM&quot;,&quot;MER 210 (345H) V1 WM&quot;,newmap$map_name)
 
-paste0(&quot;This fix harmonized the consolidated map with the sequencing map: &quot;)</code></pre>
-<pre><code>## [1] &quot;This fix harmonized the consolidated map with the sequencing map: &quot;</code></pre>
+paste0(&quot;This fix harmonized the consolidated map with the sequencing map!&quot;)</code></pre>
+<pre><code>## [1] &quot;This fix harmonized the consolidated map with the sequencing map!&quot;</code></pre>
+<pre class="r"><code>paste0(&quot;Number of isolates not in sequencing map: &quot;)</code></pre>
+<pre><code>## [1] &quot;Number of isolates not in sequencing map: &quot;</code></pre>
 <pre class="r"><code>newmap$map_name[!newmap$map_name %in% sequencing$Sample.ID]  %&gt;% length</code></pre>
 <pre><code>## [1] 0</code></pre>
 </div>
-<div id="edit-evans-platemap-info-to-match-stragglers" class="section level1">
-<h1>Edit Evan’s platemap info to match stragglers</h1>
+<div id="edit-evans-platemap-info-to-match-stragglers-not-mapping-properly" class="section level1">
+<h1>Edit Evan’s platemap info to match stragglers not mapping
+properly</h1>
 <pre class="r"><code># Merge PS 2A -&gt; PS2A
 newmap$map_name &lt;- ifelse(newmap$map_name == &quot;126H V3 PS 2A C1 (00837)&quot;,&quot;126H V3 PS2A C1 (00837)&quot;,newmap$map_name)
+
 # 118H* V1 B1 C1 -&gt; 
-##Remove the *
+## Remove the *
 newmap$map_name &lt;-  ifelse(newmap$map_name == &quot;118H* V1 B1 C1&quot;,&quot;118H V1 B1 C1&quot;,newmap$map_name)  
 oldmap$map_name &lt;- ifelse(oldmap$map_name == &quot;118H* V1 B1 C1&quot;,&quot;118H V1 B1 C1&quot;,oldmap$map_name)  
 sequencing$Sample.ID &lt;- ifelse(sequencing$Sample.ID == &quot;118H* V1 B1 C1&quot;,&quot;118H V1 B1 C1&quot;,sequencing$Sample.ID)  
@@ -697,7 +714,7 @@ newmap$map_name &lt;- ifelse(newmap$map_name==&quot;MER 209 (320H) V1 PN 2A C1&q
 sequencing$Sample.ID &lt;- ifelse(sequencing$Sample.ID == &quot;MER 209 (320H) V1 PN 2A C1&quot;,&quot;MER 209 (320H) V1 PN1AC1&quot;,sequencing$Sample.ID)  
 sequencing$map_name &lt;- ifelse(sequencing$map_name == &quot;MER 209 (320H) V1 PN 2A C1&quot;,&quot;MER 209 (320H) V1 PN1AC1&quot;,sequencing$map_name)  
 
-# 91H V2 PN 1A C1 03281 - multiple isolates w/ name, remove the barcode callout
+# 91H V2 PN 1A C1 03281 - multiple isolates w/ name, remove the barcode
 ## 91H V2 PN1A C1 (00522) - &gt; 91H V2 PN1A C1
 oldmap$map_name &lt;- ifelse(oldmap$map_name==&quot;91H V2 PN1A C1 (00522)&quot;,&quot;91H V2 PN1A C1&quot;,oldmap$map_name)
 newmap$map_name &lt;- ifelse(newmap$map_name==&quot;91H V2 PN1A C1 (00522)&quot;,&quot;91H V2 PN1A C1&quot;,newmap$map_name)
@@ -721,12 +738,12 @@ newmap$map_name &lt;- ifelse(newmap$map_name==&quot;445H V3 S1A C2&quot;,&quot;4
 sequencing$Sample.ID &lt;- ifelse(sequencing$Sample.ID == &quot;445H V3 S1A C2&quot;,&quot;445H V3 S1A&quot;,sequencing$Sample.ID)  
 sequencing$map_name &lt;- ifelse(sequencing$map_name == &quot;445H V3 S1A C2&quot;,&quot;445H V3 S1A&quot;,sequencing$map_name)  
 
-#  345H V3 S1A C1
-## Change plate location from G9 to G8
+# 370H V2 PN 1A C2
+## Change plate location from G9 to G8 - Appears to have been fixed
 metadata$position &lt;-  ifelse(metadata$position==&quot;G9&quot; &amp; metadata$plate==&quot;5&quot; &amp; metadata$household_number_recode ==&quot;370H&quot;,&quot;G8&quot;,metadata$position) 
 
 # 238H V1 B1 C1
-## Change plate location from D6 to D7 
+## Change plate location from D6 to D7 - Appears to have been fixed
 metadata$position &lt;-  ifelse(metadata$position==&quot;D6&quot; &amp; metadata$plate==&quot;1&quot; &amp; metadata$household_number_recode ==&quot;238H&quot;,&quot;D7&quot;,metadata$position) 
 
 # 238H V1 K C1 (00843) - Two multiple entries in platemap with different barcode, but same sample info
@@ -739,7 +756,7 @@ sequencing$map_name &lt;- ifelse(sequencing$map_name == &quot;238H V1 K C1 (0084
 oldmap$map_name &lt;- ifelse(oldmap$map_name==&quot;238H V1 K C1 (01240)&quot;,&quot;238H V1 K C1&quot;,oldmap$map_name)
 newmap$map_name &lt;- ifelse(newmap$map_name==&quot;238H V1 K C1 (01240)&quot;,&quot;238H V1 K C1&quot;,newmap$map_name)
 sequencing$Sample.ID &lt;- ifelse(sequencing$Sample.ID == &quot;238H V1 K C1 (01240)&quot;,&quot;238H V1 K C1&quot;,sequencing$Sample.ID)  
-sequencing$map_name &lt;- ifelse(sequencing$map_name == &quot;238H V1 K C1 (01240)&quot;,&quot;238H V1 K C1&quot;,sequencing$map_name)  
+sequencing$map_name &lt;- ifelse(sequencing$map_name == &quot;238H V1 K C1 (01240)&quot;,&quot;238H V1 K C1&quot;,sequencing$map_name)
 
 # 293H V3 B1 C2 - Two multiple entries in platemap, but only one in metadata
 ## 293H V3 B1 C1 - &gt; 293H V3 B1
@@ -759,8 +776,8 @@ newmap$map_name &lt;- ifelse(newmap$map_name==&#39;182H V2 S1A C1 (01238)&#39;,&
 sequencing$Sample.ID &lt;- ifelse(sequencing$Sample.ID == &#39;182H V2 S1A C1 (01238)&#39;,&#39;182H V2 S1A C1&#39;,sequencing$Sample.ID)  
 sequencing$map_name &lt;- ifelse(sequencing$map_name == &#39;182H V2 S1A C1 (01238)&#39;,&#39;182H V2 S1A C1&#39;,sequencing$map_name) </code></pre>
 </div>
-<div id="merge-with-impala-data" class="section level1">
-<h1>Merge with impala data</h1>
+<div id="merge-with-impala-plates-data" class="section level1">
+<h1>Merge with IMPALA plate’s data</h1>
 <pre class="r"><code>get_impala_info &lt;- function(sequencing_IMPALA_plate_row){ 
   map_name &lt;- sequencing_IMPALA_plate_row[[&#39;Sample.ID&#39;]]
   string &lt;- sequencing_IMPALA_plate_row[[&#39;Sequencing.plate&#39;]]
@@ -777,8 +794,7 @@ IMPALA_map &lt;- apply(sequencing_IMPALA_plate,1,get_impala_info) %&gt;% do.call
 </div>
 <div id="add-impala-data-to-old-map" class="section level1">
 <h1>Add impala data to old map</h1>
-<pre class="r"><code># Merge with metadata
-oldmap &lt;- rbind(oldmap,IMPALA_map)</code></pre>
+<pre class="r"><code>oldmap &lt;- rbind(oldmap,IMPALA_map)</code></pre>
 </div>
 <div id="merge-evans-consolidated-map-w-sequencing-list" class="section level1">
 <h1>Merge Evan’s Consolidated Map w/ Sequencing List</h1>
@@ -865,6 +881,7 @@ paste0(&quot;Number of metadata entires: &quot;, nrow(qc_summary))</code></pre>
 <pre class="r"><code>qc_summary$WGS_qc_pass_runs_num &lt;- sapply(qc_summary$WGS_qc_pass,FUN=function(x){
   str_split(string = x,pattern = &#39;;&#39;) %&gt;% unlist %&gt;% subset(.,.==TRUE) %&gt;% length
 })
+
 qc_summary$WGS_qc_pass_ids_num &lt;- sapply(qc_summary$genomic_id_qc_pass,FUN=function(x){
   str_split(string = x,pattern = &#39;;&#39;) %&gt;% unlist %&gt;% subset(.!= &quot;&quot;) %&gt;% length
 })  

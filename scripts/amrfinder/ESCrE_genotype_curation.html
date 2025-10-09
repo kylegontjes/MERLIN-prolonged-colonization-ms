@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-07-01" />
+<meta name="date" content="2025-10-09" />
 
 <title>Summarise amrfinder results</title>
 
@@ -576,7 +576,7 @@ display: none;
 
 <h1 class="title toc-ignore">Summarise amrfinder results</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-07-01</h4>
+<h4 class="date">2025-10-09</h4>
 
 </div>
 
@@ -592,26 +592,26 @@ invisible(lapply(packages,library,character.only=T,quietly=T))
 # Print environment
 set.seed(45) 
 Sys.info()</code></pre>
-<pre><code>##                                                                                             sysname 
-##                                                                                            &quot;Darwin&quot; 
-##                                                                                             release 
-##                                                                                            &quot;24.5.0&quot; 
-##                                                                                             version 
-## &quot;Darwin Kernel Version 24.5.0: Tue Apr 22 19:53:26 PDT 2025; root:xnu-11417.121.6~2/RELEASE_X86_64&quot; 
-##                                                                                            nodename 
-##                                                                     &quot;macbookpro.wifi.med.umich.edu&quot; 
-##                                                                                             machine 
-##                                                                                            &quot;x86_64&quot; 
-##                                                                                               login 
-##                                                                                              &quot;root&quot; 
-##                                                                                                user 
-##                                                                                          &quot;kgontjes&quot; 
-##                                                                                      effective_user 
-##                                                                                          &quot;kgontjes&quot;</code></pre>
+<pre><code>##                                                                                                     sysname 
+##                                                                                                    &quot;Darwin&quot; 
+##                                                                                                     release 
+##                                                                                                    &quot;24.6.0&quot; 
+##                                                                                                     version 
+## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
+##                                                                                                    nodename 
+##                                                                                            &quot;msla0572.local&quot; 
+##                                                                                                     machine 
+##                                                                                                    &quot;x86_64&quot; 
+##                                                                                                       login 
+##                                                                                                      &quot;root&quot; 
+##                                                                                                        user 
+##                                                                                                  &quot;kgontjes&quot; 
+##                                                                                              effective_user 
+##                                                                                                  &quot;kgontjes&quot;</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.5.1 (2025-06-13)
 ## Platform: x86_64-apple-darwin20
-## Running under: macOS Sequoia 15.5
+## Running under: macOS Sequoia 15.7
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -627,40 +627,43 @@ Sys.info()</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] kableExtra_1.4.0 lubridate_1.9.4  forcats_1.0.0    stringr_1.5.1   
-##  [5] dplyr_1.1.4      purrr_1.0.4      readr_2.1.5      tidyr_1.3.1     
-##  [9] tibble_3.2.1     ggplot2_3.5.2    tidyverse_2.0.0  knitr_1.50      
+##  [1] kableExtra_1.4.0 lubridate_1.9.4  forcats_1.0.1    stringr_1.5.2   
+##  [5] dplyr_1.1.4      purrr_1.1.0      readr_2.1.5      tidyr_1.3.1     
+##  [9] tibble_3.3.0     ggplot2_3.5.2    tidyverse_2.0.0  knitr_1.50      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.1     tidyselect_1.2.1  
-##  [5] xml2_1.3.8         jquerylib_0.1.4    systemfonts_1.2.2  scales_1.4.0      
-##  [9] yaml_2.3.10        fastmap_1.2.0      R6_2.6.1           generics_0.1.4    
-## [13] svglite_2.1.3      bslib_0.9.0        pillar_1.10.2      RColorBrewer_1.1-3
-## [17] tzdb_0.5.0         rlang_1.1.6        cachem_1.1.0       stringi_1.8.7     
-## [21] xfun_0.52          sass_0.4.10        viridisLite_0.4.2  timechange_0.3.0  
-## [25] cli_3.6.5          withr_3.0.2        magrittr_2.0.3     digest_0.6.37     
-## [29] grid_4.5.1         rstudioapi_0.17.1  hms_1.1.3          lifecycle_1.0.4   
-## [33] vctrs_0.6.5        evaluate_1.0.3     glue_1.8.0         farver_2.1.2      
-## [37] rmarkdown_2.29     tools_4.5.1        pkgconfig_2.0.3    htmltools_0.5.8.1</code></pre>
+##  [5] xml2_1.4.0         jquerylib_0.1.4    textshaping_1.0.3  systemfonts_1.2.3 
+##  [9] scales_1.4.0       yaml_2.3.10        fastmap_1.2.0      R6_2.6.1          
+## [13] generics_0.1.4     svglite_2.2.1      bslib_0.9.0        pillar_1.11.1     
+## [17] RColorBrewer_1.1-3 tzdb_0.5.0         rlang_1.1.6        cachem_1.1.0      
+## [21] stringi_1.8.7      xfun_0.53          sass_0.4.10        viridisLite_0.4.2 
+## [25] timechange_0.3.0   cli_3.6.5          withr_3.0.2        magrittr_2.0.4    
+## [29] digest_0.6.37      grid_4.5.1         rstudioapi_0.17.1  hms_1.1.3         
+## [33] lifecycle_1.0.4    vctrs_0.6.5        evaluate_1.0.5     glue_1.8.0        
+## [37] farver_2.1.2       rmarkdown_2.29     tools_4.5.1        pkgconfig_2.0.3   
+## [41] htmltools_0.5.8.1</code></pre>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
-<pre class="r"><code>df &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS&quot;)  %&gt;% subset(WGS_escre == TRUE &amp; qc_pass == TRUE) 
-isolates &lt;- df$genomic_id 
+<pre class="r"><code>df &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_metadata_final.RDS&quot;) 
+isolates &lt;- subset(df,WGS_escre == TRUE &amp; qc_pass == TRUE) %&gt;% .$genomic_id 
 amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.RDS&quot;)  %&gt;% subset(genomic_id %in% isolates)
 amrfinder_mat &lt;- readRDS(&quot;./data/amrfinder/amrfinder_matrix.RDS&quot;) %&gt;% subset(rownames(.) %in% isolates)</code></pre>
 <pre class="r"><code>blactam_info &lt;-  amrfinder %&gt;% subset(class == &quot;BETA-LACTAM&quot;) %&gt;% select(element_symbol,element_symbol_renamed,element_name,class,subclass) %&gt;% distinct
 paste0(&quot;Detected b-lactamase genes: &quot;)</code></pre>
 <pre><code>## [1] &quot;Detected b-lactamase genes: &quot;</code></pre>
 <pre class="r"><code>sort(blactam_info$element_symbol_renamed)</code></pre>
-<pre><code>##  [1] &quot;blaACT-115&quot;   &quot;blaACT-17&quot;    &quot;blaACT-24&quot;    &quot;blaACT-75*&quot;   &quot;blaCMY-13*&quot;  
-##  [6] &quot;blaCMY-190*&quot;  &quot;blaCMY-2&quot;     &quot;blaCMY-25*&quot;   &quot;blaCMY-4&quot;     &quot;blaCMY-65*&quot;  
-## [11] &quot;blaCMY-67*&quot;   &quot;blaCTX-M-15&quot;  &quot;blaCTX-M-27&quot;  &quot;blaCTX-M-3&quot;   &quot;blaCTX-M-55&quot; 
-## [16] &quot;blaCTX-M-55*&quot; &quot;blaEC&quot;        &quot;blaEC-15*&quot;    &quot;blaEC-5&quot;      &quot;blaEC-5*&quot;    
-## [21] &quot;blaEC-8*&quot;     &quot;blaKPC-2&quot;     &quot;blaKPC-3&quot;     &quot;blaOXA-1&quot;     &quot;blaOXY-1-11&quot; 
-## [26] &quot;blaSHV-1&quot;     &quot;blaSHV-1?&quot;    &quot;blaSHV-11&quot;    &quot;blaSHV-12&quot;    &quot;blaSHV-187&quot;  
-## [31] &quot;blaSHV-28&quot;    &quot;blaTEM-1&quot;     &quot;blaTEM-1?&quot;    &quot;blaTEM-1?*&quot;   &quot;blaTEM-105?*&quot;
-## [36] &quot;blaTEM-214&quot;</code></pre>
+<pre><code>##  [1] &quot;ampC*&quot;        &quot;blaACT-115&quot;   &quot;blaACT-12*&quot;   &quot;blaACT-131*&quot;  &quot;blaACT-16&quot;   
+##  [6] &quot;blaACT-17&quot;    &quot;blaACT-24&quot;    &quot;blaACT-25&quot;    &quot;blaACT-27&quot;    &quot;blaACT-43&quot;   
+## [11] &quot;blaACT-75*&quot;   &quot;blaCMY-13&quot;    &quot;blaCMY-13*&quot;   &quot;blaCMY-189*&quot;  &quot;blaCMY-190*&quot; 
+## [16] &quot;blaCMY-2&quot;     &quot;blaCMY-2?&quot;    &quot;blaCMY-25*&quot;   &quot;blaCMY-4&quot;     &quot;blaCMY-48&quot;   
+## [21] &quot;blaCMY-65*&quot;   &quot;blaCMY-67*&quot;   &quot;blaCTX-M-15&quot;  &quot;blaCTX-M-27&quot;  &quot;blaCTX-M-3&quot;  
+## [26] &quot;blaCTX-M-55&quot;  &quot;blaCTX-M-55*&quot; &quot;blaEC&quot;        &quot;blaEC-15*&quot;    &quot;blaEC-19*&quot;   
+## [31] &quot;blaEC-5&quot;      &quot;blaEC-5*&quot;     &quot;blaEC-8*&quot;     &quot;blaKPC-2&quot;     &quot;blaKPC-3&quot;    
+## [36] &quot;blaNDM-5&quot;     &quot;blaOXA-1&quot;     &quot;blaOXY-1-11&quot;  &quot;blaSHV-1&quot;     &quot;blaSHV-1?&quot;   
+## [41] &quot;blaSHV-11&quot;    &quot;blaSHV-12&quot;    &quot;blaSHV-187&quot;   &quot;blaSHV-205&quot;   &quot;blaSHV-28&quot;   
+## [46] &quot;blaTEM-1&quot;     &quot;blaTEM-1?&quot;    &quot;blaTEM-1?*&quot;   &quot;blaTEM-105?*&quot; &quot;blaTEM-214&quot;</code></pre>
 <pre class="r"><code>paste0(&quot;Detected ESBL genes: &quot;)</code></pre>
 <pre><code>## [1] &quot;Detected ESBL genes: &quot;</code></pre>
 <pre class="r"><code>ESBL_genes &lt;- amrfinder[grepl(&quot;extended-spectrum&quot;,amrfinder$element_name),&#39;element_symbol_renamed&#39;] %&gt;% unique %&gt;% sort
@@ -697,11 +700,14 @@ blactam_info$ESCrE &lt;- ifelse(blactam_info$ESBL ==T | blactam_info$carbapenema
 paste0(&quot;ESCrE genotypes:&quot;)</code></pre>
 <pre><code>## [1] &quot;ESCrE genotypes:&quot;</code></pre>
 <pre class="r"><code>blactam_info %&gt;% subset(ESCrE ==T) %&gt;% .$element_symbol_renamed %&gt;% unique %&gt;% sort</code></pre>
-<pre><code>##  [1] &quot;blaACT-115&quot;   &quot;blaACT-17&quot;    &quot;blaACT-24&quot;    &quot;blaACT-75*&quot;   &quot;blaCMY-13*&quot;  
-##  [6] &quot;blaCMY-190*&quot;  &quot;blaCMY-2&quot;     &quot;blaCMY-25*&quot;   &quot;blaCMY-4&quot;     &quot;blaCMY-65*&quot;  
-## [11] &quot;blaCMY-67*&quot;   &quot;blaCTX-M-15&quot;  &quot;blaCTX-M-27&quot;  &quot;blaCTX-M-3&quot;   &quot;blaCTX-M-55&quot; 
-## [16] &quot;blaCTX-M-55*&quot; &quot;blaEC&quot;        &quot;blaEC-15*&quot;    &quot;blaEC-5&quot;      &quot;blaEC-5*&quot;    
-## [21] &quot;blaEC-8*&quot;     &quot;blaKPC-2&quot;     &quot;blaKPC-3&quot;     &quot;blaOXY-1-11&quot;  &quot;blaSHV-12&quot;</code></pre>
+<pre><code>##  [1] &quot;ampC*&quot;        &quot;blaACT-115&quot;   &quot;blaACT-12*&quot;   &quot;blaACT-131*&quot;  &quot;blaACT-16&quot;   
+##  [6] &quot;blaACT-17&quot;    &quot;blaACT-24&quot;    &quot;blaACT-25&quot;    &quot;blaACT-27&quot;    &quot;blaACT-43&quot;   
+## [11] &quot;blaACT-75*&quot;   &quot;blaCMY-13&quot;    &quot;blaCMY-13*&quot;   &quot;blaCMY-189*&quot;  &quot;blaCMY-190*&quot; 
+## [16] &quot;blaCMY-2&quot;     &quot;blaCMY-2?&quot;    &quot;blaCMY-25*&quot;   &quot;blaCMY-4&quot;     &quot;blaCMY-48&quot;   
+## [21] &quot;blaCMY-65*&quot;   &quot;blaCMY-67*&quot;   &quot;blaCTX-M-15&quot;  &quot;blaCTX-M-27&quot;  &quot;blaCTX-M-3&quot;  
+## [26] &quot;blaCTX-M-55&quot;  &quot;blaCTX-M-55*&quot; &quot;blaEC&quot;        &quot;blaEC-15*&quot;    &quot;blaEC-19*&quot;   
+## [31] &quot;blaEC-5&quot;      &quot;blaEC-5*&quot;     &quot;blaEC-8*&quot;     &quot;blaKPC-2&quot;     &quot;blaKPC-3&quot;    
+## [36] &quot;blaNDM-5&quot;     &quot;blaOXY-1-11&quot;  &quot;blaSHV-12&quot;</code></pre>
 <pre class="r"><code>paste0(&quot;Overall data:&quot;)</code></pre>
 <pre><code>## [1] &quot;Overall data:&quot;</code></pre>
 <pre class="r"><code>blactam_info %&gt;% select(-class) %&gt;%  arrange(element_symbol) %&gt;% gontjesr::favorite_kable()</code></pre>
@@ -746,6 +752,41 @@ ESCrE
 <tbody>
 <tr>
 <td style="text-align:left;">
+ampC
+</td>
+<td style="text-align:left;">
+ampC*
+</td>
+<td style="text-align:left;">
+cephalosporin-hydrolyzing class C beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1.76
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 blaACT
 </td>
 <td style="text-align:left;">
@@ -761,7 +802,77 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaACT
+</td>
+<td style="text-align:left;">
+blaACT-12*
+</td>
+<td style="text-align:left;">
+ACT family cephalosporin-hydrolyzing class C beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1.18
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaACT
+</td>
+<td style="text-align:left;">
+blaACT-131*
+</td>
+<td style="text-align:left;">
+ACT family cephalosporin-hydrolyzing class C beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1.18
 </td>
 <td style="text-align:left;">
 C
@@ -796,7 +907,42 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaACT-16
+</td>
+<td style="text-align:left;">
+blaACT-16
+</td>
+<td style="text-align:left;">
+cephalosporin-hydrolyzing class C beta-lactamase ACT-16
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1.76
 </td>
 <td style="text-align:left;">
 C
@@ -828,10 +974,10 @@ cephalosporin-hydrolyzing class C beta-lactamase ACT-17
 CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
-3
+8
 </td>
 <td style="text-align:right;">
-3.03
+4.71
 </td>
 <td style="text-align:left;">
 C
@@ -863,10 +1009,150 @@ cephalosporin-hydrolyzing class C beta-lactamase ACT-24
 CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
-3
+4
 </td>
 <td style="text-align:right;">
-3.03
+2.35
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaACT-25
+</td>
+<td style="text-align:left;">
+blaACT-25
+</td>
+<td style="text-align:left;">
+cephalosporin-hydrolyzing class C beta-lactamase ACT-25
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2.35
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaACT-27
+</td>
+<td style="text-align:left;">
+blaACT-27
+</td>
+<td style="text-align:left;">
+cephalosporin-hydrolyzing class C beta-lactamase ACT-27
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.59
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaACT-43
+</td>
+<td style="text-align:left;">
+blaACT-43
+</td>
+<td style="text-align:left;">
+cephalosporin-hydrolyzing class C beta-lactamase ACT-43
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1.18
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY
+</td>
+<td style="text-align:left;">
+blaCMY-189*
+</td>
+<td style="text-align:left;">
+CMY-2 family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1.18
 </td>
 <td style="text-align:left;">
 C
@@ -901,7 +1187,7 @@ CEPHALOSPORIN
 2
 </td>
 <td style="text-align:right;">
-2.02
+1.18
 </td>
 <td style="text-align:left;">
 C
@@ -936,7 +1222,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
 </td>
 <td style="text-align:left;">
 C
@@ -971,7 +1257,42 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY
+</td>
+<td style="text-align:left;">
+blaCMY-2?
+</td>
+<td style="text-align:left;">
+CMY-2 family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1.18
 </td>
 <td style="text-align:left;">
 C
@@ -1006,7 +1327,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
 </td>
 <td style="text-align:left;">
 C
@@ -1041,7 +1362,42 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY-13
+</td>
+<td style="text-align:left;">
+blaCMY-13
+</td>
+<td style="text-align:left;">
+class C beta-lactamase CMY-13
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.59
 </td>
 <td style="text-align:left;">
 C
@@ -1073,10 +1429,10 @@ extended-spectrum class C beta-lactamase CMY-2
 CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
-6
+9
 </td>
 <td style="text-align:right;">
-6.06
+5.29
 </td>
 <td style="text-align:left;">
 C
@@ -1111,7 +1467,42 @@ CEPHALOSPORIN
 3
 </td>
 <td style="text-align:right;">
-3.03
+1.76
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaCMY-48
+</td>
+<td style="text-align:left;">
+blaCMY-48
+</td>
+<td style="text-align:left;">
+class C beta-lactamase CMY-48
+</td>
+<td style="text-align:left;">
+CEPHALOSPORIN
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.59
 </td>
 <td style="text-align:left;">
 C
@@ -1146,7 +1537,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
 </td>
 <td style="text-align:left;">
 A
@@ -1178,10 +1569,10 @@ extended-spectrum class A beta-lactamase CTX-M-15
 CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
-46
+66
 </td>
 <td style="text-align:right;">
-46.46
+38.82
 </td>
 <td style="text-align:left;">
 A
@@ -1213,10 +1604,10 @@ extended-spectrum class A beta-lactamase CTX-M-27
 CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
-21
+32
 </td>
 <td style="text-align:right;">
-21.21
+18.82
 </td>
 <td style="text-align:left;">
 A
@@ -1251,7 +1642,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
 </td>
 <td style="text-align:left;">
 A
@@ -1286,7 +1677,7 @@ CEPHALOSPORIN
 2
 </td>
 <td style="text-align:right;">
-2.02
+1.18
 </td>
 <td style="text-align:left;">
 A
@@ -1321,7 +1712,7 @@ BETA-LACTAM
 17
 </td>
 <td style="text-align:right;">
-17.17
+10.00
 </td>
 <td style="text-align:left;">
 C
@@ -1353,10 +1744,10 @@ BlaEC family class C beta-lactamase
 BETA-LACTAM
 </td>
 <td style="text-align:right;">
-39
+60
 </td>
 <td style="text-align:right;">
-39.39
+35.29
 </td>
 <td style="text-align:left;">
 C
@@ -1391,7 +1782,7 @@ BETA-LACTAM
 3
 </td>
 <td style="text-align:right;">
-3.03
+1.76
 </td>
 <td style="text-align:left;">
 C
@@ -1423,10 +1814,45 @@ BlaEC family class C beta-lactamase
 BETA-LACTAM
 </td>
 <td style="text-align:right;">
-1
+6
 </td>
 <td style="text-align:right;">
-1.01
+3.53
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+blaEC-19*
+</td>
+<td style="text-align:left;">
+BlaEC family class C beta-lactamase
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1.18
 </td>
 <td style="text-align:left;">
 C
@@ -1458,10 +1884,10 @@ cephalosporin-hydrolyzing class C beta-lactamase EC-5
 CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
-8
+11
 </td>
 <td style="text-align:right;">
-8.08
+6.47
 </td>
 <td style="text-align:left;">
 C
@@ -1493,10 +1919,10 @@ carbapenem-hydrolyzing class A beta-lactamase KPC-2
 CARBAPENEM
 </td>
 <td style="text-align:right;">
-3
+5
 </td>
 <td style="text-align:right;">
-3.03
+2.94
 </td>
 <td style="text-align:left;">
 A
@@ -1528,13 +1954,48 @@ carbapenem-hydrolyzing class A beta-lactamase KPC-3
 CARBAPENEM
 </td>
 <td style="text-align:right;">
-3
+8
 </td>
 <td style="text-align:right;">
-3.03
+4.71
 </td>
 <td style="text-align:left;">
 A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaNDM-5
+</td>
+<td style="text-align:left;">
+blaNDM-5
+</td>
+<td style="text-align:left;">
+subclass B1 metallo-beta-lactamase NDM-5
+</td>
+<td style="text-align:left;">
+CARBAPENEM
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1.76
+</td>
+<td style="text-align:left;">
+B
 </td>
 <td style="text-align:left;">
 FALSE
@@ -1563,10 +2024,10 @@ oxacillin-hydrolyzing class D beta-lactamase OXA-1
 CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
-14
+23
 </td>
 <td style="text-align:right;">
-14.14
+13.53
 </td>
 <td style="text-align:left;">
 D
@@ -1601,7 +2062,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
 </td>
 <td style="text-align:left;">
 A
@@ -1636,7 +2097,7 @@ BETA-LACTAM
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
 </td>
 <td style="text-align:left;">
 A
@@ -1668,10 +2129,10 @@ broad-spectrum class A beta-lactamase SHV-1
 BETA-LACTAM
 </td>
 <td style="text-align:right;">
-4
+6
 </td>
 <td style="text-align:right;">
-4.04
+3.53
 </td>
 <td style="text-align:left;">
 A
@@ -1706,7 +2167,7 @@ BETA-LACTAM
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
 </td>
 <td style="text-align:left;">
 A
@@ -1741,7 +2202,7 @@ CEFIDEROCOL/CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
 </td>
 <td style="text-align:left;">
 A
@@ -1773,10 +2234,45 @@ broad-spectrum class A beta-lactamase SHV-187
 CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
-3
+5
 </td>
 <td style="text-align:right;">
-3.03
+2.94
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaSHV-205
+</td>
+<td style="text-align:left;">
+blaSHV-205
+</td>
+<td style="text-align:left;">
+class A beta-lactamase SHV-205
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.59
 </td>
 <td style="text-align:left;">
 A
@@ -1808,10 +2304,80 @@ broad-spectrum class A beta-lactamase SHV-28
 BETA-LACTAM
 </td>
 <td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+4.71
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaTEM
+</td>
+<td style="text-align:left;">
+blaTEM-105?*
+</td>
+<td style="text-align:left;">
+TEM family class A beta-lactamase
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
 3
 </td>
 <td style="text-align:right;">
-3.03
+1.76
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+blaTEM
+</td>
+<td style="text-align:left;">
+blaTEM-1?*
+</td>
+<td style="text-align:left;">
+TEM family class A beta-lactamase
+</td>
+<td style="text-align:left;">
+BETA-LACTAM
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1.76
 </td>
 <td style="text-align:left;">
 A
@@ -1846,77 +2412,7 @@ BETA-LACTAM
 2
 </td>
 <td style="text-align:right;">
-2.02
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaTEM
-</td>
-<td style="text-align:left;">
-blaTEM-1?*
-</td>
-<td style="text-align:left;">
-TEM family class A beta-lactamase
-</td>
-<td style="text-align:left;">
-BETA-LACTAM
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-2.02
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-blaTEM
-</td>
-<td style="text-align:left;">
-blaTEM-105?*
-</td>
-<td style="text-align:left;">
-TEM family class A beta-lactamase
-</td>
-<td style="text-align:left;">
-BETA-LACTAM
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-2.02
+1.18
 </td>
 <td style="text-align:left;">
 A
@@ -1948,10 +2444,10 @@ broad-spectrum class A beta-lactamase TEM-1
 BETA-LACTAM
 </td>
 <td style="text-align:right;">
-36
+60
 </td>
 <td style="text-align:right;">
-36.36
+35.29
 </td>
 <td style="text-align:left;">
 A
@@ -1986,7 +2482,7 @@ BETA-LACTAM
 1
 </td>
 <td style="text-align:right;">
-1.01
+0.59
 </td>
 <td style="text-align:left;">
 A
@@ -2007,9 +2503,11 @@ FALSE
 </tbody>
 </table>
 <pre class="r"><code># Save
-blactam_info &lt;- blactam_info %&gt;% arrange(element_symbol_renamed)
-
-saveRDS(blactam_info,&quot;./data/amrfinder/beta_lactamase_summary_index_cohort.RDS&quot;)</code></pre>
+blactam_info &lt;- blactam_info %&gt;% arrange(element_symbol_renamed)</code></pre>
+</div>
+<div id="save" class="section level1">
+<h1>Save</h1>
+<pre class="r"><code>saveRDS(blactam_info,file=&quot;./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS&quot;)</code></pre>
 </div>
 
 

@@ -1,5 +1,5 @@
 ---
-title: "Data Cleaning Step 2 - Curate QCD data"
+title: "Data Cleaning Step 2 - Curate the sequencing [QCD] data"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -36,17 +36,20 @@ colnames(master_qc) <- colnames(master_qc) %>% gsub("\\.|\\.\\.\\.","_",.)
 master_qc$genomic_id <- master_qc$Sample
 # Pass QC
 master_qc$qc_pass <- ifelse(master_qc$QC_Check=='PASS', TRUE, FALSE) 
+# Genus
+master_qc$Genus <- str_split(master_qc$Species," ",simplify=T) %>% .[,1]
 ```
 
 # ESCrE WGS Call
 ```{r}
-escre_list <- read_csv("../data/INTEGRATE_MERLIN_WGS_Species_calls_030925_LLC.csv") %>% subset(Enterobacterales ==T)%>% .$Species
+escre_species_calls <- read_csv("../data/INTEGRATE_MERLIN_WGS_Species_calls_030925_LLC.csv") 
+escre_list <- c(escre_species_calls %>% subset(Enterobacterales ==T)%>% .$Species,"Kluyvera sichuanensis")
 escre_list
 
 master_qc$WGS_escre <- ifelse(master_qc$Species %in% escre_list,T,F)
 ```
 
-# Get sequencing run specimen belonged to
+# Get the specimen's sequencing run  
 ```{r}
 run_11270_ES <- read.csv('../../Sequence_data/illumina_fastq/2025-03-04_11270-ES/DemuxStats_11270-ES.csv') %>% subset(grepl("MERLIN",Description))%>% mutate(run = '11270-ES')
 run_9200_LL <- read.csv('../../Sequence_data/illumina_fastq/2025-03-04_9200-LL/DemuxStats_9200-LL_updated.csv') %>% mutate(run = '9200-LL')
@@ -68,12 +71,12 @@ get_sequencing_run <- function(isolate,sequencing_record){
 master_qc$sequencing_run <- sapply(master_qc$Sample,get_sequencing_run,sequencing_run_records)
 ``` 
 
-
-# Save
+# Save the data
 ```{r}
 # All
 saveRDS(master_qc,"./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS")
+
 # QC passing and not negative controls
-master_qc_passing <- subset(master_qc,qc_pass==T & grepl("NEG_CTL",genomic_id)==F)
+master_qc_passing <- subset(master_qc,qc_pass == T & grepl("NEG_CTL",genomic_id) == F)
 saveRDS(master_qc_passing,"./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_passing.RDS")
 ``` 

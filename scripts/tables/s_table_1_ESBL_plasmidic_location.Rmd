@@ -33,14 +33,14 @@ sessionInfo()
 # Data
 ```{r cars} 
 ESCrE_genotype_data <- readRDS("./data/ESBL_plasmids/MERLIN_ESCrE_proportion_plasmidic.RDS")
-ESCRE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_index_cohort.RDS")
+ESCRE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS")
 ```
 
 ```{r}
 ESCrE_genotype_data <- left_join(ESCrE_genotype_data %>% mutate(element_symbol_renamed = ESCrE),ESCRE_genotype_info %>% select(element_symbol_renamed,blactam_class,ESBL,carbapenemase,ampC_like))
 ESCrE_genotype_data$category <- ifelse(ESCrE_genotype_data$ESBL == T,"ESBL",ifelse(ESCrE_genotype_data$carbapenemase == T,"Carbapenemase",ifelse(ESCrE_genotype_data$ampC_like ==T, "ampC-like","Other")))
 
-ESBL_prop_data <- ESCrE_genotype_data %>% select(element_symbol_renamed,category,n_chromosome,n_plasmid,prop_plasmid) %>% arrange(-prop_plasmid,-n_plasmid)
+ESBL_prop_data <- ESCrE_genotype_data %>% select(element_symbol_renamed,category,n_chromosome,n_plasmid,prop_plasmid) %>% arrange(-prop_plasmid,-n_plasmid,n_chromosome)
 
 
 colnames(ESBL_prop_data) <- c("ESCrE","Category","No. chromosomal","No. plasmidic","Proportion plasmidic")
