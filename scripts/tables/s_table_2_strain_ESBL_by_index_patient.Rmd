@@ -42,7 +42,7 @@ df_index <- left_join(df_index,plasmid_data)
 ## Note: Updated to use 25 SNP threshold not 30 due to epidemiological data
 
 ```{r}
-s_table_2 <- df_index %>% arrange(household,visit) %>% select(household,visit,Species_ST_cluster,plasmids,ESCrE_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,ESCrE_plasmids) %>% mutate(plasmids = gsub(";",", ",plasmids),ESCrE_genes = gsub(";",", ",ESCrE_genes),ESCrE_chromosome_genes = gsub(";",", ",ESCrE_chromosome_genes),ESCrE_plasmid_genes = gsub(";",", ",ESCrE_plasmid_genes),ESCrE_plasmids = gsub(";",", ",ESCrE_plasmids)) %>%  `colnames<-`(c("Household","Visit","Strain","Plasmids","ESCrE genes",'Chromosomal ESCrE genes','Plasmid-linked ESCrE genes','ESCrE plasmids'))
+s_table_2 <- df_index %>% arrange(household_numeric,visit) %>% select(household,visit,Species_ST_cluster,plasmids,ESCrE_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,ESCrE_plasmids) %>% mutate(plasmids = gsub(";",", ",plasmids),ESCrE_genes = gsub(";",", ",ESCrE_genes),ESCrE_chromosome_genes = gsub(";",", ",ESCrE_chromosome_genes),ESCrE_plasmid_genes = gsub(";",", ",ESCrE_plasmid_genes),ESCrE_plasmids = gsub(";",", ",ESCrE_plasmids)) %>%  `colnames<-`(c("Household","Visit","Strain","Plasmids","ESCrE genes",'Chromosomal ESCrE genes','Plasmid-linked ESCrE genes','ESCrE plasmids'))
 ```
 
 ```{r}
