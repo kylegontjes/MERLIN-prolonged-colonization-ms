@@ -472,11 +472,11 @@ df &lt;- left_join(df,simplified_metadata_for_sra)</code></pre>
 <pre class="r"><code>## Household
 df$household &lt;- ifelse(grepl(&quot;MER&quot;,df$household_number_recode), df$isolate_id,df$household_number_recode) %&gt;% gsub(&quot;h&quot;,&quot;H&quot;,.)
 ## Specimen
-df$specimen &lt;- ifelse(grepl(&quot;MER&quot;,df$household_number_recode),&quot;Stool 1A&quot;,df$isolate_id) %&gt;% gsub(&quot;C1|C2|C3&quot;,&quot;&quot;,.)  %&gt;% trimws(.,&quot;both&quot;)  %&gt;% gsub(&quot;\\)|pink|00784|01240|01238|00794|00792|\\(&quot;,&quot;&quot;,.) %&gt;% trimws(.,&quot;both&quot;)  %&gt;% gsub(&quot;Petnape&quot;,&quot;Pet Nape&quot;,.) %&gt;% trimws(.,&quot;both&quot;) %&gt;% gsub(&quot;Petstool&quot;,&quot;Pet Stool&quot;,.) %&gt;% trimws(.,&quot;both&quot;) 
+df$specimen &lt;- ifelse(grepl(&quot;MER&quot;,df$household_number_recode),&quot;IndexClinical&quot;,df$isolate_id) %&gt;% gsub(&quot;C1|C2|C3&quot;,&quot;&quot;,.)  %&gt;% trimws(.,&quot;both&quot;)  %&gt;% gsub(&quot;\\)|pink|00784|01240|01238|00794|00792|\\(&quot;,&quot;&quot;,.) %&gt;% trimws(.,&quot;both&quot;)  %&gt;% gsub(&quot;Petnape&quot;,&quot;Pet Nape&quot;,.) %&gt;% trimws(.,&quot;both&quot;) %&gt;% gsub(&quot;Petstool&quot;,&quot;Pet Stool&quot;,.) %&gt;% trimws(.,&quot;both&quot;) 
 
 df$specimen_category &lt;- ifelse(df$specimen %in% c(&quot;Bath 1&quot;,&quot;Bath 2&quot;,&quot;Kitchen&quot;,&quot;Living Room&quot;,&quot;Washing Machine&quot;),&quot;Environment&quot;,
                                            ifelse(df$specimen %in% c(&quot;Pet Nape 1A&quot;,&quot;Pet Nape 2A&quot;,&quot;Pet Nape 3A&quot;,&quot;Pet Stool 1A&quot;,&quot;Pet Stool 2A&quot;),&quot;Pet&quot;,
-                                                  ifelse(df$specimen %in% c(&quot;Stool 1A&quot;,&quot;Stool 2A&quot;,&quot;Stool 3A&quot;),&quot;Human&quot;,&quot;Unknown&quot;)))
+                                                  ifelse(df$specimen %in% c(&quot;Stool 1A&quot;,&quot;Stool 2A&quot;,&quot;Stool 3A&quot;,&quot;IndexClinical&quot;),&quot;Human&quot;,&quot;Unknown&quot;)))
 
 ## Individual subject ID
 df$MERLIN_subject_id &lt;- gsub(&#39;merlin&#39;,&quot;MERLIN&quot;,df$merlin_subject_id) %&gt;% gsub(&quot;113hpd1&quot;,&quot;hpd1&quot;,.)
@@ -497,7 +497,7 @@ df$subject_category_recode &lt;- gsub(&quot;^hi$&quot;,&quot;Index&quot;,df$subj
 df$index &lt;-  df$subject_category == &#39;hi&#39; 
 
 # Isolate name
-df$isolate_name &lt;- paste0(df$MERLIN_subject_id,&quot;_&quot;,df$visit,&quot;_&quot;,df$specimen)</code></pre>
+df$isolate_name &lt;- paste0(df$MERLIN_subject_id,&quot;_&quot;,df$visit,&quot;_&quot;,df$specimen_type)</code></pre>
 </div>
 <div id="save" class="section level1">
 <h1>Save</h1>

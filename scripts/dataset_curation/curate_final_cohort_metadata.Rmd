@@ -87,11 +87,11 @@ df <- left_join(df,simplified_metadata_for_sra)
 ## Household
 df$household <- ifelse(grepl("MER",df$household_number_recode), df$isolate_id,df$household_number_recode) %>% gsub("h","H",.)
 ## Specimen
-df$specimen <- ifelse(grepl("MER",df$household_number_recode),"Stool 1A",df$isolate_id) %>% gsub("C1|C2|C3","",.)  %>% trimws(.,"both")  %>% gsub("\\)|pink|00784|01240|01238|00794|00792|\\(","",.) %>% trimws(.,"both")  %>% gsub("Petnape","Pet Nape",.) %>% trimws(.,"both") %>% gsub("Petstool","Pet Stool",.) %>% trimws(.,"both") 
+df$specimen <- ifelse(grepl("MER",df$household_number_recode),"IndexClinical",df$isolate_id) %>% gsub("C1|C2|C3","",.)  %>% trimws(.,"both")  %>% gsub("\\)|pink|00784|01240|01238|00794|00792|\\(","",.) %>% trimws(.,"both")  %>% gsub("Petnape","Pet Nape",.) %>% trimws(.,"both") %>% gsub("Petstool","Pet Stool",.) %>% trimws(.,"both") 
 
 df$specimen_category <- ifelse(df$specimen %in% c("Bath 1","Bath 2","Kitchen","Living Room","Washing Machine"),"Environment",
                                            ifelse(df$specimen %in% c("Pet Nape 1A","Pet Nape 2A","Pet Nape 3A","Pet Stool 1A","Pet Stool 2A"),"Pet",
-                                                  ifelse(df$specimen %in% c("Stool 1A","Stool 2A","Stool 3A"),"Human","Unknown")))
+                                                  ifelse(df$specimen %in% c("Stool 1A","Stool 2A","Stool 3A","IndexClinical"),"Human","Unknown")))
 
 ## Individual subject ID
 df$MERLIN_subject_id <- gsub('merlin',"MERLIN",df$merlin_subject_id) %>% gsub("113hpd1","hpd1",.)
@@ -112,7 +112,7 @@ df$subject_category_recode <- gsub("^hi$","Index",df$subject_category) %>% gsub(
 df$index <-  df$subject_category == 'hi' 
 
 # Isolate name
-df$isolate_name <- paste0(df$MERLIN_subject_id,"_",df$visit,"_",df$specimen)
+df$isolate_name <- paste0(df$MERLIN_subject_id,"_",df$visit,"_",df$specimen_type)
 ```
 
 # Save
