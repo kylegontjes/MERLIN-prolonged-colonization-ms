@@ -1,5 +1,5 @@
 ---
-title: "Generate pairs for SNP distance analyses"
+title: "SNP Clustering Step 2: Generate pairs for SNP distance analyses"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -28,9 +28,12 @@ sessionInfo()
 
 # Load data
 ```{r} 
-df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(WGS_escre==T & qc_pass==T)
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") %>% subset(WGS_escre==T & qc_pass==T)
+
+paste0("Number of considered isolates: ",nrow(df))
 ``` 
 
+# Species with more than one isolate
 ```{r}
 species <- table(df$Species) %>% subset(.>1)  %>% names
 
@@ -42,12 +45,15 @@ species_simple <- str_split(string = species,pattern = " ",simplify = T) %>% app
 dist_matrices <- readRDS('./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_matrices.RDS')
 ```
 
+# Subset metadata to species of interest 
 ```{r}
 # Subset metadata to species
 clean_datasets <- function(metadata,mat,species){
   # Curate datasets
+  ## Species of interest
   species_df <- metadata %>% subset(Species ==species)  
   rownames(species_df) <- species_df$isolate_no
+  ## Isolates of interest
   species_mat <- mat[species_df$genomic_id,species_df$genomic_id]
   # Update datasets
   results <- list(species_df,species_mat) %>% `names<-`(c("df","mat"))
@@ -103,7 +109,7 @@ update_pair_types_w_info <- function(pair_types_df,df,voi){
 ```
 
 ```{r}
-voi = c("household","Species","Species_ST","specimen",'visit','specimen_category','isolate_name','MERLIN_subject_id')
+voi = c("household",'subject_id','ncbi_id',"visit","collect_date","Species","Species_ST","subject_category",'subject_category_simplified')
 
 pairtype_datasets <- pbmcapply::pbmclapply(species_simple,FUN=function(x){ 
   data <- get(paste0(x,"_data"))

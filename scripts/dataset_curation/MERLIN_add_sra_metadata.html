@@ -13,7 +13,7 @@
 
 <meta name="date" content="2025-10-30" />
 
-<title>Data Cleaning Step 8 - Curate final metadataset of specimens from index subjects</title>
+<title>Data Cleaning Step 6 - Add SRA Simplified metadata</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,14 +350,15 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Data Cleaning Step 8 - Curate final
-metadataset of specimens from index subjects</h1>
+<h1 class="title toc-ignore">Data Cleaning Step 6 - Add SRA Simplified
+metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
 <h4 class="date">2025-10-30</h4>
 
 </div>
 
 
+<p>NOTE: Run scripts in scripts/SNP_distance before completion!!!!</p>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
 <pre class="r"><code>#Packages
@@ -419,25 +420,37 @@ loaded via a namespace (and not attached):
 [29] vctrs_0.6.5        evaluate_1.0.5     glue_1.8.0         farver_2.1.2      
 [33] rmarkdown_2.29     tools_4.5.1        pkgconfig_2.0.3    htmltools_0.5.8.1 </code></pre>
 </div>
-<div id="update---changed-from-30-to-25-snp-threshold" class="section level1">
-<h1>Update - changed from 30 to 25 SNP threshold</h1>
-<pre class="r"><code># Overall dataset
-df &lt;- readRDS(&quot;/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS&quot;)
-paste0(&quot;Number of overall isolates: &quot;,nrow(df))</code></pre>
-<pre><code>[1] &quot;Number of overall isolates: 260&quot;</code></pre>
-<pre class="r"><code># QC passing ESCrE genomes
-df_qc_passing &lt;-  df %&gt;% subset(qc_pass==&quot;TRUE&quot; &amp; WGS_escre==TRUE)
-paste0(&quot;Number of overall ESCrE qc-passing isolates: &quot;,nrow(df_qc_passing))</code></pre>
-<pre><code>[1] &quot;Number of overall ESCrE qc-passing isolates: 168&quot;</code></pre>
-<pre class="r"><code># Index isolates
-df_index &lt;- subset(df_qc_passing, index==TRUE)
-paste0(&quot;Number of index isolates: &quot;,nrow(df_index))</code></pre>
-<pre><code>[1] &quot;Number of index isolates: 98&quot;</code></pre>
+<div id="load-data" class="section level1">
+<h1>Load data</h1>
+<pre class="r"><code>df &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS&quot;) 
+simplified_metadata_for_sra &lt;- read_csv(&quot;./Analysis/data/merlin_sra_submission_20251029.csv&quot;) #%&gt;% distinct</code></pre>
+</div>
+<div id="merge-data" class="section level1">
+<h1>Merge data</h1>
+<pre class="r"><code>simplified_metadata_for_sra &lt;- simplified_metadata_for_sra %&gt;% rename(&#39;lab_vantage_s_number&#39;=&#39;lv_id&#39;,
+                                                                      &#39;sra_location_or_participant&#39;=&#39;location_or_participant&#39;) 
+df &lt;- left_join(df ,simplified_metadata_for_sra %&gt;% select(-visit,-plate,-position))</code></pre>
+</div>
+<div id="organize-dataset" class="section level1">
+<h1>Organize dataset</h1>
+<pre class="r"><code># Specimen categories
+df$subject_category &lt;- df$subject_id %&gt;% str_split(.,&quot;_&quot;,simplify = T) %&gt;% .[,2]
+df$subject_category_simplified &lt;-  ifelse(df$subject_category == &#39;humanindex&#39;,&#39;Index&#39;,
+                                     ifelse(df$subject_category %in% c(&quot;bath1&quot;,&quot;bath2&quot;,&#39;bath2c1&#39;),&quot;Bath&quot;,
+                                            ifelse(df$subject_category %in% c(&quot;humanfemale1&quot;,&#39;humanfemale2&#39;),&quot;Female housemate&quot;,
+                                                   ifelse(df$subject_category %in% c(&quot;humanmale1&quot;),&quot;Male housemate&quot;,
+                                                          ifelse(df$subject_category %in% c(&quot;petcat1&quot;,&quot;petcat2&quot;,&quot;petcat3&quot;),&quot;Cat&quot;,
+                                                                 ifelse(df$subject_category %in% c(&quot;petdog1&quot;,&quot;petdog2&quot;),&quot;Dog&quot;,
+                                                                        ifelse(df$subject_category %in% c(&quot;hs&quot;),&quot;Other housemate&quot;,
+                                                                               ifelse(df$subject_category %in% c(&quot;kitchen&quot;),&quot;Kitchen&quot;,
+                                                                                                                 ifelse(df$subject_category %in% c(&quot;livingroom&quot;),&quot;Living room&quot;,
+                                                                                                                        ifelse(df$subject_category %in% c(&quot;washingmachine&quot;),&quot;Washing machine&quot;,&quot;Other&quot;))))))))))
+
+df$index &lt;-  df$subject_category == &#39;humanindex&#39; </code></pre>
 </div>
 <div id="save" class="section level1">
 <h1>Save</h1>
-<pre class="r"><code>saveRDS(df_index,&quot;/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS&quot;)
-write_csv(df_index,&quot;/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_index_cases_metadata_final.csv&quot;)</code></pre>
+<pre class="r"><code>saveRDS(df,&#39;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS&#39;)</code></pre>
 </div>
 
 

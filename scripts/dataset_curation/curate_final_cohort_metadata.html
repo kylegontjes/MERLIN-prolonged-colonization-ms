@@ -11,9 +11,9 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-09" />
+<meta name="date" content="2025-10-30" />
 
-<title>Data Cleaning Step 6 - Curate final metadata</title>
+<title>Data Cleaning Step 7 - Curate final metadata</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,10 +350,10 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Data Cleaning Step 6 - Curate final
+<h1 class="title toc-ignore">Data Cleaning Step 7 - Curate final
 metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-09</h4>
+<h4 class="date">2025-10-30</h4>
 
 </div>
 
@@ -389,7 +389,7 @@ Sys.info()</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.5.1 (2025-06-13)
 Platform: x86_64-apple-darwin20
-Running under: macOS Sequoia 15.7
+Running under: macOS Sequoia 15.7.1
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -419,25 +419,16 @@ loaded via a namespace (and not attached):
 [25] grid_4.5.1         rstudioapi_0.17.1  hms_1.1.3          lifecycle_1.0.4   
 [29] vctrs_0.6.5        evaluate_1.0.5     glue_1.8.0         farver_2.1.2      
 [33] rmarkdown_2.29     tools_4.5.1        pkgconfig_2.0.3    htmltools_0.5.8.1 </code></pre>
-<pre class="r"><code>df &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS&quot;) 
+<pre class="r"><code>df &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS&quot;) 
 cluster_25_SNPs &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_25_SNP_clusters.RDS&quot;)
-ecoli_phylogroup &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS&quot;)
-simplified_metadata_for_sra &lt;- read_csv(&quot;./Analysis/data/merlin_metadata_simple_20250930.csv&quot;) %&gt;% distinct</code></pre>
-</div>
-<div id="integrate-cluster-data" class="section level1">
-<h1>Integrate cluster data</h1>
-<div id="edit-metadata" class="section level2">
-<h2>Edit metadata</h2>
-<pre class="r"><code>df$ST &lt;- ifelse(df$ST ==&quot;-&quot;,&quot;Unknown&quot;,df$ST) 
-df$Species_ST &lt;- paste0(df$Species,&quot; ST &quot;,df$ST) %&gt;% trimws(.,&quot;both&quot;)</code></pre>
-</div>
+ecoli_phylogroup &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS&quot;) </code></pre>
 <div id="left-join-merge-with-cluster-data" class="section level2">
 <h2>Left join merge with cluster data</h2>
 <pre class="r"><code>df &lt;- left_join(df,cluster_25_SNPs)</code></pre>
 </div>
 </div>
-<div id="merge-ecoli-phylogroup_data" class="section level1">
-<h1>Merge ecoli phylogroup_data</h1>
+<div id="merge-ecoli-phylogroup-data" class="section level1">
+<h1>Merge ecoli phylogroup data</h1>
 <pre class="r"><code>get_clermont_data &lt;- function(genomic_id, clermont_data){
   ids &lt;- str_split(genomic_id,&quot;;&quot;) %&gt;% unlist
   clermont_sub &lt;- clermont_data %&gt;% subset(genomic_id %in% ids)
@@ -447,60 +438,11 @@ df$Species_ST &lt;- paste0(df$Species,&quot; ST &quot;,df$ST) %&gt;% trimws(.,&q
     NA
     }
 }
+
 df$ecoli_phylogroup &lt;- sapply(df$genomic_id, get_clermont_data, clermont_data = ecoli_phylogroup)</code></pre>
 </div>
-<div id="merge-simplified-metadata-for-sra" class="section level1">
-<h1>Merge simplified metadata for SRA</h1>
-<pre class="r"><code># Simplified variable
-simplified_metadata_for_sra$merging_variable &lt;- ifelse(is.na(simplified_metadata_for_sra$specimen_id)==F,simplified_metadata_for_sra$specimen_id,
-                                                       ifelse(is.na(simplified_metadata_for_sra$specimen_id) &amp; simplified_metadata_for_sra$merlin_subject_id == &quot;merlin_55_hi&quot; &amp; simplified_metadata_for_sra$household_numeric ==55, &quot;MERLIN_55_hi_clinical&quot;,
-                                                              ifelse(is.na(simplified_metadata_for_sra$specimen_id) &amp; simplified_metadata_for_sra$merlin_subject_id == &quot;merlin_460_hpd1&quot; &amp; simplified_metadata_for_sra$household_numeric ==460 &amp; simplified_metadata_for_sra$visit == 3 &amp; simplified_metadata_for_sra$specimen_type == &quot;PetNape1AC1&quot;,&quot;MERLIN_460_3_PN1AC1&quot;,NA)))
-  
-simplified_metadata_for_sra$merging_variable &lt;- paste0(simplified_metadata_for_sra$merging_variable,&quot;_visit_&quot;,simplified_metadata_for_sra$visit)
-
-# df variable
-df$merging_variable &lt;-  ifelse(is.na(df$lab_vantage_s_number)==F,df$lab_vantage_s_number,
-                                                       ifelse(is.na(df$lab_vantage_s_number) &amp; df$isolate_id == &quot;55H&quot; &amp; df$household_number ==&#39;MER_78&#39;,&quot;MERLIN_55_hi_clinical&quot;,
-                                                              ifelse(is.na(df$lab_vantage_s_number) &amp; df$isolate_id == &quot;Pet Nape 1A C1&quot; &amp; df$household_number ==&#39;460H&#39; &amp; df$visit == 3 &amp; df$location_or_participant == &quot;460hpd1&quot;,&quot;MERLIN_460_3_PN1AC1&quot;,NA)))
-
-df$merging_variable &lt;- paste0(df$merging_variable,&quot;_visit_&quot;,df$visit)
-
-df &lt;- left_join(df,simplified_metadata_for_sra)</code></pre>
-</div>
-<div id="organize-dataset" class="section level1">
-<h1>Organize dataset</h1>
-<pre class="r"><code>## Household
-df$household &lt;- ifelse(grepl(&quot;MER&quot;,df$household_number_recode), df$isolate_id,df$household_number_recode) %&gt;% gsub(&quot;h&quot;,&quot;H&quot;,.)
-## Specimen
-df$specimen &lt;- ifelse(grepl(&quot;MER&quot;,df$household_number_recode),&quot;IndexClinical&quot;,df$isolate_id) %&gt;% gsub(&quot;C1|C2|C3&quot;,&quot;&quot;,.)  %&gt;% trimws(.,&quot;both&quot;)  %&gt;% gsub(&quot;\\)|pink|00784|01240|01238|00794|00792|\\(&quot;,&quot;&quot;,.) %&gt;% trimws(.,&quot;both&quot;)  %&gt;% gsub(&quot;Petnape&quot;,&quot;Pet Nape&quot;,.) %&gt;% trimws(.,&quot;both&quot;) %&gt;% gsub(&quot;Petstool&quot;,&quot;Pet Stool&quot;,.) %&gt;% trimws(.,&quot;both&quot;) 
-
-df$specimen_category &lt;- ifelse(df$specimen %in% c(&quot;Bath 1&quot;,&quot;Bath 2&quot;,&quot;Kitchen&quot;,&quot;Living Room&quot;,&quot;Washing Machine&quot;),&quot;Environment&quot;,
-                                           ifelse(df$specimen %in% c(&quot;Pet Nape 1A&quot;,&quot;Pet Nape 2A&quot;,&quot;Pet Nape 3A&quot;,&quot;Pet Stool 1A&quot;,&quot;Pet Stool 2A&quot;),&quot;Pet&quot;,
-                                                  ifelse(df$specimen %in% c(&quot;Stool 1A&quot;,&quot;Stool 2A&quot;,&quot;Stool 3A&quot;,&quot;IndexClinical&quot;),&quot;Human&quot;,&quot;Unknown&quot;)))
-
-## Individual subject ID
-df$MERLIN_subject_id &lt;- gsub(&#39;merlin&#39;,&quot;MERLIN&quot;,df$merlin_subject_id) %&gt;% gsub(&quot;113hpd1&quot;,&quot;hpd1&quot;,.)
-df$subject_category &lt;- str_split(string = df$MERLIN_subject_id,&quot;_&quot;,simplify=T) %&gt;% .[,3]
-df$subject_category_simplified &lt;- ifelse(df$subject_category == &#39;hi&#39;,&#39;Index&#39;,
-                                     ifelse(df$subject_category %in% c(&quot;bath1&quot;,&quot;bath2&quot;,&#39;bath2c1&#39;),&quot;Bath&quot;,
-                                            ifelse(df$subject_category %in% c(&quot;hf1&quot;,&#39;hf2&#39;),&quot;Female housemate&quot;,
-                                                   ifelse(df$subject_category %in% c(&quot;hm1&quot;),&quot;Male housemate&quot;,
-                                                          ifelse(df$subject_category %in% c(&quot;hpc&quot;,&quot;hpc1&quot;,&quot;hpc2&quot;,&quot;hpc3&quot;),&quot;Cat&quot;,
-                                                                 ifelse(df$subject_category %in% c(&quot;hpd&quot;,&quot;hpd1&quot;,&quot;hpd2&quot;),&quot;Dog&quot;,
-                                                                        ifelse(df$subject_category %in% c(&quot;hs&quot;),&quot;Other housemate&quot;,
-                                                                               ifelse(df$subject_category %in% c(&quot;kitchen&quot;),&quot;Kitchen&quot;,
-                                                                                                                 ifelse(df$subject_category %in% c(&quot;livingroom&quot;),&quot;Living room&quot;,
-                                                                                                                        ifelse(df$subject_category %in% c(&quot;washingmachine&quot;),&quot;Washing machine&quot;,&quot;Other&quot;))))))))))
-df$subject_category_recode &lt;- gsub(&quot;^hi$&quot;,&quot;Index&quot;,df$subject_category) %&gt;% gsub(&quot;bath&quot;,&quot;Bath &quot;,.) %&gt;% gsub(&quot;hf&quot;,&quot;Female housemate &quot;,.) %&gt;% gsub(&quot;hm&quot;,&quot;Male housemate &quot;,.) %&gt;% gsub(&quot;hpc&quot;,&quot;Cat &quot;,.) %&gt;% gsub(&quot;hpd&quot;,&quot;Dog &quot;,.) %&gt;% gsub(&#39;hs&#39;,&#39;Other housemate&#39;,.) %&gt;% gsub(&quot;kitchen&quot;,&quot;Kitchen&quot;,.) %&gt;% gsub(&quot;livingroom&quot;,&quot;Living room&quot;,.) %&gt;% gsub(&quot;washingmachine&quot;,&quot;Washing machine&quot;,.) %&gt;% gsub(&quot;c1&quot;,&quot;&quot;,.)
-   
-## Index status
-df$index &lt;-  df$subject_category == &#39;hi&#39; 
-
-# Isolate name
-df$isolate_name &lt;- paste0(df$MERLIN_subject_id,&quot;_&quot;,df$visit,&quot;_&quot;,df$specimen_type)</code></pre>
-</div>
-<div id="save" class="section level1">
-<h1>Save</h1>
+<div id="save-dataset" class="section level1">
+<h1>Save dataset</h1>
 <pre class="r"><code>saveRDS(df,&quot;/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS&quot;)
 write_csv(df,&quot;/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.csv&quot;)</code></pre>
 </div>

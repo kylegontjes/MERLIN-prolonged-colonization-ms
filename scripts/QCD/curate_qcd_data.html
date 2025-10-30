@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-09" />
+<meta name="date" content="2025-10-30" />
 
 <title>Data Cleaning Step 2 - Curate the sequencing [QCD] data</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 2 - Curate the
 sequencing [QCD] data</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-09</h4>
+<h4 class="date">2025-10-30</h4>
 
 </div>
 
@@ -387,7 +387,7 @@ Sys.info()</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.5.1 (2025-06-13)
 ## Platform: x86_64-apple-darwin20
-## Running under: macOS Sequoia 15.7
+## Running under: macOS Sequoia 15.7.1
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -485,6 +485,39 @@ get_sequencing_run &lt;- function(isolate,sequencing_record){
 }
 
 master_qc$sequencing_run &lt;- sapply(master_qc$Sample,get_sequencing_run,sequencing_run_records)</code></pre>
+</div>
+<div id="drop-isolates" class="section level1">
+<h1>Drop isolates</h1>
+<div id="as-of-103025-drop-merlin_285-merlin_246-and-merlin_231" class="section level2">
+<h2>As of 10/30/25: Drop MERLIN_285, MERLIN_246, and MERLIN_231</h2>
+<div id="merlin_285---s-221005-00370---transcription-error-which-could-not-be-resolved" class="section level3">
+<h3>MERLIN_285 - S-221005-00370 - Transcription error which could not be
+resolved</h3>
+</div>
+<div id="merlin_246---s-221019-01336---based-on-plate-map-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_211" class="section level3">
+<h3>MERLIN_246 - S-221019-01336 - Based on plate map review and
+sequencing results, this is a duplicate of genomic_id MERLIN_211</h3>
+</div>
+<div id="merlin_231---s-221221-00536--based-on-lv-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_250." class="section level3">
+<h3>MERLIN_231 - S-221221-00536 -Based on LV review and sequencing
+results, this is a duplicate of genomic_id MERLIN_250.</h3>
+<pre class="r"><code>paste0(&quot;Number of qc entries at this stage: &quot;,nrow(master_qc))</code></pre>
+<pre><code>## [1] &quot;Number of qc entries at this stage: 422&quot;</code></pre>
+<pre class="r"><code># Remove these three isolates
+isolates_to_drop &lt;- c(&quot;MERLIN_285&quot;,&quot;MERLIN_246&quot;,&quot;MERLIN_231&quot;)
+master_qc$genomic_id[master_qc$genomic_id %in% isolates_to_drop]</code></pre>
+<pre><code>## [1] &quot;MERLIN_246&quot; &quot;MERLIN_231&quot; &quot;MERLIN_246&quot; &quot;MERLIN_285&quot; &quot;MERLIN_246&quot;</code></pre>
+<pre class="r"><code>master_qc &lt;- subset(master_qc,!genomic_id %in% isolates_to_drop)
+
+paste0(&quot;Number of qc entries at this stage: &quot;,nrow(master_qc))</code></pre>
+<pre><code>## [1] &quot;Number of qc entries at this stage: 417&quot;</code></pre>
+</div>
+</div>
+</div>
+<div id="curate-sequencing-data" class="section level1">
+<h1>Curate sequencing data</h1>
+<pre class="r"><code>master_qc$ST &lt;- ifelse(master_qc$ST ==&quot;-&quot;,&quot;Unknown&quot;,master_qc$ST) 
+master_qc$Species_ST &lt;- paste0(master_qc$Species,&quot; ST &quot;,master_qc$ST) %&gt;% trimws(.,&quot;both&quot;)</code></pre>
 </div>
 <div id="save-the-data" class="section level1">
 <h1>Save the data</h1>

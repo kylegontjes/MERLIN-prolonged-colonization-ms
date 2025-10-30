@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-09" />
+<meta name="date" content="2025-10-30" />
 
 <title>Data Cleaning Step 1 - Curate raw MERLIN metadata</title>
 
@@ -353,15 +353,30 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 1 - Curate raw MERLIN
 metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-09</h4>
+<h4 class="date">2025-10-30</h4>
 
 </div>
 
 
-<p>Note: 1. Received new data on 03/20/25 2. Received update with plate
-data on 3/27/25 3. Received update with final plate data on 4/01/25 4.
-Fix 168H location_or_participant variable to match SRA metadata on
-10/7/25</p>
+<p>Note:</p>
+<ol style="list-style-type: decimal">
+<li><p>Received new data on 03/20/25</p></li>
+<li><p>Received update with plate data on 3/27/25</p></li>
+<li><p>Received update with final plate data on 4/01/25</p></li>
+<li><p>Fix 168H location_or_participant variable to match SRA metadata
+on 10/7/25</p></li>
+<li><p>Received update on 10/30/25:</p></li>
+</ol>
+<ul>
+<li><p>A. Dropped 3 isolates as previously discussed</p></li>
+<li><p>B. Changed LV S-numbers for 4 isolates as previously
+discussed</p></li>
+<li><p>C. Location_or_participant 1hs changed to 1hf1</p></li>
+<li><p>D. Location_or_participant 100hs changed to 100hf1</p></li>
+<li><p>E. For household 168H: location_or_participant changed from
+166hf1 to 168hf1</p></li>
+<li><p>F. Removed notes in parentheses from isolate_id</p></li>
+</ul>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
 <pre class="r"><code>#Packages
@@ -391,7 +406,7 @@ Sys.info()</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.5.1 (2025-06-13)
 Platform: x86_64-apple-darwin20
-Running under: macOS Sequoia 15.7
+Running under: macOS Sequoia 15.7.1
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -424,22 +439,15 @@ loaded via a namespace (and not attached):
 </div>
 <div id="load-data" class="section level1">
 <h1>Load Data</h1>
-<pre class="r"><code>metadata &lt;- readxl::read_xlsx(&#39;../data/Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_20250402.xlsx&#39;,trim_ws = T)  
+<pre class="r"><code>metadata &lt;- readxl::read_xlsx(&#39;../data/Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_20251017.xlsx&#39;,trim_ws = T)  
 metadata &lt;- as.data.frame(metadata) </code></pre>
 </div>
 <div id="clean-datasets" class="section level1">
 <h1>Clean Datasets</h1>
 <div id="isolate-variable" class="section level2">
 <h2>Isolate variable</h2>
-<pre class="r"><code># Remove whitespace
-metadata$isolate_id_recode &lt;- recode(metadata$isolate_id,
-                                    &#39;Stool 1A C1 (00792)&#39; = &#39;Stool 1A C1&#39;,
-                                    &#39;Bath 1 C2 (pink)&#39; = &#39;Bath 1 C2&#39;,
-                                    &#39;Stool 1A C1 (00794)&#39; = &#39;Stool 1A C1&#39;,
-                                    &#39;Stool 1A C1 (01238)&#39; = &#39;Stool 1A C1&#39;,
-                                    &#39;Kitchen C1 (01240)&#39; = &#39;Kitchen C1&#39;) 
-
-# Harmonize isolate ID information
+<pre class="r"><code># Harmonize isolate ID information
+metadata$isolate_id_recode &lt;- metadata$isolate_id
 ## Petnape -&gt; Pet Nape
 metadata$isolate_id_recode &lt;- gsub(pattern = &quot;Petnape&quot;,replacement = &quot;Pet Nape&quot;,metadata$isolate_id_recode)
 ## Petstool -&gt; Pet Stool
@@ -473,14 +481,7 @@ metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quo
 # 151H: Remove &quot;C1&quot; from  Visit 3 Living Room &amp; Washing Room
 metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Living Room C1&quot;,&quot;Living Room&quot;, metadata$isolate_id_recode)
 
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Washing Machine C1&quot;,&quot;Washing Machine&quot;, metadata$isolate_id_recode)
-
-# 168H: ensure participant ID is correct
-### NEW CHANGE October 2025
-## 168hi
-metadata$location_or_participant &lt;- ifelse(metadata$household_number==&quot;168H&quot; &amp; metadata$visit ==1 &amp; metadata$location_or_participant ==&#39;166hi&#39;,&quot;168hi&quot;,metadata$location_or_participant)
-## 168hm1
-metadata$location_or_participant &lt;- ifelse(metadata$household_number==&quot;168H&quot; &amp; metadata$isolate_id ==&quot;Stool 2A C1&quot; &amp; metadata$location_or_participant ==&#39;166hf1&#39;,&quot;168hm1&quot;,metadata$location_or_participant)</code></pre>
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Washing Machine C1&quot;,&quot;Washing Machine&quot;, metadata$isolate_id_recode)</code></pre>
 </div>
 </div>
 <div id="save-metadata" class="section level1">

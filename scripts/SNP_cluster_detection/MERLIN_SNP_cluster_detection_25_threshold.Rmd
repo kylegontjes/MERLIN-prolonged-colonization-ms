@@ -28,7 +28,7 @@ sessionInfo()
 ```
 
 ```{r}  
-df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(WGS_escre==T & qc_pass==T)
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") %>% subset(WGS_escre==T & qc_pass==T)
 overall_pair_types <- readRDS('./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_pairs_dataset.RDS')
 SNP_distance_matrices <- readRDS('./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_matrices.RDS')
 ``` 
@@ -48,7 +48,7 @@ get_clusters_under <- function(dataframe,pair_types,threshold){
   # Calculate the size of each cluster
   cluster_sizes <- table(clusters$membership)
   ordered_cluster_ids <- order(cluster_sizes, decreasing = TRUE)
-  clusters$membership_ordered <- factor(clusters$membership, levels = names(cluster_sizes)[ordered_cluster_ids]) 
+  clusters$membership_ordered <- factor(clusters$membership, levels = names(cluster_sizes)[ordered_cluster_ids])
   
 clusters <- components(ig)$membership
 genomic_id <- names(clusters)
@@ -58,7 +58,6 @@ cluster_call <- cbind.data.frame(genomic_id,cluster)
 get_cluster_membership <- function(isolate,clustering){
   if(isolate %in% names(clustering)){
     cluster <- subset(clustering,names(clustering) == isolate)
-    
   }
   if(!isolate %in% names(clustering)){
     cluster <- ""
@@ -69,12 +68,10 @@ cluster <- lapply(dataframe$genomic_id,FUN=get_cluster_membership,clusters) %>% 
 
 data_list <- list(clustering_graph=ig,cluster=cluster)
 return(data_list)
-
 } 
 
 cluster_25_SNPs <- get_clusters_under(df,overall_pair_types,threshold=25)
 ```
-
 
 # Merge clustering with metadata
 ```{r}

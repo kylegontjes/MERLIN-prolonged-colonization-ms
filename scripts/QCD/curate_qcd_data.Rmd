@@ -71,6 +71,28 @@ get_sequencing_run <- function(isolate,sequencing_record){
 master_qc$sequencing_run <- sapply(master_qc$Sample,get_sequencing_run,sequencing_run_records)
 ``` 
 
+# Drop isolates
+## As of 10/30/25: Drop MERLIN_285, MERLIN_246, and MERLIN_231
+### MERLIN_285 - S-221005-00370 -  Transcription error which could not be resolved
+### MERLIN_246 - S-221019-01336 - Based on plate map review and sequencing results, this is a duplicate of genomic_id MERLIN_211
+### MERLIN_231 - S-221221-00536 -Based on LV review and sequencing results, this is a duplicate of genomic_id MERLIN_250.
+```{r}
+paste0("Number of qc entries at this stage: ",nrow(master_qc))
+# Remove these three isolates
+isolates_to_drop <- c("MERLIN_285","MERLIN_246","MERLIN_231")
+master_qc$genomic_id[master_qc$genomic_id %in% isolates_to_drop]
+master_qc <- subset(master_qc,!genomic_id %in% isolates_to_drop)
+
+paste0("Number of qc entries at this stage: ",nrow(master_qc))
+```
+
+# Curate sequencing data
+```{r}
+master_qc$ST <- ifelse(master_qc$ST =="-","Unknown",master_qc$ST) 
+master_qc$Species_ST <- paste0(master_qc$Species," ST ",master_qc$ST) %>% trimws(.,"both")
+```
+
+
 # Save the data
 ```{r}
 # All

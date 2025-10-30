@@ -1,5 +1,5 @@
 ---
-title: "Data Cleaning Step 3- Platemap Harmonization with Metadata"
+title: "Data Cleaning Step 3 - Platemap Harmonization with Metadata"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -16,7 +16,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
 # Environment
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse")   
+packages <- c("tidyverse",'gontjesr','kableExtra')   
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
 
@@ -231,7 +231,6 @@ oldmap$map_name <- ifelse(oldmap$map_name=="445H V3 S1A C2","445H V3 S1A",oldmap
 newmap$map_name <- ifelse(newmap$map_name=="445H V3 S1A C2","445H V3 S1A",newmap$map_name)
 sequencing$Sample.ID <- ifelse(sequencing$Sample.ID == "445H V3 S1A C2","445H V3 S1A",sequencing$Sample.ID)  
 sequencing$map_name <- ifelse(sequencing$map_name == "445H V3 S1A C2","445H V3 S1A",sequencing$map_name)  
-
 # 370H V2 PN 1A C2
 ## Change plate location from G9 to G8 - Appears to have been fixed
 metadata$position <-  ifelse(metadata$position=="G9" & metadata$plate=="5" & metadata$household_number_recode =="370H","G8",metadata$position) 
@@ -315,6 +314,7 @@ paste0(nrow(no_correct_platemap)," isolates w/o genotyping data due to sequencin
 table(no_correct_platemap$plate,useNA = 'ifany') 
  
 # Edit platemap
+# Naming issue with 126H V3 PS 2A C1 (00837)
 paste0("One of them had an issue w/ their naming. ")
 metadata$map_name <- ifelse(metadata$household_number_recode=="126H" & metadata$visit == 3 & metadata$isolate_id =='Pet Stool 2A C1' & metadata$lab_vantage_s_number == "S-220606-00837",'126H V3 PS 2A C1 (00837)',metadata$map_name)
 
@@ -358,7 +358,10 @@ get_qc_flag <- function(ID,QC_data){
  
 qc_summary <- lapply(metadata_w_genomic_id$Genome_ID,FUN=get_qc_flag,QC_data=qcd) %>% do.call(rbind,.) %>% distinct 
 
-paste0("Number of metadata entires: ", nrow(qc_summary))
+paste0("Number of distinct metadata genome entires: ", nrow(qc_summary))
+
+paste0("Duplicated metadata genome entries: ")
+metadata_w_genomic_id%>% subset(Genome_ID %in% c(metadata_w_genomic_id$Genome_ID[duplicated(metadata_w_genomic_id$Genome_ID)])) %>% favorite_kable()
 
 qc_summary$WGS_qc_pass_runs_num <- sapply(qc_summary$WGS_qc_pass,FUN=function(x){
   str_split(string = x,pattern = ';') %>% unlist %>% subset(.,.==TRUE) %>% length

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-09" />
+<meta name="date" content="2025-10-30" />
 
 <title>Cluster detection using 25 SNPs</title>
 
@@ -576,7 +576,7 @@ display: none;
 
 <h1 class="title toc-ignore">Cluster detection using 25 SNPs</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-09</h4>
+<h4 class="date">2025-10-30</h4>
 
 </div>
 
@@ -611,7 +611,7 @@ Sys.info()</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.5.1 (2025-06-13)
 Platform: x86_64-apple-darwin20
-Running under: macOS Sequoia 15.7
+Running under: macOS Sequoia 15.7.1
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -646,7 +646,7 @@ loaded via a namespace (and not attached):
 [41] glue_1.8.0         Rcpp_1.1.0         systemfonts_1.2.3  ggforce_0.5.0     
 [45] xfun_0.53          tidyselect_1.2.1   rstudioapi_0.17.1  farver_2.1.2      
 [49] htmltools_0.5.8.1  svglite_2.2.1      rmarkdown_2.29     compiler_4.5.1    </code></pre>
-<pre class="r"><code>df &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS&quot;) %&gt;% subset(WGS_escre==T &amp; qc_pass==T)
+<pre class="r"><code>df &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS&quot;) %&gt;% subset(WGS_escre==T &amp; qc_pass==T)
 overall_pair_types &lt;- readRDS(&#39;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_pairs_dataset.RDS&#39;)
 SNP_distance_matrices &lt;- readRDS(&#39;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_matrices.RDS&#39;)</code></pre>
 </div>
@@ -669,7 +669,7 @@ SNPs</h2>
   # Calculate the size of each cluster
   cluster_sizes &lt;- table(clusters$membership)
   ordered_cluster_ids &lt;- order(cluster_sizes, decreasing = TRUE)
-  clusters$membership_ordered &lt;- factor(clusters$membership, levels = names(cluster_sizes)[ordered_cluster_ids]) 
+  clusters$membership_ordered &lt;- factor(clusters$membership, levels = names(cluster_sizes)[ordered_cluster_ids])
   
 clusters &lt;- components(ig)$membership
 genomic_id &lt;- names(clusters)
@@ -679,7 +679,6 @@ cluster_call &lt;- cbind.data.frame(genomic_id,cluster)
 get_cluster_membership &lt;- function(isolate,clustering){
   if(isolate %in% names(clustering)){
     cluster &lt;- subset(clustering,names(clustering) == isolate)
-    
   }
   if(!isolate %in% names(clustering)){
     cluster &lt;- &quot;&quot;
@@ -690,7 +689,6 @@ cluster &lt;- lapply(dataframe$genomic_id,FUN=get_cluster_membership,clusters) %
 
 data_list &lt;- list(clustering_graph=ig,cluster=cluster)
 return(data_list)
-
 } 
 
 cluster_25_SNPs &lt;- get_clusters_under(df,overall_pair_types,threshold=25)</code></pre>
@@ -705,15 +703,15 @@ cluster_df &lt;- left_join(cluster_data,df %&gt;% select(Species,ST,Species_ST,g
 table(cluster_df$cluster)</code></pre>
 <pre><code>
         1        10        11        12        13        14        15        16 
-        3         4         3         4         7         2         5         9 
+        2         4         3         4         7         2         5         9 
        17        18        19         2        20        21        22        23 
-        2         3         2         2         3         2         8         6 
+        3         2         2         3         3         2         8         6 
        24        25        26        27        28        29         3        30 
-        4         4         2         4         5         4         4         4 
-       31        32        33        34        35         4         5         6 
-        7         2         3         3         5         2         4         4 
-        7         8         9 singleton 
-        2         2         4        36 </code></pre>
+        4         4         4         5         4         4         4         7 
+       31        32        33         4         5         6         7         8 
+        3         3         5         2         4         4         2         2 
+        9 singleton 
+        4        38 </code></pre>
 <div id="get-species-st-clusters" class="section level2">
 <h2>Get Species + ST + Clusters</h2>
 <pre class="r"><code>ST_list &lt;- cluster_df$Species_ST %&gt;% unique %&gt;% sort
@@ -757,7 +755,11 @@ ST_df &lt;- lapply(ST_list,recode_ST_data,cluster_df) %&gt;% do.call(rbind,.)</c
                                              1 
       Enterobacter hormaechei ST 200 Singleton 
                                              1 
+      Enterobacter hormaechei ST 950 Singleton 
+                                             1 
       Enterobacter hormaechei ST 974 Singleton 
+                                             1 
+    Enterobacter ludwigii ST Unknown Singleton 
                                              1 
             Escherichia coli ST 1236 Singleton 
                                              1 
@@ -807,11 +809,7 @@ Citrobacter portucalensis ST Unknown Singleton
                                              2 
        Enterobacter hormaechei ST 45 Singleton 
                                              2 
-      Enterobacter hormaechei ST 950 Cluster 1 
-                                             2 
        Enterobacter ludwigii ST 1287 Cluster 1 
-                                             2 
-    Enterobacter ludwigii ST Unknown Cluster 1 
                                              2 
             Escherichia coli ST 131 Cluster 11 
                                              2 
@@ -927,22 +925,22 @@ cluster_size_range
 <tbody>
 <tr>
 <td style="text-align:right;">
-35
+33
 </td>
 <td style="text-align:right;">
-134
+130
 </td>
 <td style="text-align:right;">
-36
+38
 </td>
 <td style="text-align:right;">
-78.82353
+77.38095
 </td>
 <td style="text-align:right;">
 4
 </td>
 <td style="text-align:right;">
-3.828571
+3.939394
 </td>
 <td style="text-align:right;">
 9

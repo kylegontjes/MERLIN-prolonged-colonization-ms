@@ -6,10 +6,28 @@ date: "`r Sys.Date()`"
 ---
 
 Note:
-1. Received new data on 03/20/25
-2. Received update with plate data on 3/27/25
-3. Received update with final plate data on 4/01/25 
-4. Fix 168H location_or_participant variable to match SRA metadata on 10/7/25
+
+1.  Received new data on 03/20/25
+
+2.  Received update with plate data on 3/27/25
+
+3.  Received update with final plate data on 4/01/25
+
+4.  Fix 168H location_or_participant variable to match SRA metadata on 10/7/25
+
+5.  Received update on 10/30/25:
+
+-   A. Dropped 3 isolates as previously discussed
+
+-   B. Changed LV S-numbers for 4 isolates as previously discussed
+
+-   C. Location_or_participant 1hs changed to 1hf1
+
+-   D. Location_or_participant 100hs changed to 100hf1
+
+-   E. For household 168H: location_or_participant changed from 166hf1 to 168hf1
+
+-   F. Removed notes in parentheses from isolate_id
 
 ```{r setup, include=FALSE}
 require(knitr)
@@ -19,6 +37,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
 ```
 
 # Environment
+
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse")   
@@ -31,37 +50,37 @@ Sys.info()
 sessionInfo()
 ```
 
-# Load Data 
-```{r} 
-metadata <- readxl::read_xlsx('../data/Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_20250402.xlsx',trim_ws = T)  
+# Load Data
+
+```{r}
+metadata <- readxl::read_xlsx('../data/Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_20251017.xlsx',trim_ws = T)  
 metadata <- as.data.frame(metadata) 
 ```
 
-# Clean Datasets 
-## Isolate variable
-```{r}
-# Remove whitespace
-metadata$isolate_id_recode <- recode(metadata$isolate_id,
-                                    'Stool 1A C1 (00792)' = 'Stool 1A C1',
-                                    'Bath 1 C2 (pink)' = 'Bath 1 C2',
-                                    'Stool 1A C1 (00794)' = 'Stool 1A C1',
-                                    'Stool 1A C1 (01238)' = 'Stool 1A C1',
-                                    'Kitchen C1 (01240)' = 'Kitchen C1') 
+# Clean Datasets
 
+## Isolate variable
+
+```{r}
 # Harmonize isolate ID information
+metadata$isolate_id_recode <- metadata$isolate_id
 ## Petnape -> Pet Nape
 metadata$isolate_id_recode <- gsub(pattern = "Petnape",replacement = "Pet Nape",metadata$isolate_id_recode)
 ## Petstool -> Pet Stool
 metadata$isolate_id_recode <- gsub(pattern = "Petstool",replacement = "Pet Stool",metadata$isolate_id_recode)
 ```
+
 ## Household id (correct lowercase)
+
 ```{r}
 # Correct lowercase
 metadata$household_number_recode <- recode(metadata$household_number,'49h' = '49H')
 ```
 
-# Edit specific isolates with coding differences 
+# Edit specific isolates with coding differences
+
 ## Specifically to enable proper merging with metadata
+
 ```{r}
 # 113H_2_Pet Stool 1A C1: Remove C1
 metadata$isolate_id_recode <- ifelse(metadata$household_number_recode=="113H" & metadata$visit ==2 & metadata$isolate_id == "Pet Stool 1A C1", "Pet Stool 1A",metadata$isolate_id_recode)
@@ -82,16 +101,10 @@ metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "197H" 
 metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "151H" & metadata$visit == 3 & metadata$isolate_id == "Living Room C1","Living Room", metadata$isolate_id_recode)
 
 metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "151H" & metadata$visit == 3 & metadata$isolate_id == "Washing Machine C1","Washing Machine", metadata$isolate_id_recode)
-
-# 168H: ensure participant ID is correct
-### NEW CHANGE October 2025
-## 168hi
-metadata$location_or_participant <- ifelse(metadata$household_number=="168H" & metadata$visit ==1 & metadata$location_or_participant =='166hi',"168hi",metadata$location_or_participant)
-## 168hm1
-metadata$location_or_participant <- ifelse(metadata$household_number=="168H" & metadata$isolate_id =="Stool 2A C1" & metadata$location_or_participant =='166hf1',"168hm1",metadata$location_or_participant)
 ```
- 
+
 # Save metadata
+
 ```{r}
 saveRDS(metadata,"./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.RDS")
 write_csv(metadata,"./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.csv")

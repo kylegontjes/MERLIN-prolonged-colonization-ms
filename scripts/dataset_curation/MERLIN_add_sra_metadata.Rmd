@@ -1,0 +1,66 @@
+---
+title: "Data Cleaning Step 6 - Add SRA Simplified metadata"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/')
+```
+ 
+NOTE: Run scripts in scripts/SNP_distance before completion!!!!
+
+# Environment
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load data
+```{r} 
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") 
+simplified_metadata_for_sra <- read_csv("./Analysis/data/merlin_sra_submission_20251029.csv") #%>% distinct
+```
+
+# Merge data
+```{r}
+simplified_metadata_for_sra <- simplified_metadata_for_sra %>% rename('lab_vantage_s_number'='lv_id',
+                                                                      'sra_location_or_participant'='location_or_participant') 
+df <- left_join(df ,simplified_metadata_for_sra %>% select(-visit,-plate,-position))
+```
+
+# Organize dataset
+```{r}
+# Specimen categories
+df$subject_category <- df$subject_id %>% str_split(.,"_",simplify = T) %>% .[,2]
+df$subject_category_simplified <-  ifelse(df$subject_category == 'humanindex','Index',
+                                     ifelse(df$subject_category %in% c("bath1","bath2",'bath2c1'),"Bath",
+                                            ifelse(df$subject_category %in% c("humanfemale1",'humanfemale2'),"Female housemate",
+                                                   ifelse(df$subject_category %in% c("humanmale1"),"Male housemate",
+                                                          ifelse(df$subject_category %in% c("petcat1","petcat2","petcat3"),"Cat",
+                                                                 ifelse(df$subject_category %in% c("petdog1","petdog2"),"Dog",
+                                                                        ifelse(df$subject_category %in% c("hs"),"Other housemate",
+                                                                               ifelse(df$subject_category %in% c("kitchen"),"Kitchen",
+                                                                                                                 ifelse(df$subject_category %in% c("livingroom"),"Living room",
+                                                                                                                        ifelse(df$subject_category %in% c("washingmachine"),"Washing machine","Other"))))))))))
+
+df$index <-  df$subject_category == 'humanindex' 
+```
+
+# Save
+```{r}
+saveRDS(df,'./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS')
+```

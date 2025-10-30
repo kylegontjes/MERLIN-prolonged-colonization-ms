@@ -1,5 +1,5 @@
 ---
-title: "Data Cleaning Step 5 - Add QCD data to de-duplicated metadata"
+title: "Data Cleaning Step 5 - Add sequencing [QCD] data to de-duplicated metadata"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -52,12 +52,14 @@ qcd_entries_failed <-  lapply(failed_genomes,merge_qcd_data,QC_flag='FALSE') %>%
 qcd_results <- rbind(qcd_entries,qcd_entries_failed)
 
 metadata <- left_join(metadata, qcd_results)
-```
 
-```{r}
+# Clean by removing unnecessary columns and update column names
 metadata_clean <- metadata %>% select(-no_correct_platemap,-WGS_qc_pass_runs_num,-WGS_qc_pass_ids_num)
 colnames(metadata_clean) <- gsub("\\.|\\.\\.\\.","_",colnames(metadata_clean))
+```
 
+# Save file
+```{r}
 saveRDS(metadata_clean,'./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS')
 write.csv(metadata_clean,'./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.csv')
 ```

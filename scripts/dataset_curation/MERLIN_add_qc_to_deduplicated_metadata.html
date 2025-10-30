@@ -11,9 +11,9 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-09" />
+<meta name="date" content="2025-10-30" />
 
-<title>Data Cleaning Step 5 - Add QCD data to de-duplicated metadata</title>
+<title>Data Cleaning Step 5 - Add sequencing [QCD] data to de-duplicated metadata</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,10 +350,10 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Data Cleaning Step 5 - Add QCD data to
-de-duplicated metadata</h1>
+<h1 class="title toc-ignore">Data Cleaning Step 5 - Add sequencing [QCD]
+data to de-duplicated metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-09</h4>
+<h4 class="date">2025-10-30</h4>
 
 </div>
 
@@ -387,7 +387,7 @@ Sys.info()</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.5.1 (2025-06-13)
 ## Platform: x86_64-apple-darwin20
-## Running under: macOS Sequoia 15.7
+## Running under: macOS Sequoia 15.7.1
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -446,10 +446,13 @@ qcd_results &lt;- rbind(qcd_entries,qcd_entries_failed)
 
 metadata &lt;- left_join(metadata, qcd_results)</code></pre>
 <pre><code>## Joining with `by = join_by(genomic_id)`</code></pre>
-<pre class="r"><code>metadata_clean &lt;- metadata %&gt;% select(-no_correct_platemap,-WGS_qc_pass_runs_num,-WGS_qc_pass_ids_num)
-colnames(metadata_clean) &lt;- gsub(&quot;\\.|\\.\\.\\.&quot;,&quot;_&quot;,colnames(metadata_clean))
-
-saveRDS(metadata_clean,&#39;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS&#39;)
+<pre class="r"><code># Clean by removing unnecessary columns and update column names
+metadata_clean &lt;- metadata %&gt;% select(-no_correct_platemap,-WGS_qc_pass_runs_num,-WGS_qc_pass_ids_num)
+colnames(metadata_clean) &lt;- gsub(&quot;\\.|\\.\\.\\.&quot;,&quot;_&quot;,colnames(metadata_clean))</code></pre>
+</div>
+<div id="save-file" class="section level1">
+<h1>Save file</h1>
+<pre class="r"><code>saveRDS(metadata_clean,&#39;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS&#39;)
 write.csv(metadata_clean,&#39;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.csv&#39;)</code></pre>
 </div>
 
