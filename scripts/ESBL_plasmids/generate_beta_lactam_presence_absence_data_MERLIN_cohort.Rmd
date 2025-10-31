@@ -1,0 +1,83 @@
+---
+title: "Generate Beta-lactam presence and location data for full cohort"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+# Environment
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
+#Packages
+packages <- c("tidyverse",'kableExtra') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Load functions
+source("./scripts/ESBL_plasmids/ESCrE_plasmid_location_functions.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load data
+```{r}
+df <-  readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS")   %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
+amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0)
+amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(element_symbol_renamed %in% colnames(amrfinder_mat))
+ESCrE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS")  %>% subset(element_symbol_renamed %in% colnames(amrfinder_mat))
+mobsuite_gene_pres <- readRDS("./data/ESBL_plasmids/amrfinder_mobsuite_beta_lactamase_presence.RDS") %>% subset(genomic_id %in% df$genomic_id) 
+ESCrE_plasmid_clusters <- readRDS("./data/ESBL_plasmids/amrfinder_ESCrE_contig_matrix.RDS") %>% subset(rownames(.) %in% df$genomic_id) %>% select_if(colSums(.)>0) 
+
+paste0("Total tested genomes: ",nrow(df))
+```
+
+# Merge
+```{r}
+df <- left_join(df,amrfinder_mat %>% mutate(genomic_id = rownames(.))) %>% left_join(ESCrE_plasmid_clusters %>% mutate(genomic_id=rownames(.)))
+``` 
+
+# Get BLA and ESBL genes
+```{r} 
+bla_genes <- ESCrE_genotype_info$element_symbol_renamed%>% unique %>% sort
+paste0("Number of beta-lactamase genes identified: " , length(ESCrE_genotype_info$element_symbol_renamed %>% unique))
+table(ESCrE_genotype_info$element_symbol_renamed,ESCrE_genotype_info$blactam_class) 
+
+escre_genotypes <- subset(ESCrE_genotype_info,ESCrE==T)
+ESCrE_genes = escre_genotypes$element_symbol_renamed %>% sort %>% unique
+paste0("ESCrE beta-lactamase genes identified: " ,nrow(escre_genotypes)) 
+escre_genotypes$element_symbol_renamed %>% sort
+```
+
+# Get BLA and ESBL data on plasmids and chromosome
+```{r,fig.width=10}
+plasmid_data <- lapply(df$genomic_id,get_ESCrE_genes_data,mobsuite_gene_pres,bla_genes,ESCrE_genes) %>% do.call(rbind,.) 
+```
+
+# Plasmidic ESBL
+```{r}
+ESCrE_prop_data <- lapply(ESCrE_genes,analyze_frequency_on_plasmid,plasmid_data) %>% do.call(rbind,.) %>% arrange(prop_plasmid,n_plasmid) 
+ 
+ESCrE_prop_data %>% arrange(prop_plasmid) %>% gontjesr::favorite_kable()
+plasmidic_ESCrEs <- subset(ESCrE_prop_data,prop_plasmid>0) %>% .$ESCrE %>% sort
+
+saveRDS(ESCrE_prop_data,"./data/ESBL_plasmids/MERLIN_cohort_ESCrE_proportion_plasmidic.RDS")
+
+ESCrE_plasmidic_presence <- lapply(df$genomic_id,get_plasmidic_ESCrE,mobsuite_gene_pres,plasmidic_ESCrEs) %>% do.call(rbind,.)
+```
+
+# Save overall data
+```{r}
+plasmid_data <-  left_join(plasmid_data,ESCrE_plasmidic_presence) 
+saveRDS(plasmid_data,"./data/ESBL_plasmids/MERLIN_cohort_beta_lactam_location_data.RDS")
+```

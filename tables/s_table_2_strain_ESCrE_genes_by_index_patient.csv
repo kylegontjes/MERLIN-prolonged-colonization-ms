@@ -1,9 +1,9 @@
 Household,Visit,Strain,Plasmids,ESCrE genes,Chromosomal ESCrE genes,Plasmid-linked ESCrE genes,ESCrE plasmids
 1H,0,Escherichia coli ST 69 Singleton,"AA277, AA337, AA474, AA553, AA579, AA619, AA977, AC431, novel_79f30b0d6dbdbf76081706ab79ee0ca0","blaCTX-M-15, blaEC-8*",blaEC-8*,blaCTX-M-15,AA474
-1H,1,Escherichia coli ST 6321 Cluster 1,"AA110, AA378, AA474, AA579, AA619, AA977, AB685, AC431","blaCTX-M-15, blaEC-8*",blaEC-8*,blaCTX-M-15,AA378
 1H,1,Klebsiella pneumoniae ST 45 Cluster 1,"AA031, AA110, AA123, AA277, AB531, AC082, AD094",blaCTX-M-15,,blaCTX-M-15,AA277
-1H,2,Escherichia coli ST 6321 Cluster 1,"AA110, AA378, AA552, AA579, AA619, AA977, AB685, AC026","blaCTX-M-15, blaEC-8*",blaEC-8*,blaCTX-M-15,AC026
+1H,1,Escherichia coli ST 6321 Cluster 1,"AA110, AA378, AA474, AA579, AA619, AA977, AB685, AC431","blaCTX-M-15, blaEC-8*",blaEC-8*,blaCTX-M-15,AA378
 1H,2,Klebsiella pneumoniae ST 45 Cluster 1,"AA277, AB183, AB531, AE974",blaCTX-M-15,,blaCTX-M-15,AA277
+1H,2,Escherichia coli ST 6321 Cluster 1,"AA110, AA378, AA552, AA579, AA619, AA977, AB685, AC026","blaCTX-M-15, blaEC-8*",blaEC-8*,blaCTX-M-15,AC026
 1H,3,Proteus mirabilis ST Unknown Singleton,,,,,
 4H,0,Escherichia coli ST 69 Singleton,"AA977, AC026","blaCTX-M-55, blaEC-8*",blaEC-8*,blaCTX-M-55,AC026
 4H,1,Enterobacter hormaechei ST 974 Singleton,"AA422, AA424","blaACT-115, blaCTX-M-15",blaACT-115,blaCTX-M-15,AA424
@@ -28,8 +28,8 @@ Household,Visit,Strain,Plasmids,ESCrE genes,Chromosomal ESCrE genes,Plasmid-link
 109H,1,Escherichia coli ST 1193 Cluster 2,"AA171, AA174, AA579, AB443, AB685, AC511, AC748","blaCTX-M-27, blaEC-5",blaEC-5,blaCTX-M-27,AA171
 109H,2,Escherichia coli ST 1193 Cluster 2,"AA171, AA174, AA579, AB443, AB685, AC511, AC748","blaCTX-M-27, blaEC-5",blaEC-5,blaCTX-M-27,AA171
 109H,3,Escherichia coli ST 1193 Cluster 2,"AA171, AA174, AA579, AB443, AB685, AC511, AC748","blaCTX-M-27, blaEC-5",blaEC-5,blaCTX-M-27,AA171
-118H,1,Escherichia coli ST 216 Singleton,"AA474, AA552, AA833","blaEC-15*, blaKPC-3",blaEC-15*,blaKPC-3,AA552
 118H,1,Klebsiella pneumoniae ST 6602 Singleton,"AA275, AA552, AB685, AC082",blaKPC-3,,blaKPC-3,AA552
+118H,1,Escherichia coli ST 216 Singleton,"AA474, AA552, AA833","blaEC-15*, blaKPC-3",blaEC-15*,blaKPC-3,AA552
 118H,3,Escherichia coli ST 73 Singleton,"AA337, AA552","blaEC-5, blaKPC-3",blaEC-5,blaKPC-3,AA552
 126H,0,Escherichia coli ST 4118 Cluster 1,"AA474, AA581","blaCMY-2, blaEC-8*","blaCMY-2, blaEC-8*",,
 126H,1,Escherichia coli ST 4118 Cluster 1,"AA474, AA581","blaCMY-2, blaEC-8*","blaCMY-2, blaEC-8*",,

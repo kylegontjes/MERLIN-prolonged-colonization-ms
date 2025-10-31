@@ -39,25 +39,33 @@ overall_pair_types <- readRDS("./data/SNP_distance/MERLIN_SNP_distance_pairs_dat
 # Update pairtypes with the following questions
 ```{r}
 update_pair_types_df_w_questions <- function(pair_types_df){
-  index_cases <- ifelse(pair_types_df$visit1==0 & pair_types_df$visit2==0,T,F)
+  both_index_cases <- ifelse(pair_types_df$index1==T & pair_types_df$index2==T,T,F)
+  index_isolates <- ifelse(pair_types_df$visit1==0 & pair_types_df$visit2==0,T,F)
   same_household <- ifelse(pair_types_df$household1==pair_types_df$household2,T,F)
   same_household_visit <- ifelse(pair_types_df$household1==pair_types_df$household2 & pair_types_df$visit1==pair_types_df$visit2,T,F) 
-  same_individual <- ifelse(pair_types_df$MERLIN_subject_id1==pair_types_df$MERLIN_subject_id2,T,F)
+  same_individual <- ifelse(pair_types_df$ncbi_id1==pair_types_df$ncbi_id2,T,F)
   ST_pair <- ifelse(pair_types_df$Species_ST1==pair_types_df$Species_ST2,T,F)
-  same_specimen_category <- ifelse(pair_types_df$specimen_category1 ==pair_types_df$specimen_category2,T,F)
-  both_human <- ifelse(pair_types_df$specimen_category1 == "Human" & pair_types_df$specimen_category2 == "Human",T,F)
-  both_pet <- ifelse(pair_types_df$specimen_category1 == "Pet" & pair_types_df$specimen_category2 == "Pet",T,F)
-  both_env <- ifelse(pair_types_df$specimen_category1 == "Environment" & pair_types_df$specimen_category2 == "Environment",T,F)  
+  same_specimen_category <- ifelse(pair_types_df$subject_type1 ==pair_types_df$subject_type2,T,F)
+  both_human <- ifelse(pair_types_df$subject_type1 == "Human" & pair_types_df$subject_type2 == "Human",T,F)
+  both_pet <- ifelse(pair_types_df$subject_type1 == "Pet" & pair_types_df$subject_type2 == "Pet",T,F)
+  both_env <- ifelse(pair_types_df$subject_type1 == "Environment" & pair_types_df$subject_type2 == "Environment",T,F)  
   
-  dataset <- cbind(pair_types_df,index_cases=index_cases,same_household=same_household,same_household_visit=same_household_visit,ST_pair=ST_pair,same_specimen_category=same_specimen_category,same_individual=same_individual,both_human=both_human,both_pet=both_pet,both_env=both_env)
+  dataset <- cbind(pair_types_df,both_index_cases=both_index_cases,index_isolates=index_isolates,same_household=same_household,same_household_visit=same_household_visit,ST_pair=ST_pair,same_specimen_category=same_specimen_category,same_individual=same_individual,both_human=both_human,both_pet=both_pet,both_env=both_env)
   return(dataset)
 }
 ```
 
+# Annotate and subset database
 ```{r,fig.width=8,fig.height=5}
-overall_pair_types <- overall_pair_types %>% update_pair_types_df_w_questions
-overall_pair_types_index <- subset(overall_pair_types,MERLIN_subject_id1 %in%  df_index$MERLIN_subject_id & MERLIN_subject_id2 %in% df_index$MERLIN_subject_id )
+# Annotate
+overall_pair_types <- overall_pair_types %>% update_pair_types_df_w_questions 
 
+# Subset to index isolates
+overall_pair_types_index <- subset(overall_pair_types,ncbi_id1 %in%  df_index$ncbi_id & ncbi_id2 %in% df_index$ncbi_id)
+```
+
+# Figure
+```{r,fig.width=8,fig.height=5}
 overall_pair_types_index <- as.data.frame(overall_pair_types_index)
 overall_pair_types_index$pairwise_dist <- as.numeric(overall_pair_types_index$pairwise_dist)
 s_figure_1 <- ggplot(data=overall_pair_types_index,aes(x=pairwise_dist,fill=same_household)) + geom_histogram(bins=100)+ xlab("Pairwise SNP distance")+ ylab("Number of pairs") + theme_bw_me + pairtype_fill  + s_figure_1_format + scale_y_continuous(breaks = c(0,100,200,300,400,500,600,700,800))+ scale_x_continuous(breaks = c(0,10000,25000,50000,75000,100000,125000,150000),limits = c(NA,150010))
@@ -68,6 +76,7 @@ s_figure_1 <- s_figure_1 +  annotation_custom(ggplotGrob(s_figure_1_inlet), xmin
 s_figure_1
 ```
 
+# Save figure
 ```{r}
 ggsave(plot = s_figure_1,filename = './figures/s_figure_1_pairwise_SNP_distance.png', dpi = 900, width = 8, height = 5,bg='white')
 ```

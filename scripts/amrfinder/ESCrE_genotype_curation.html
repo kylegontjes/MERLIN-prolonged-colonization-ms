@@ -11,9 +11,9 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-09" />
+<meta name="date" content="2025-10-31" />
 
-<title>Summarise amrfinder results</title>
+<title>Curate ESCrE genotype information for downstream analyses</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -574,9 +574,10 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Summarise amrfinder results</h1>
+<h1 class="title toc-ignore">Curate ESCrE genotype information for
+downstream analyses</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-09</h4>
+<h4 class="date">2025-10-31</h4>
 
 </div>
 
@@ -599,7 +600,7 @@ Sys.info()</code></pre>
 ##                                                                                                     version 
 ## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
 ##                                                                                                    nodename 
-##                                                                                            &quot;msla0572.local&quot; 
+##                                                                               &quot;msla0572.wifi.med.umich.edu&quot; 
 ##                                                                                                     machine 
 ##                                                                                                    &quot;x86_64&quot; 
 ##                                                                                                       login 
@@ -611,7 +612,7 @@ Sys.info()</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.5.1 (2025-06-13)
 ## Platform: x86_64-apple-darwin20
-## Running under: macOS Sequoia 15.7
+## Running under: macOS Sequoia 15.7.1
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -646,10 +647,17 @@ Sys.info()</code></pre>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
-<pre class="r"><code>df &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_metadata_final.RDS&quot;) 
+<pre class="r"><code># Load dataset
+df &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_metadata_final.RDS&quot;) 
 isolates &lt;- subset(df,WGS_escre == TRUE &amp; qc_pass == TRUE) %&gt;% .$genomic_id 
+paste0(&quot;Number of final isolates that were ESCRE and QC passing: &quot;, length(isolates))</code></pre>
+<pre><code>## [1] &quot;Number of final isolates that were ESCRE and QC passing: 168&quot;</code></pre>
+<pre class="r"><code># Load AMRFINDER
 amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.RDS&quot;)  %&gt;% subset(genomic_id %in% isolates)
 amrfinder_mat &lt;- readRDS(&quot;./data/amrfinder/amrfinder_matrix.RDS&quot;) %&gt;% subset(rownames(.) %in% isolates)</code></pre>
+</div>
+<div id="create-esbl-and-escre-genotype-classifiers" class="section level1">
+<h1>Create ESBL and EScrE genotype classifiers</h1>
 <pre class="r"><code>blactam_info &lt;-  amrfinder %&gt;% subset(class == &quot;BETA-LACTAM&quot;) %&gt;% select(element_symbol,element_symbol_renamed,element_name,class,subclass) %&gt;% distinct
 paste0(&quot;Detected b-lactamase genes: &quot;)</code></pre>
 <pre><code>## [1] &quot;Detected b-lactamase genes: &quot;</code></pre>
@@ -767,7 +775,7 @@ CEPHALOSPORIN
 3
 </td>
 <td style="text-align:right;">
-1.76
+1.79
 </td>
 <td style="text-align:left;">
 C
@@ -802,7 +810,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -834,10 +842,10 @@ ACT family cephalosporin-hydrolyzing class C beta-lactamase
 CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
-2
+1
 </td>
 <td style="text-align:right;">
-1.18
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -872,7 +880,7 @@ CEPHALOSPORIN
 2
 </td>
 <td style="text-align:right;">
-1.18
+1.19
 </td>
 <td style="text-align:left;">
 C
@@ -907,7 +915,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -942,7 +950,7 @@ CEPHALOSPORIN
 3
 </td>
 <td style="text-align:right;">
-1.76
+1.79
 </td>
 <td style="text-align:left;">
 C
@@ -977,7 +985,7 @@ CEPHALOSPORIN
 8
 </td>
 <td style="text-align:right;">
-4.71
+4.76
 </td>
 <td style="text-align:left;">
 C
@@ -1012,7 +1020,7 @@ CEPHALOSPORIN
 4
 </td>
 <td style="text-align:right;">
-2.35
+2.38
 </td>
 <td style="text-align:left;">
 C
@@ -1047,7 +1055,7 @@ CEPHALOSPORIN
 4
 </td>
 <td style="text-align:right;">
-2.35
+2.38
 </td>
 <td style="text-align:left;">
 C
@@ -1082,7 +1090,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -1114,10 +1122,10 @@ cephalosporin-hydrolyzing class C beta-lactamase ACT-43
 CEPHALOSPORIN
 </td>
 <td style="text-align:right;">
-2
+1
 </td>
 <td style="text-align:right;">
-1.18
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -1152,7 +1160,7 @@ CEPHALOSPORIN
 2
 </td>
 <td style="text-align:right;">
-1.18
+1.19
 </td>
 <td style="text-align:left;">
 C
@@ -1187,7 +1195,7 @@ CEPHALOSPORIN
 2
 </td>
 <td style="text-align:right;">
-1.18
+1.19
 </td>
 <td style="text-align:left;">
 C
@@ -1222,7 +1230,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -1257,7 +1265,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -1292,7 +1300,7 @@ CEPHALOSPORIN
 2
 </td>
 <td style="text-align:right;">
-1.18
+1.19
 </td>
 <td style="text-align:left;">
 C
@@ -1327,7 +1335,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -1362,7 +1370,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -1397,7 +1405,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -1432,7 +1440,7 @@ CEPHALOSPORIN
 9
 </td>
 <td style="text-align:right;">
-5.29
+5.36
 </td>
 <td style="text-align:left;">
 C
@@ -1467,7 +1475,7 @@ CEPHALOSPORIN
 3
 </td>
 <td style="text-align:right;">
-1.76
+1.79
 </td>
 <td style="text-align:left;">
 C
@@ -1502,7 +1510,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 C
@@ -1537,7 +1545,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 A
@@ -1572,7 +1580,7 @@ CEPHALOSPORIN
 66
 </td>
 <td style="text-align:right;">
-38.82
+39.29
 </td>
 <td style="text-align:left;">
 A
@@ -1607,7 +1615,7 @@ CEPHALOSPORIN
 32
 </td>
 <td style="text-align:right;">
-18.82
+19.05
 </td>
 <td style="text-align:left;">
 A
@@ -1642,7 +1650,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 A
@@ -1677,7 +1685,7 @@ CEPHALOSPORIN
 2
 </td>
 <td style="text-align:right;">
-1.18
+1.19
 </td>
 <td style="text-align:left;">
 A
@@ -1712,7 +1720,7 @@ BETA-LACTAM
 17
 </td>
 <td style="text-align:right;">
-10.00
+10.12
 </td>
 <td style="text-align:left;">
 C
@@ -1747,7 +1755,7 @@ BETA-LACTAM
 60
 </td>
 <td style="text-align:right;">
-35.29
+35.71
 </td>
 <td style="text-align:left;">
 C
@@ -1782,7 +1790,7 @@ BETA-LACTAM
 3
 </td>
 <td style="text-align:right;">
-1.76
+1.79
 </td>
 <td style="text-align:left;">
 C
@@ -1817,7 +1825,7 @@ BETA-LACTAM
 6
 </td>
 <td style="text-align:right;">
-3.53
+3.57
 </td>
 <td style="text-align:left;">
 C
@@ -1852,7 +1860,7 @@ BETA-LACTAM
 2
 </td>
 <td style="text-align:right;">
-1.18
+1.19
 </td>
 <td style="text-align:left;">
 C
@@ -1887,7 +1895,7 @@ CEPHALOSPORIN
 11
 </td>
 <td style="text-align:right;">
-6.47
+6.55
 </td>
 <td style="text-align:left;">
 C
@@ -1922,7 +1930,7 @@ CARBAPENEM
 5
 </td>
 <td style="text-align:right;">
-2.94
+2.98
 </td>
 <td style="text-align:left;">
 A
@@ -1957,7 +1965,7 @@ CARBAPENEM
 8
 </td>
 <td style="text-align:right;">
-4.71
+4.76
 </td>
 <td style="text-align:left;">
 A
@@ -1992,7 +2000,7 @@ CARBAPENEM
 3
 </td>
 <td style="text-align:right;">
-1.76
+1.79
 </td>
 <td style="text-align:left;">
 B
@@ -2027,7 +2035,7 @@ CEPHALOSPORIN
 23
 </td>
 <td style="text-align:right;">
-13.53
+13.69
 </td>
 <td style="text-align:left;">
 D
@@ -2062,7 +2070,7 @@ CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 A
@@ -2097,7 +2105,7 @@ BETA-LACTAM
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 A
@@ -2132,7 +2140,7 @@ BETA-LACTAM
 6
 </td>
 <td style="text-align:right;">
-3.53
+3.57
 </td>
 <td style="text-align:left;">
 A
@@ -2167,7 +2175,7 @@ BETA-LACTAM
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 A
@@ -2202,7 +2210,7 @@ CEFIDEROCOL/CEPHALOSPORIN
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 A
@@ -2237,7 +2245,7 @@ CEPHALOSPORIN
 5
 </td>
 <td style="text-align:right;">
-2.94
+2.98
 </td>
 <td style="text-align:left;">
 A
@@ -2272,7 +2280,7 @@ BETA-LACTAM
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 A
@@ -2307,7 +2315,7 @@ BETA-LACTAM
 8
 </td>
 <td style="text-align:right;">
-4.71
+4.76
 </td>
 <td style="text-align:left;">
 A
@@ -2342,7 +2350,7 @@ BETA-LACTAM
 3
 </td>
 <td style="text-align:right;">
-1.76
+1.79
 </td>
 <td style="text-align:left;">
 A
@@ -2377,7 +2385,7 @@ BETA-LACTAM
 3
 </td>
 <td style="text-align:right;">
-1.76
+1.79
 </td>
 <td style="text-align:left;">
 A
@@ -2412,7 +2420,7 @@ BETA-LACTAM
 2
 </td>
 <td style="text-align:right;">
-1.18
+1.19
 </td>
 <td style="text-align:left;">
 A
@@ -2447,7 +2455,7 @@ BETA-LACTAM
 60
 </td>
 <td style="text-align:right;">
-35.29
+35.71
 </td>
 <td style="text-align:left;">
 A
@@ -2482,7 +2490,7 @@ BETA-LACTAM
 1
 </td>
 <td style="text-align:right;">
-0.59
+0.60
 </td>
 <td style="text-align:left;">
 A
@@ -2502,7 +2510,7 @@ FALSE
 </tr>
 </tbody>
 </table>
-<pre class="r"><code># Save
+<pre class="r"><code># Arrange by symbol
 blactam_info &lt;- blactam_info %&gt;% arrange(element_symbol_renamed)</code></pre>
 </div>
 <div id="save" class="section level1">

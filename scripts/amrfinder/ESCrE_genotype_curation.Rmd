@@ -1,5 +1,5 @@
 ---
-title: "Summarise amrfinder results"
+title: "Curate ESCrE genotype information for downstream analyses"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -29,12 +29,17 @@ sessionInfo()
 
 # Load data
 ```{r}
+# Load dataset
 df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") 
 isolates <- subset(df,WGS_escre == TRUE & qc_pass == TRUE) %>% .$genomic_id 
+paste0("Number of final isolates that were ESCRE and QC passing: ", length(isolates))
+
+# Load AMRFINDER
 amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(genomic_id %in% isolates)
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% isolates)
 ```
 
+# Create ESBL and EScrE genotype classifiers
 ```{r}
 blactam_info <-  amrfinder %>% subset(class == "BETA-LACTAM") %>% select(element_symbol,element_symbol_renamed,element_name,class,subclass) %>% distinct
 paste0("Detected b-lactamase genes: ")
@@ -78,13 +83,11 @@ paste0("Overall data:")
 
 blactam_info %>% select(-class) %>%  arrange(element_symbol) %>% gontjesr::favorite_kable()
 
-# Save
+# Arrange by symbol
 blactam_info <- blactam_info %>% arrange(element_symbol_renamed)
-
 ```
 
 # Save
 ```{r}
 saveRDS(blactam_info,file="./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS")
 ```
-

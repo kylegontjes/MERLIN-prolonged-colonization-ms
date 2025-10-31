@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-09" />
+<meta name="date" content="2025-10-31" />
 
 <title>mobsuite_AMR_gene_data_curation</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">mobsuite_AMR_gene_data_curation</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-09</h4>
+<h4 class="date">2025-10-31</h4>
 
 </div>
 
@@ -375,7 +375,7 @@ Sys.info()</code></pre>
 ##                                                                                                     version 
 ## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
 ##                                                                                                    nodename 
-##                                                                                            &quot;msla0572.local&quot; 
+##                                                                               &quot;msla0572.wifi.med.umich.edu&quot; 
 ##                                                                                                     machine 
 ##                                                                                                    &quot;x86_64&quot; 
 ##                                                                                                       login 
@@ -387,7 +387,7 @@ Sys.info()</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.5.1 (2025-06-13)
 ## Platform: x86_64-apple-darwin20
-## Running under: macOS Sequoia 15.7
+## Running under: macOS Sequoia 15.7.1
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib 
@@ -425,10 +425,12 @@ Sys.info()</code></pre>
 <pre class="r"><code>df &lt;-  readRDS(&quot;./data/dataset/MERLIN_cohort_metadata_final.RDS&quot;)   %&gt;% subset(WGS_escre == TRUE &amp; qc_pass == TRUE) 
 isolates &lt;- df$genomic_id
 
+# AMRFINDER
 amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.RDS&quot;)  %&gt;% subset(genomic_id %in% isolates)
 amrfinder_mat &lt;- readRDS(&quot;./data/amrfinder/amrfinder_matrix.RDS&quot;) %&gt;% subset(rownames(.) %in% isolates)
 ESCrE_genotype_info &lt;- readRDS(&quot;./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS&quot;)
  
+# MOB-Suite
 mobsuite_contigs &lt;- readRDS(&quot;./data/mobsuite/mobsuite_contigs.RDS&quot;) %&gt;% subset(genomic_id%in% isolates)
 mobtyper &lt;- readRDS(&quot;./data/mobsuite/mobtyper.RDS&quot;)%&gt;% subset(genomic_id %in% isolates)</code></pre>
 </div>

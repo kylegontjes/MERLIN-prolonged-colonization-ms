@@ -42,6 +42,7 @@ ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & WGS_escre==T)
 
 # Species level
 
+## Function
 ```{r }
 get_prolonged_colonization <- function(isolate,metadata,variable){
   isolate_df <- subset(metadata,household==isolate)
@@ -60,7 +61,10 @@ get_prolonged_colonization <- function(isolate,metadata,variable){
   colnames(results) <- c("household",paste0(colnames(results)[-1],"_",variable))
   return(results)
 }
+```
 
+## Data generation
+```{r }
 any_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='WGS_escre') %>% do.call(rbind,.) 
 species_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species') %>% do.call(rbind,.)
 species_ST_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species_ST') %>% do.call(rbind,.)
@@ -69,7 +73,8 @@ species_ST_cluster_prolonged <- lapply(ESCrE_index_positive_households,get_prolo
 prolonged_df <- left_join(any_prolonged,species_prolonged) %>% left_join(.,species_ST_prolonged) %>% left_join(.,species_ST_cluster_prolonged)
 ```
 
-# Plasmid level
+# Plasmid level prolonged colonization
+## Function
 ```{r}
 # Generic
 get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split){
@@ -125,10 +130,9 @@ get_prolonged_colonization_str_split_plasmid_aware <- function(isolate,metadata,
   
   return(results)
 } 
-
 ```
 
-
+## Data generation
 ```{r} 
 maldi_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='maldi',split=",") %>% do.call(rbind,.)
 
@@ -139,13 +143,13 @@ ESCrE_plasmid_aware_sharing <- lapply(ESCrE_index_positive_households,get_prolon
 prolonged_df <- left_join(prolonged_df,ESCrE_genes_sharing)  %>% left_join(.,ESCrE_plasmid_aware_sharing) %>% left_join(.,maldi_sharing)
 ```
 
-# Create merged datapoints
+# Generate merged datapoints
 ```{r}
 prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes ==1,1,0) 
 prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware ==1,1,0) 
 ```
 
-# Save
+# Save dataset
 ```{r}
 saveRDS(prolonged_df,'./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS')
 ```

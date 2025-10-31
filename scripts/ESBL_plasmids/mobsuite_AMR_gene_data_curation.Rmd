@@ -33,10 +33,12 @@ sessionInfo()
 df <-  readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS")   %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
 isolates <- df$genomic_id
 
+# AMRFINDER
 amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS")  %>% subset(genomic_id %in% isolates)
 amrfinder_mat <- readRDS("./data/amrfinder/amrfinder_matrix.RDS") %>% subset(rownames(.) %in% isolates)
 ESCrE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS")
  
+# MOB-Suite
 mobsuite_contigs <- readRDS("./data/mobsuite/mobsuite_contigs.RDS") %>% subset(genomic_id%in% isolates)
 mobtyper <- readRDS("./data/mobsuite/mobtyper.RDS")%>% subset(genomic_id %in% isolates)
 ``` 

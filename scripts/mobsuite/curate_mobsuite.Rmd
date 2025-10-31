@@ -1,5 +1,5 @@
 ---
-title: "Plasmid curation"
+title: "Plasmid curation via MOB-Suite"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -43,11 +43,11 @@ mobtyper <- read_mobtyper_results(path='./data/mobsuite/MERLIN_mobtyper_results.
 mobsuite_contigs <- read_mobtyper_results(path='./data/mobsuite/MERLIN_contig_report.txt',df)
 mobsuite_contigs$location <- ifelse(mobsuite_contigs$primary_cluster_id=="-","chromosome",mobsuite_contigs$primary_cluster_id)
 
-# save reports
+# Save reports
 saveRDS(mobtyper,file="./data/mobsuite/mobtyper.RDS")
 saveRDS(mobsuite_contigs,file="./data/mobsuite/mobsuite_contigs.RDS") 
 
-# Convert Mobsuite Data into Binary Matrix
+# Convert Mobtyper data into a binary plasmid presence/absence matrix
 mash_nn_matrix <- get_mobtyper_mash_nn_matrix(df,mobtyper)  
 cluster_matrix <- get_mobtyper_cluster_matrix(df,mobtyper) 
 

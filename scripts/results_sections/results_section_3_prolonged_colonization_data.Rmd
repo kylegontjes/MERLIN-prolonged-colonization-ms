@@ -38,6 +38,7 @@ prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolo
 clinical_prolonged_colonization <- read_csv("./data/prolonged_colonization/merlin_prolonged_colonization.csv")
 ```
  
+# Get numer of positive households
 ```{r}
 ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & WGS_escre==T) %>% .$household
 paste0("Number of subjects with index specimens positive: ", length(ESCrE_index_positive_households))
