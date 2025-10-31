@@ -68,7 +68,11 @@ overall_pair_types_index <- subset(overall_pair_types,ncbi_id1 %in%  df_index$nc
 ```{r,fig.width=8,fig.height=5}
 overall_pair_types_index <- as.data.frame(overall_pair_types_index)
 overall_pair_types_index$pairwise_dist <- as.numeric(overall_pair_types_index$pairwise_dist)
-s_figure_1 <- ggplot(data=overall_pair_types_index,aes(x=pairwise_dist,fill=same_household)) + geom_histogram(bins=100)+ xlab("Pairwise SNP distance")+ ylab("Number of pairs") + theme_bw_me + pairtype_fill  + s_figure_1_format + scale_y_continuous(breaks = c(0,100,200,300,400,500,600,700,800))+ scale_x_continuous(breaks = c(0,10000,25000,50000,75000,100000,125000,150000),limits = c(NA,150010))
+
+# Overall figure
+s_figure_1 <- ggplot(data=overall_pair_types_index,aes(x=pairwise_dist,fill=same_household)) + geom_histogram(bins=100) + xlab("Pairwise SNP distance") + ylab("Number of pairs") + theme_bw_me + pairtype_fill  + s_figure_1_format + scale_y_continuous(breaks = c(0,100,200,300,400,500,600,700,800)) + scale_x_continuous(breaks = c(0,10000,25000,50000,75000,100000,125000,150000),limits = c(NA,150010))
+
+# Insert of 0 to 500
 s_figure_1_inlet <- ggplot(data=overall_pair_types_index %>% subset(pairwise_dist <500),aes(x=pairwise_dist,fill=same_household)) + geom_histogram(bins=100) + theme_bw_me + xlab("") + ylab("") + pairtype_fill + geom_vline(xintercept = 25,colour = 'red',linetype = 2) + s_figure_1_inset_format  + scale_x_continuous(breaks = c(0,25,50,75,100,150,200,250,300,350))
 
 s_figure_1 <- s_figure_1 +  annotation_custom(ggplotGrob(s_figure_1_inlet), xmin = 65000, xmax = 155000, ymin = 150, ymax = 800)

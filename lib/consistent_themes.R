@@ -25,7 +25,7 @@ figure_2_format <- theme(axis.text =   element_text(size=10, color="black"),
 
 
 # Supplemental Figure 1
-pairtype_fill <- scale_fill_manual(breaks=c(T,F),values = c('#FFCB05','#00274C'),labels = c("Intra-patient",'Inter-patient'), name="Type", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
+pairtype_fill <- scale_fill_manual(breaks=c(T,F),values = c('#FFCB05','#00274C'),labels = c("Intra-subject",'Inter-subject'), name="Type", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
 
 s_figure_1_format <- theme(legend.position = "bottom",
                 axis.text =   element_text(size=12, color="black"),
@@ -43,6 +43,5 @@ s_figure_1_inset_format <- theme(legend.position = "none",
 # Favorite kable
 favorite_kable <- function (x) {
   x %>% kable(., format = "html", table.attr = "style='width:100%;'", 
-              row.names = F) %>% kable_styling(bootstrap_options = c("striped", 
-                                                                     "hover", "condensed", "responsive"))
+              row.names = F) %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 }
