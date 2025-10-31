@@ -44,7 +44,7 @@ ESCrE_genotype_data$category <- ifelse(ESCrE_genotype_data$ESBL == T,"ESBL",ifel
 ESBL_prop_data <- ESCrE_genotype_data %>% select(element_symbol_renamed,category,n_chromosome,n_plasmid,prop_plasmid) %>% arrange(-prop_plasmid,-n_plasmid,n_chromosome)
 
 colnames(ESBL_prop_data) <- c("ESCrE","Category","No. chromosomal","No. plasmidic","Proportion plasmidic")
-
+ 
 ESBL_prop_data %>% favorite_kable() 
 ```
 
