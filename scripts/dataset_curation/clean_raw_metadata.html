@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-30" />
+<meta name="date" content="2025-10-31" />
 
 <title>Data Cleaning Step 1 - Curate raw MERLIN metadata</title>
 
@@ -353,12 +353,12 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 1 - Curate raw MERLIN
 metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-30</h4>
+<h4 class="date">2025-10-31</h4>
 
 </div>
 
 
-<p>Note:</p>
+<p>Notes:</p>
 <ol style="list-style-type: decimal">
 <li><p>Received new data on 03/20/25</p></li>
 <li><p>Received update with plate data on 3/27/25</p></li>
@@ -394,7 +394,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                                           &quot;msla0572.local&quot; 
+                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -459,8 +459,8 @@ metadata$isolate_id_recode &lt;- gsub(pattern = &quot;Petstool&quot;,replacement
 metadata$household_number_recode &lt;- recode(metadata$household_number,&#39;49h&#39; = &#39;49H&#39;)</code></pre>
 </div>
 </div>
-<div id="edit-specific-isolates-with-coding-differences" class="section level1">
-<h1>Edit specific isolates with coding differences</h1>
+<div id="edit-specific-isolates-with-coding-differences-in-the-platemap" class="section level1">
+<h1>Edit specific isolates with coding differences in the platemap</h1>
 <div id="specifically-to-enable-proper-merging-with-metadata" class="section level2">
 <h2>Specifically to enable proper merging with metadata</h2>
 <pre class="r"><code># 113H_2_Pet Stool 1A C1: Remove C1

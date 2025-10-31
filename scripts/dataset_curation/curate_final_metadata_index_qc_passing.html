@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-30" />
+<meta name="date" content="2025-10-31" />
 
 <title>Data Cleaning Step 8 - Curate final metadataset of specimens from index subjects</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 8 - Curate final
 metadataset of specimens from index subjects</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-30</h4>
+<h4 class="date">2025-10-31</h4>
 
 </div>
 
@@ -376,7 +376,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                                           &quot;msla0572.local&quot; 
+                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -419,8 +419,8 @@ loaded via a namespace (and not attached):
 [29] vctrs_0.6.5        evaluate_1.0.5     glue_1.8.0         farver_2.1.2      
 [33] rmarkdown_2.29     tools_4.5.1        pkgconfig_2.0.3    htmltools_0.5.8.1 </code></pre>
 </div>
-<div id="update---changed-from-30-to-25-snp-threshold" class="section level1">
-<h1>Update - changed from 30 to 25 SNP threshold</h1>
+<div id="load-data-and-restrict-to-isolates-from-index-subject" class="section level1">
+<h1>Load data and restrict to isolates from index subject</h1>
 <pre class="r"><code># Overall dataset
 df &lt;- readRDS(&quot;/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS&quot;)
 paste0(&quot;Number of overall isolates: &quot;,nrow(df))</code></pre>

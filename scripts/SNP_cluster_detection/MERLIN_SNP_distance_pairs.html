@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-30" />
+<meta name="date" content="2025-10-31" />
 
 <title>SNP Clustering Step 2: Generate pairs for SNP distance analyses</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">SNP Clustering Step 2: Generate pairs for
 SNP distance analyses</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-30</h4>
+<h4 class="date">2025-10-31</h4>
 
 </div>
 
@@ -376,7 +376,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                                           &quot;msla0572.local&quot; 
+                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -445,8 +445,8 @@ loaded via a namespace (and not attached):
 paste0(&quot;Number of considered isolates: &quot;,nrow(df))</code></pre>
 <pre><code>[1] &quot;Number of considered isolates: 168&quot;</code></pre>
 </div>
-<div id="species-with-more-than-one-isolate" class="section level1">
-<h1>Species with more than one isolate</h1>
+<div id="load-distances-matrices-for-species-with-more-than-one-isolate" class="section level1">
+<h1>Load distances matrices for species with more than one isolate</h1>
 <pre class="r"><code>species &lt;- table(df$Species) %&gt;% subset(.&gt;1)  %&gt;% names
 
 species_simple &lt;- str_split(string = species,pattern = &quot; &quot;,simplify = T) %&gt;% apply(.,1,FUN=function(x){
@@ -456,8 +456,8 @@ species_simple &lt;- str_split(string = species,pattern = &quot; &quot;,simplify
 
 dist_matrices &lt;- readRDS(&#39;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_matrices.RDS&#39;)</code></pre>
 </div>
-<div id="subset-metadata-to-species-of-interest" class="section level1">
-<h1>Subset metadata to species of interest</h1>
+<div id="subset-metadata-to-species-and-isolates-of-interest" class="section level1">
+<h1>Subset metadata to species and isolates of interest</h1>
 <pre class="r"><code># Subset metadata to species
 clean_datasets &lt;- function(metadata,mat,species){
   # Curate datasets
@@ -482,6 +482,8 @@ for(i in species){
 </div>
 <div id="get-pairwise-distances" class="section level1">
 <h1>Get pairwise distances</h1>
+<div id="get-distance-data-i.e.-info-for-each-cell" class="section level2">
+<h2>Get distance data (i.e., info for each cell)</h2>
 <pre class="r"><code>get_cell_info &lt;- function(mat) {
   idx &lt;- which(!is.na(mat) &amp; lower.tri(mat) , arr.ind = TRUE)
   data.frame(
@@ -490,6 +492,10 @@ for(i in species){
     pairwise_dist = mat[idx]
   )
 }</code></pre>
+</div>
+<div id="get-pair-types-matrix-with-updated-info-i.e.-info-for-each-member-of-the-pair" class="section level2">
+<h2>Get pair types matrix with updated info (i.e., info for each member
+of the pair)</h2>
 <pre class="r"><code>get_pair_types_mat &lt;- function(dataset,mat,type,voi){ 
   pair_types &lt;- get_cell_info(mat = mat)
   pair_types_info &lt;-  update_pair_types_w_info(pair_types,df=dataset,voi=voi) 
@@ -513,16 +519,23 @@ update_pair_types_w_info &lt;- function(pair_types_df,df,voi){
   
   return(as.data.frame(pair_types_df))
 } </code></pre>
-<pre class="r"><code>voi = c(&quot;household&quot;,&#39;subject_id&#39;,&#39;ncbi_id&#39;,&quot;visit&quot;,&quot;collect_date&quot;,&quot;Species&quot;,&quot;Species_ST&quot;,&quot;subject_category&quot;,&#39;subject_category_simplified&#39;)
+</div>
+<div id="run-the-code" class="section level2">
+<h2>Run the code!</h2>
+<pre class="r"><code>voi = c(&quot;household&quot;,&#39;subject_id&#39;,&#39;ncbi_id&#39;,&quot;visit&quot;,&quot;collect_date&quot;,&quot;Species&quot;,&quot;Species_ST&quot;,&quot;subject_category&quot;,&#39;subject_category_simplified&#39;,&quot;subject_type&quot;,&#39;index&#39;)
 
 pairtype_datasets &lt;- pbmcapply::pbmclapply(species_simple,FUN=function(x){ 
   data &lt;- get(paste0(x,&quot;_data&quot;))
   get_pair_types_mat(data$df,data$mat,type=&quot;type&quot;,voi=voi)   
-},mc.cores=6) %&gt;% `names&lt;-`(species_simple)
+}, mc.cores=6) %&gt;% `names&lt;-`(species_simple)
 
 # Overall
-overall_pair_types &lt;- do.call(rbind,pairtype_datasets) </code></pre>
+overall_pair_types &lt;- do.call(rbind, pairtype_datasets) </code></pre>
+</div>
+<div id="save-the-dataset" class="section level2">
+<h2>Save the dataset</h2>
 <pre class="r"><code>saveRDS(overall_pair_types,&#39;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_pairs_dataset.RDS&#39;) </code></pre>
+</div>
 </div>
 
 

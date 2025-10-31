@@ -11,9 +11,9 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-30" />
+<meta name="date" content="2025-10-31" />
 
-<title>Data Cleaning Step 7 - Curate final metadata</title>
+<title>Data Cleaning Step 7 - Curate final metadata files for MERLIN projects</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -351,14 +351,18 @@ display: none;
 
 
 <h1 class="title toc-ignore">Data Cleaning Step 7 - Curate final
-metadata</h1>
+metadata files for MERLIN projects</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-30</h4>
+<h4 class="date">2025-10-31</h4>
 
 </div>
 
 
-<p>NOTE: Run scripts in scripts/SNP_distance before completion!!!!</p>
+<p>NOTE: Run the following analysis scripts before doing this!</p>
+<ol style="list-style-type: decimal">
+<li><p>SNP distance analysis: ./scripts/SNP_distance</p></li>
+<li><p>E. coli phylogroup analyses: ./scripts/ecoli_phylogroup</p></li>
+</ol>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
 <pre class="r"><code>#Packages
@@ -377,7 +381,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                                           &quot;msla0572.local&quot; 
+                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -419,16 +423,18 @@ loaded via a namespace (and not attached):
 [25] grid_4.5.1         rstudioapi_0.17.1  hms_1.1.3          lifecycle_1.0.4   
 [29] vctrs_0.6.5        evaluate_1.0.5     glue_1.8.0         farver_2.1.2      
 [33] rmarkdown_2.29     tools_4.5.1        pkgconfig_2.0.3    htmltools_0.5.8.1 </code></pre>
+</div>
+<div id="load-data" class="section level1">
+<h1>Load data</h1>
 <pre class="r"><code>df &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS&quot;) 
 cluster_25_SNPs &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_25_SNP_clusters.RDS&quot;)
 ecoli_phylogroup &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS&quot;) </code></pre>
-<div id="left-join-merge-with-cluster-data" class="section level2">
-<h2>Left join merge with cluster data</h2>
+<div id="merge-clustering-data" class="section level2">
+<h2>Merge clustering data</h2>
 <pre class="r"><code>df &lt;- left_join(df,cluster_25_SNPs)</code></pre>
 </div>
-</div>
-<div id="merge-ecoli-phylogroup-data" class="section level1">
-<h1>Merge ecoli phylogroup data</h1>
+<div id="add-ecoli-phylogroup-data" class="section level2">
+<h2>Add ecoli phylogroup data</h2>
 <pre class="r"><code>get_clermont_data &lt;- function(genomic_id, clermont_data){
   ids &lt;- str_split(genomic_id,&quot;;&quot;) %&gt;% unlist
   clermont_sub &lt;- clermont_data %&gt;% subset(genomic_id %in% ids)
@@ -440,6 +446,7 @@ ecoli_phylogroup &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-pr
 }
 
 df$ecoli_phylogroup &lt;- sapply(df$genomic_id, get_clermont_data, clermont_data = ecoli_phylogroup)</code></pre>
+</div>
 </div>
 <div id="save-dataset" class="section level1">
 <h1>Save dataset</h1>

@@ -12,8 +12,6 @@ opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/')
 ```
  
-NOTE: Run scripts in scripts/SNP_distance before completion!!!!
-
 # Environment
 
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
@@ -32,7 +30,7 @@ sessionInfo()
 # Load data
 ```{r} 
 df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") 
-simplified_metadata_for_sra <- read_csv("./Analysis/data/merlin_sra_submission_20251029.csv") #%>% distinct
+simplified_metadata_for_sra <- read_csv("./Analysis/data/merlin_sra_submission_20251029.csv")
 ```
 
 # Merge data
@@ -56,6 +54,10 @@ df$subject_category_simplified <-  ifelse(df$subject_category == 'humanindex','I
                                                                                ifelse(df$subject_category %in% c("kitchen"),"Kitchen",
                                                                                                                  ifelse(df$subject_category %in% c("livingroom"),"Living room",
                                                                                                                         ifelse(df$subject_category %in% c("washingmachine"),"Washing machine","Other"))))))))))
+
+df$subject_type <- ifelse(df$subject_category_simplified %in% c("Bath","Kitchen","Living room","Washing machine"),"Environment",
+                          ifelse(df$subject_category_simplified %in% c("Cat","Dog"),"Pet",
+                                 ifelse(df$subject_category_simplified %in% c("Index","Female housemate","Male housemate"),"Human","Other")))
 
 df$index <-  df$subject_category == 'humanindex' 
 ```

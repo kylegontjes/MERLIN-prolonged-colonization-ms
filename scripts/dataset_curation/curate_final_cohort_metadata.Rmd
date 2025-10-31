@@ -1,5 +1,5 @@
 ---
-title: "Data Cleaning Step 7 - Curate final metadata"
+title: "Data Cleaning Step 7 - Curate final metadata files for MERLIN projects"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -12,7 +12,11 @@ opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/')
 ```
  
-NOTE: Run scripts in scripts/SNP_distance before completion!!!!
+NOTE: Run the following analysis scripts before doing this!
+
+1. SNP distance analysis: ./scripts/SNP_distance
+
+2. E. coli phylogroup analyses: ./scripts/ecoli_phylogroup
 
 # Environment
 
@@ -29,19 +33,20 @@ Sys.info()
 sessionInfo()
 ```
 
+# Load data
 ```{r}  
 df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") 
 cluster_25_SNPs <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_25_SNP_clusters.RDS")
 ecoli_phylogroup <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS") 
 ``` 
 
-## Left join merge with cluster data
+## Merge clustering data
 
 ```{r}
 df <- left_join(df,cluster_25_SNPs)
 ```
 
-# Merge ecoli phylogroup data
+## Add ecoli phylogroup data
 ```{r}
 get_clermont_data <- function(genomic_id, clermont_data){
   ids <- str_split(genomic_id,";") %>% unlist

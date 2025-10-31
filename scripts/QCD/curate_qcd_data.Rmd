@@ -5,6 +5,10 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
+Notes:
+
+1. Removed three isolates from consideration on 10/30/25. See section "Drop isolates" for details.
+
 ```{r setup, include=FALSE}
 require(knitr)
 opts_knit$set(echo = TRUE,warning = FALSE, message = FALSE)  
@@ -73,16 +77,18 @@ master_qc$sequencing_run <- sapply(master_qc$Sample,get_sequencing_run,sequencin
 
 # Drop isolates
 ## As of 10/30/25: Drop MERLIN_285, MERLIN_246, and MERLIN_231
-### MERLIN_285 - S-221005-00370 -  Transcription error which could not be resolved
-### MERLIN_246 - S-221019-01336 - Based on plate map review and sequencing results, this is a duplicate of genomic_id MERLIN_211
-### MERLIN_231 - S-221221-00536 -Based on LV review and sequencing results, this is a duplicate of genomic_id MERLIN_250.
+### MERLIN_285 - S-221005-00370 - Transcription error which could not be resolved
+### MERLIN_246 - S-221019-01336 - Based on plate map review and sequencing results, this is a duplicate of genomic_id MERLIN_211. Removed MELRIN_246 in preference of MERLIN_211. Needed to change the MERLIN_remove_duplicates file to reflect this...
+### MERLIN_231 - S-221221-00536 - Based on LV review and sequencing results, this is a duplicate of genomic_id MERLIN_250.
 ```{r}
 paste0("Number of qc entries at this stage: ",nrow(master_qc))
 # Remove these three isolates
 isolates_to_drop <- c("MERLIN_285","MERLIN_246","MERLIN_231")
+paste0("Dropping the following entries:")
 master_qc$genomic_id[master_qc$genomic_id %in% isolates_to_drop]
 master_qc <- subset(master_qc,!genomic_id %in% isolates_to_drop)
 
+# Count after removal
 paste0("Number of qc entries at this stage: ",nrow(master_qc))
 ```
 
@@ -91,7 +97,6 @@ paste0("Number of qc entries at this stage: ",nrow(master_qc))
 master_qc$ST <- ifelse(master_qc$ST =="-","Unknown",master_qc$ST) 
 master_qc$Species_ST <- paste0(master_qc$Species," ST ",master_qc$ST) %>% trimws(.,"both")
 ```
-
 
 # Save the data
 ```{r}

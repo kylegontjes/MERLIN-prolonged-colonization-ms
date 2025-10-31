@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-30" />
+<meta name="date" content="2025-10-31" />
 
 <title>Data Cleaning Step 2 - Curate the sequencing [QCD] data</title>
 
@@ -353,11 +353,16 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 2 - Curate the
 sequencing [QCD] data</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-30</h4>
+<h4 class="date">2025-10-31</h4>
 
 </div>
 
 
+<p>Notes:</p>
+<ol style="list-style-type: decimal">
+<li>Removed three isolates from consideration on 10/30/25. See section
+“Drop isolates” for details.</li>
+</ol>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
 <pre class="r"><code>#Packages
@@ -375,7 +380,7 @@ Sys.info()</code></pre>
 ##                                                                                                     version 
 ## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
 ##                                                                                                    nodename 
-##                                                                                            &quot;msla0572.local&quot; 
+##                                                                               &quot;msla0572.wifi.med.umich.edu&quot; 
 ##                                                                                                     machine 
 ##                                                                                                    &quot;x86_64&quot; 
 ##                                                                                                       login 
@@ -494,21 +499,26 @@ master_qc$sequencing_run &lt;- sapply(master_qc$Sample,get_sequencing_run,sequen
 <h3>MERLIN_285 - S-221005-00370 - Transcription error which could not be
 resolved</h3>
 </div>
-<div id="merlin_246---s-221019-01336---based-on-plate-map-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_211" class="section level3">
+<div id="merlin_246---s-221019-01336---based-on-plate-map-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_211.-removed-melrin_246-in-preference-of-merlin_211.-needed-to-change-the-merlin_remove_duplicates-file-to-reflect-this" class="section level3">
 <h3>MERLIN_246 - S-221019-01336 - Based on plate map review and
-sequencing results, this is a duplicate of genomic_id MERLIN_211</h3>
+sequencing results, this is a duplicate of genomic_id MERLIN_211.
+Removed MELRIN_246 in preference of MERLIN_211. Needed to change the
+MERLIN_remove_duplicates file to reflect this…</h3>
 </div>
-<div id="merlin_231---s-221221-00536--based-on-lv-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_250." class="section level3">
-<h3>MERLIN_231 - S-221221-00536 -Based on LV review and sequencing
+<div id="merlin_231---s-221221-00536---based-on-lv-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_250." class="section level3">
+<h3>MERLIN_231 - S-221221-00536 - Based on LV review and sequencing
 results, this is a duplicate of genomic_id MERLIN_250.</h3>
 <pre class="r"><code>paste0(&quot;Number of qc entries at this stage: &quot;,nrow(master_qc))</code></pre>
 <pre><code>## [1] &quot;Number of qc entries at this stage: 422&quot;</code></pre>
 <pre class="r"><code># Remove these three isolates
 isolates_to_drop &lt;- c(&quot;MERLIN_285&quot;,&quot;MERLIN_246&quot;,&quot;MERLIN_231&quot;)
-master_qc$genomic_id[master_qc$genomic_id %in% isolates_to_drop]</code></pre>
+paste0(&quot;Dropping the following entries:&quot;)</code></pre>
+<pre><code>## [1] &quot;Dropping the following entries:&quot;</code></pre>
+<pre class="r"><code>master_qc$genomic_id[master_qc$genomic_id %in% isolates_to_drop]</code></pre>
 <pre><code>## [1] &quot;MERLIN_246&quot; &quot;MERLIN_231&quot; &quot;MERLIN_246&quot; &quot;MERLIN_285&quot; &quot;MERLIN_246&quot;</code></pre>
 <pre class="r"><code>master_qc &lt;- subset(master_qc,!genomic_id %in% isolates_to_drop)
 
+# Count after removal
 paste0(&quot;Number of qc entries at this stage: &quot;,nrow(master_qc))</code></pre>
 <pre><code>## [1] &quot;Number of qc entries at this stage: 417&quot;</code></pre>
 </div>

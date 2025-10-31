@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-30" />
+<meta name="date" content="2025-10-31" />
 
 <title>Data Cleaning Step 6 - Add SRA Simplified metadata</title>
 
@@ -353,12 +353,11 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 6 - Add SRA Simplified
 metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-30</h4>
+<h4 class="date">2025-10-31</h4>
 
 </div>
 
 
-<p>NOTE: Run scripts in scripts/SNP_distance before completion!!!!</p>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
 <pre class="r"><code>#Packages
@@ -377,7 +376,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                                           &quot;msla0572.local&quot; 
+                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -423,7 +422,7 @@ loaded via a namespace (and not attached):
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
 <pre class="r"><code>df &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS&quot;) 
-simplified_metadata_for_sra &lt;- read_csv(&quot;./Analysis/data/merlin_sra_submission_20251029.csv&quot;) #%&gt;% distinct</code></pre>
+simplified_metadata_for_sra &lt;- read_csv(&quot;./Analysis/data/merlin_sra_submission_20251029.csv&quot;)</code></pre>
 </div>
 <div id="merge-data" class="section level1">
 <h1>Merge data</h1>
@@ -445,6 +444,10 @@ df$subject_category_simplified &lt;-  ifelse(df$subject_category == &#39;humanin
                                                                                ifelse(df$subject_category %in% c(&quot;kitchen&quot;),&quot;Kitchen&quot;,
                                                                                                                  ifelse(df$subject_category %in% c(&quot;livingroom&quot;),&quot;Living room&quot;,
                                                                                                                         ifelse(df$subject_category %in% c(&quot;washingmachine&quot;),&quot;Washing machine&quot;,&quot;Other&quot;))))))))))
+
+df$subject_type &lt;- ifelse(df$subject_category_simplified %in% c(&quot;Bath&quot;,&quot;Kitchen&quot;,&quot;Living room&quot;,&quot;Washing machine&quot;),&quot;Environment&quot;,
+                          ifelse(df$subject_category_simplified %in% c(&quot;Cat&quot;,&quot;Dog&quot;),&quot;Pet&quot;,
+                                 ifelse(df$subject_category_simplified %in% c(&quot;Index&quot;,&quot;Female housemate&quot;,&quot;Male housemate&quot;),&quot;Human&quot;,&quot;Other&quot;)))
 
 df$index &lt;-  df$subject_category == &#39;humanindex&#39; </code></pre>
 </div>

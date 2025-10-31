@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-NOTE: Run scripts/QCD/curate_qcd_data.Rmd before running this step
+NOTE: Run ./scripts/QCD/curate_qcd_data.Rmd before running this step
 
 ```{r setup, include=FALSE}
 require(knitr)
@@ -29,7 +29,7 @@ sessionInfo()
 # Load metdadata
 ```{r}
 metadata <- readRDS("./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.RDS")
-paste0("Number of entries in curated mettadata from PENN: ", nrow(metadata))
+paste0("Number of entries in curated metadata from PENN: ", nrow(metadata))
 ```
 
 # Load sequencing sample lookup
@@ -62,7 +62,7 @@ load_plate_map <- function(path,sheet,name){
 }
 ```
 
-## Paths
+## Iteratively load the platemaps using sheet numbering 
 ```{r}
 eight <- c("A","B","C","D","E","F","G","H") 
 
@@ -103,6 +103,7 @@ parse_map <- function(map,num){
   return(dataframe)
 }
 ```
+
 ## Old maps 
 ```{r}
 # Old Map
@@ -121,7 +122,6 @@ oldmap$map_name <- ifelse(oldmap$map_name == "MER 210  (345H) V1 WM","MER 210 (3
 ```
 
 ## New platemap parsing
-
 ```{r}
 new_map_sum_1 <- parse_map(platemap_consolidated_1,"1")
 new_map_sum_2 <- parse_map(platemap_consolidated_2,"2")
@@ -300,7 +300,7 @@ newmap$Sequencing.plate <- paste0("Sequencing plate MERLIN ",newmap$plate,", ",n
 sequencing_fin <- left_join(sequencing,newmap) 
 colnames(sequencing_fin) <- gsub("\\.","_",colnames(sequencing_fin))
 paste0("How sequencing list looks like...")
-head(sequencing_fin,n = 3)
+head(sequencing_fin,n = 3) %>% gontjesr::favorite_kable()
 ```
 
 # Merge Initial Platemap w/ Barcode Data
@@ -308,17 +308,17 @@ head(sequencing_fin,n = 3)
 metadata <- left_join(metadata,oldmap)
 metadata$no_correct_platemap <- ifelse(is.na(metadata$map_name) == T,T,F)
 
+# No correct platemap entry (i.e., NA)
 no_correct_platemap <- subset(metadata,no_correct_platemap==T)
 paste0(nrow(no_correct_platemap)," isolates w/o genotyping data due to sequencing not run yet") 
-
-table(no_correct_platemap$plate,useNA = 'ifany') 
  
-# Edit platemap
+# Edit platemap for two isolates
 # Naming issue with 126H V3 PS 2A C1 (00837)
-paste0("One of them had an issue w/ their naming. ")
+paste0("One of them had an issue w/ their map name: ")
 metadata$map_name <- ifelse(metadata$household_number_recode=="126H" & metadata$visit == 3 & metadata$isolate_id =='Pet Stool 2A C1' & metadata$lab_vantage_s_number == "S-220606-00837",'126H V3 PS 2A C1 (00837)',metadata$map_name)
 
 # 345H V3 S1A C1 - ALso found on P5 C9 in original map
+paste0("The other had an issue with their map name: ")
 metadata$map_name <- ifelse(metadata$household_number_recode=="345H" & metadata$visit == 3 & metadata$isolate_id == "Stool 1A C1","345H V3 S1A C1",metadata$map_name)
 ``` 
 
@@ -337,7 +337,7 @@ metadata_wo_genomic_id <- subset(metadata_w_genomic_id,is.na(Genome_ID) == T)
 paste0("Number of metadata entries without genomic id: ",nrow(metadata_wo_genomic_id))
 ```
 
-# QC Passing genomes
+# QC Flag Generation
 ```{r}
 qcd <- readRDS("./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS")
 

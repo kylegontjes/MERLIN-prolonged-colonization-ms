@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-30" />
+<meta name="date" content="2025-10-31" />
 
 <title>Data Cleaning Step 4 - Remove duplicates</title>
 
@@ -577,7 +577,7 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 4 - Remove
 duplicates</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-30</h4>
+<h4 class="date">2025-10-31</h4>
 
 </div>
 
@@ -599,7 +599,7 @@ Sys.info()</code></pre>
 ##                                                                                                     version 
 ## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
 ##                                                                                                    nodename 
-##                                                                                            &quot;msla0572.local&quot; 
+##                                                                               &quot;msla0572.wifi.med.umich.edu&quot; 
 ##                                                                                                     machine 
 ##                                                                                                    &quot;x86_64&quot; 
 ##                                                                                                       login 
@@ -651,8 +651,8 @@ Sys.info()</code></pre>
 <pre class="r"><code>metadata &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id.RDS&quot;)
 qcd &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS&quot;) </code></pre>
 </div>
-<div id="get-escre-qc-passing-genome-data" class="section level1">
-<h1>Get ESCRE qc-passing genome data</h1>
+<div id="get-qc-passing-escre-genome-data" class="section level1">
+<h1>Get QC-passing ESCrE genome data</h1>
 <pre class="r"><code>get_escre_data &lt;- function(passing_genomes){
   genomes &lt;- str_split(passing_genomes,pattern = &quot;;&quot;) %&gt;% unlist %&gt;% as.vector()
   qcd_sub &lt;- subset(qcd, Sample %in% genomes &amp; WGS_escre ==TRUE &amp; qc_pass==TRUE)
@@ -753,7 +753,7 @@ duplicates_qc &lt;- lapply(duplicates,FUN=function(x){
 <h2>Choice: Keep 128</h2>
 <pre class="r"><code>paste0(&quot;Duplicate of interest: &quot;,duplicates[1])</code></pre>
 <pre><code>## [1] &quot;Duplicate of interest: MERLIN_128;MERLIN_45&quot;</code></pre>
-<pre class="r"><code>MERLIN_128_MERLIN_45 &lt;- duplicates_qc[[duplicates[1]]]
+<pre class="r"><code>MERLIN_128_MERLIN_45 &lt;- duplicates_qc[[&quot;MERLIN_128;MERLIN_45&quot;]]
 
 paste0(&quot;Species: &quot;, unique(MERLIN_128_MERLIN_45$Species))</code></pre>
 <pre><code>## [1] &quot;Species: Escherichia coli&quot;</code></pre>
@@ -1079,7 +1079,7 @@ Escherichia coli ST 38
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_45&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_45&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[1],gsub(&quot;MERLIN_45&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_128;MERLIN_45&quot;,gsub(&quot;MERLIN_45&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
 </div>
 <div id="merlin_148-merlin_193" class="section level1">
@@ -1091,7 +1091,7 @@ Escherichia coli ST 38
 <h2>Choice: Keep 193</h2>
 <pre class="r"><code>paste0(&quot;Duplicate of interest: &quot;,duplicates[2])</code></pre>
 <pre><code>## [1] &quot;Duplicate of interest: MERLIN_148;MERLIN_193&quot;</code></pre>
-<pre class="r"><code>MERLIN_148_MERLIN_193 &lt;- duplicates_qc[[duplicates[2]]]
+<pre class="r"><code>MERLIN_148_MERLIN_193 &lt;- duplicates_qc[[&quot;MERLIN_148;MERLIN_193&quot;]]
 
 paste0(&quot;Species: &quot;,unique(MERLIN_148_MERLIN_193$Species))</code></pre>
 <pre><code>## [1] &quot;Species: Escherichia coli&quot;</code></pre>
@@ -1417,7 +1417,7 @@ Escherichia coli ST 1193
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_148&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_148&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[2],gsub(&quot;MERLIN_148&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_148;MERLIN_193&quot;,gsub(&quot;MERLIN_148&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
 </div>
 <div id="merlin_210-merlin_198" class="section level1">
@@ -1429,7 +1429,7 @@ Escherichia coli ST 1193
 <h2>Choice: Keep 210</h2>
 <pre class="r"><code>paste0(&quot;Duplicate of interest: &quot;,duplicates[3])</code></pre>
 <pre><code>## [1] &quot;Duplicate of interest: MERLIN_210;MERLIN_198&quot;</code></pre>
-<pre class="r"><code>MERLIN_210_MERLIN_198 &lt;- duplicates_qc[[duplicates[3]]]
+<pre class="r"><code>MERLIN_210_MERLIN_198 &lt;- duplicates_qc[[&quot;MERLIN_210;MERLIN_198&quot;]]
 
 paste0(&quot;Species: &quot;,unique(MERLIN_210_MERLIN_198$Species))</code></pre>
 <pre><code>## [1] &quot;Species: Klebsiella pneumoniae&quot;</code></pre>
@@ -1755,7 +1755,7 @@ Klebsiella pneumoniae ST 1243
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_198&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_198&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[3],gsub(&quot;MERLIN_198&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_210;MERLIN_198&quot;,gsub(&quot;MERLIN_198&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
 </div>
 <div id="merlin_265-merlin_181" class="section level1">
@@ -1767,7 +1767,7 @@ Klebsiella pneumoniae ST 1243
 <h2>Choice: Keep 265</h2>
 <pre class="r"><code>paste0(&quot;Duplicate of interest: &quot;,duplicates[4])</code></pre>
 <pre><code>## [1] &quot;Duplicate of interest: MERLIN_265;MERLIN_181&quot;</code></pre>
-<pre class="r"><code>MERLIN_265_MERLIN_181 &lt;- duplicates_qc[[duplicates[4]]]
+<pre class="r"><code>MERLIN_265_MERLIN_181 &lt;- duplicates_qc[[&quot;MERLIN_265;MERLIN_181&quot;]]
 
 paste0(&quot;Species: &quot;,unique(MERLIN_265_MERLIN_181$Species))</code></pre>
 <pre><code>## [1] &quot;Species: Escherichia coli&quot;</code></pre>
@@ -2093,7 +2093,7 @@ Escherichia coli ST 131
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_181&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_181&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[4],gsub(&quot;MERLIN_181&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_265;MERLIN_181&quot;,gsub(&quot;MERLIN_181&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
 </div>
 <div id="merlin_23-merlin_34" class="section level1">
@@ -2105,7 +2105,7 @@ Escherichia coli ST 131
 <h2>Choice: Keep 34</h2>
 <pre class="r"><code>paste0(&quot;Duplicate of interest: &quot;,duplicates[5])</code></pre>
 <pre><code>## [1] &quot;Duplicate of interest: MERLIN_23;MERLIN_34&quot;</code></pre>
-<pre class="r"><code>MERLIN_23_MERLIN_34 &lt;- duplicates_qc[[duplicates[5]]]
+<pre class="r"><code>MERLIN_23_MERLIN_34 &lt;- duplicates_qc[[&quot;MERLIN_23;MERLIN_34&quot;]]
 
 paste0(&quot;Species: &quot;,unique(MERLIN_23_MERLIN_34$Species))</code></pre>
 <pre><code>## [1] &quot;Species: Citrobacter portucalensis&quot;</code></pre>
@@ -2433,7 +2433,7 @@ Citrobacter portucalensis ST 13
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_23&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_23&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[[5]],gsub(&quot;MERLIN_23&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id)  </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_23;MERLIN_34&quot;,gsub(&quot;MERLIN_23&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id)  </code></pre>
 </div>
 </div>
 <div id="merlin_105-merlin_273" class="section level1">
@@ -2445,7 +2445,7 @@ Citrobacter portucalensis ST 13
 <h2>Choice: Keep 105</h2>
 <pre class="r"><code>paste0(&quot;Duplicate of interest: &quot;,duplicates[6])</code></pre>
 <pre><code>## [1] &quot;Duplicate of interest: MERLIN_105;MERLIN_273&quot;</code></pre>
-<pre class="r"><code>MERLIN_105_MERLIN_273 &lt;- duplicates_qc[[duplicates[6]]]
+<pre class="r"><code>MERLIN_105_MERLIN_273 &lt;- duplicates_qc[[&quot;MERLIN_105;MERLIN_273&quot;]]
 
 paste0(&quot;Species: &quot;,unique(MERLIN_105_MERLIN_273$Species))</code></pre>
 <pre><code>## [1] &quot;Species: Klebsiella pneumoniae&quot;</code></pre>
@@ -2771,7 +2771,7 @@ Klebsiella pneumoniae ST 45
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_273&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_273&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[6],gsub(&quot;MERLIN_273&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_105;MERLIN_273&quot;,gsub(&quot;MERLIN_273&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
 </div>
 <div id="merlin_13-merlin_19" class="section level1">
@@ -2783,7 +2783,7 @@ Klebsiella pneumoniae ST 45
 <h2>Choice: Dulicate rows and split up!</h2>
 <pre class="r"><code>paste0(&quot;Duplicate of interest: &quot;,duplicates[7])</code></pre>
 <pre><code>## [1] &quot;Duplicate of interest: MERLIN_13;MERLIN_19&quot;</code></pre>
-<pre class="r"><code>MERLIN_13_MERLIN_19 &lt;- duplicates_qc[[duplicates[7]]]
+<pre class="r"><code>MERLIN_13_MERLIN_19 &lt;- duplicates_qc[[&quot;MERLIN_13;MERLIN_19&quot;]]
 
 paste0(&quot;Species: &quot;)</code></pre>
 <pre><code>## [1] &quot;Species: &quot;</code></pre>
@@ -2811,7 +2811,7 @@ metadata$genomic_id &lt;- ifelse(metadata$map_name == MERLIN_13_MERLIN_19_mapnam
 <h2>Choice: Keep MERLIN_46</h2>
 <pre class="r"><code>paste0(&quot;Duplicate of interest: &quot;,duplicates[8])</code></pre>
 <pre><code>## [1] &quot;Duplicate of interest: MERLIN_35;MERLIN_46&quot;</code></pre>
-<pre class="r"><code>MERLIN_35_MERLIN_46 &lt;- duplicates_qc[[duplicates[8]]]
+<pre class="r"><code>MERLIN_35_MERLIN_46 &lt;- duplicates_qc[[&quot;MERLIN_35;MERLIN_46&quot;]]
 
 paste0(&quot;Species: &quot;,unique(MERLIN_35_MERLIN_46$Species))</code></pre>
 <pre><code>## [1] &quot;Species: Enterobacter ludwigii&quot;</code></pre>
@@ -3137,7 +3137,7 @@ Enterobacter ludwigii ST 1287
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_35&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_35&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[8],gsub(&quot;MERLIN_35&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_35;MERLIN_46&quot;,gsub(&quot;MERLIN_35&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
 </div>
 <div id="merlin_re_3-merlin_289" class="section level1">
@@ -3149,7 +3149,7 @@ Enterobacter ludwigii ST 1287
 <h2>Choice: Keep MERLIN_RE_3</h2>
 <pre class="r"><code>paste0(&quot;Duplicate of interest: &quot;,duplicates[9])</code></pre>
 <pre><code>## [1] &quot;Duplicate of interest: MERLIN_RE_3;MERLIN_289&quot;</code></pre>
-<pre class="r"><code>MERLIN_RE_3_MERLIN_289 &lt;- duplicates_qc[[duplicates[9]]]
+<pre class="r"><code>MERLIN_RE_3_MERLIN_289 &lt;- duplicates_qc[[&quot;MERLIN_RE_3;MERLIN_289&quot;]]
 
 paste0(&quot;Species: &quot;,unique(MERLIN_RE_3_MERLIN_289$Species))</code></pre>
 <pre><code>## [1] &quot;Species: Escherichia coli&quot;</code></pre>
@@ -3475,19 +3475,20 @@ Escherichia coli ST 131
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_289&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_289&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[9],gsub(&quot;MERLIN_289&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_RE_3;MERLIN_289&quot;,gsub(&quot;MERLIN_289&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
 </div>
 <div id="merlin_234-merlin_233" class="section level1">
 <h1>10. MERLIN_234 MERLIN_233</h1>
-<div id="story-they-are-close-enough---25-snp-different-different" class="section level2">
-<h2>Story: They are close enough - 25 SNP different different!</h2>
+<div id="story-they-are-close-enough-for-the-purposes-of-this-study-i.e.-25-snp-threshold-for-transmission-clusters" class="section level2">
+<h2>Story: They are close enough for the purposes of this study (i.e.,
+25 SNP threshold for transmission clusters)!</h2>
 </div>
 <div id="choice-keep-234" class="section level2">
 <h2>Choice: Keep 234</h2>
 <pre class="r"><code>paste0(&quot;Duplicate of interest: &quot;,duplicates[10])</code></pre>
 <pre><code>## [1] &quot;Duplicate of interest: MERLIN_234;MERLIN_233&quot;</code></pre>
-<pre class="r"><code>MERLIN_234_MERLIN_233 &lt;- duplicates_qc[[duplicates[10]]]
+<pre class="r"><code>MERLIN_234_MERLIN_233 &lt;- duplicates_qc[[&quot;MERLIN_234;MERLIN_233&quot;]]
 
 paste0(&quot;Species: &quot;)</code></pre>
 <pre><code>## [1] &quot;Species: &quot;</code></pre>
@@ -3815,7 +3816,7 @@ Klebsiella pneumoniae ST 15
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_233&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_233&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[10],gsub(&quot;MERLIN_233&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_234;MERLIN_233&quot;,gsub(&quot;MERLIN_233&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
 </div>
 <div id="merlin_120-merlin_287" class="section level1">
@@ -4153,7 +4154,7 @@ Klebsiella pneumoniae ST 323
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_120&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_120&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[11],gsub(&quot;MERLIN_120&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_120;MERLIN_287&quot;,gsub(&quot;MERLIN_120&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
 </div>
 <div id="merlin_118-merlin_87" class="section level1">
@@ -4491,7 +4492,7 @@ Klebsiella pneumoniae ST 14
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_118&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_118&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[12],gsub(&quot;MERLIN_118&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_118;MERLIN_87&quot;,gsub(&quot;MERLIN_118&quot;,&quot;&quot;,metadata$genomic_id) ,metadata$genomic_id) </code></pre>
 </div>
 </div>
 <div id="merlin_re_8-merlin_294-merlin_61" class="section level1">
@@ -4932,7 +4933,22 @@ Citrobacter freundii ST Unknown
 </table>
 <pre class="r"><code>paste0(&quot;Drop MERLIN_294 &amp; MERLIN_RE_8&quot;)</code></pre>
 <pre><code>## [1] &quot;Drop MERLIN_294 &amp; MERLIN_RE_8&quot;</code></pre>
-<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == duplicates[13],gsub(&quot;MERLIN_294&quot;,&quot;&quot;,metadata$genomic_id)  %&gt;% gsub(&quot;MERLIN_RE_8&quot;,&quot;&quot;,.),metadata$genomic_id)  </code></pre>
+<pre class="r"><code>metadata$genomic_id &lt;- ifelse(metadata$genomic_id == &quot;MERLIN_RE_8;MERLIN_294;MERLIN_61&quot;,gsub(&quot;MERLIN_294&quot;,&quot;&quot;,metadata$genomic_id)  %&gt;% gsub(&quot;MERLIN_RE_8&quot;,&quot;&quot;,.),metadata$genomic_id)  </code></pre>
+</div>
+</div>
+<div id="validate-that-the-duplicates-were-dealt-with" class="section level1">
+<h1>Validate that the duplicates were dealt with</h1>
+<div id="expectation-no-true-values" class="section level2">
+<h2>Expectation: No TRUE values</h2>
+<pre class="r"><code>remaining_duplicates &lt;- names(duplicates_qc)[names(duplicates_qc) %in% metadata$genomic_id] 
+num_remaining_duplicates &lt;- length(remaining_duplicates)
+paste0(&quot;Number of genomic_id duplicates remaining: &quot;,num_remaining_duplicates)</code></pre>
+<pre><code>## [1] &quot;Number of genomic_id duplicates remaining: 0&quot;</code></pre>
+<pre class="r"><code>paste0(&quot;Remaining genomic_id values to deal with: &quot;,paste0(remaining_duplicates,collapse=&quot;,&quot;))  </code></pre>
+<pre><code>## [1] &quot;Remaining genomic_id values to deal with: &quot;</code></pre>
+<pre class="r"><code>if (num_remaining_duplicates &gt; 0) {
+  stop(&quot;Did not deal with a duplicate. Fix.&quot;) 
+} </code></pre>
 </div>
 </div>
 <div id="curate-the-final-genomic_id-variable" class="section level1">
@@ -4945,10 +4961,12 @@ metadata$genomic_id &lt;- trimws(metadata$genomic_id,which = &#39;both&#39;,whit
 
 # Add the genomic IDs for qc failing genomes that only have failing genomes
 metadata$genomic_id &lt;- ifelse(metadata$genomic_id==&#39;&#39; &amp; metadata$WGS_qc_pass_ids_num &gt; 0,metadata$genomic_id_qc_pass,metadata$genomic_id)
-metadata$genomic_id &lt;- ifelse(metadata$genomic_id==&#39;&#39; &amp; metadata$WGS_qc_pass_ids_num == 0,metadata$Genome_ID,metadata$genomic_id)
-
-saveRDS(metadata,&quot;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed.RDS&quot;)</code></pre>
+metadata$genomic_id &lt;- ifelse(metadata$genomic_id==&#39;&#39; &amp; metadata$WGS_qc_pass_ids_num == 0,metadata$Genome_ID,metadata$genomic_id)</code></pre>
 </div>
+</div>
+<div id="save-de-duplicated" class="section level1">
+<h1>Save de duplicated</h1>
+<pre class="r"><code>saveRDS(metadata,&quot;./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed.RDS&quot;)</code></pre>
 </div>
 
 

@@ -27,6 +27,7 @@ Sys.info()
 sessionInfo()
 ```
 
+# Load data
 ```{r}  
 df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") %>% subset(WGS_escre==T & qc_pass==T)
 overall_pair_types <- readRDS('./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_pairs_dataset.RDS')
@@ -38,6 +39,7 @@ SNP_distance_matrices <- readRDS('./Analysis/Household_transmission/MERLIN-prolo
 ## Note: Clusters are exactly the same if requiring pure clusters at 25 SNPs
 ```{r}
 get_clusters_under <- function(dataframe,pair_types,threshold){
+  # Get pairs at or under threshold
   pair_types_under_t <- subset(pair_types,pairwise_dist <=threshold)
   vertices_info <- subset(dataframe,genomic_id %in% c(unique(c(pair_types_under_t$isolate1,pair_types_under_t$isolate2)))) %>% select(genomic_id)  
   ig <- graph_from_data_frame(pair_types_under_t %>% select(isolate1,isolate2),vertices = vertices_info)  
@@ -50,10 +52,11 @@ get_clusters_under <- function(dataframe,pair_types,threshold){
   ordered_cluster_ids <- order(cluster_sizes, decreasing = TRUE)
   clusters$membership_ordered <- factor(clusters$membership, levels = names(cluster_sizes)[ordered_cluster_ids])
   
-clusters <- components(ig)$membership
-genomic_id <- names(clusters)
-cluster <- clusters
-cluster_call <- cbind.data.frame(genomic_id,cluster)
+  # Add info
+  clusters <- components(ig)$membership
+  genomic_id <- names(clusters)
+  cluster <- clusters
+  cluster_call <- cbind.data.frame(genomic_id,cluster)
 
 get_cluster_membership <- function(isolate,clustering){
   if(isolate %in% names(clustering)){
@@ -64,9 +67,10 @@ get_cluster_membership <- function(isolate,clustering){
   }
   return(cluster)
 }
-cluster <- lapply(dataframe$genomic_id,FUN=get_cluster_membership,clusters) %>% unlist %>% `names<-`(dataframe$genomic_id)
+  # Create list of cluster dataframe using the graph data
+  cluster <- lapply(dataframe$genomic_id,FUN=get_cluster_membership,clusters) %>% unlist %>% `names<-`(dataframe$genomic_id)
 
-data_list <- list(clustering_graph=ig,cluster=cluster)
+  data_list <- list(clustering_graph=ig,cluster=cluster)
 return(data_list)
 } 
 

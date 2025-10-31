@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-30" />
+<meta name="date" content="2025-10-31" />
 
 <title>Data Cleaning Step 3 - Platemap Harmonization with Metadata</title>
 
@@ -577,12 +577,12 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 3 - Platemap
 Harmonization with Metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-30</h4>
+<h4 class="date">2025-10-31</h4>
 
 </div>
 
 
-<p>NOTE: Run scripts/QCD/curate_qcd_data.Rmd before running this
+<p>NOTE: Run ./scripts/QCD/curate_qcd_data.Rmd before running this
 step</p>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
@@ -601,7 +601,7 @@ Sys.info()</code></pre>
 ##                                                                                                     version 
 ## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
 ##                                                                                                    nodename 
-##                                                                                            &quot;msla0572.local&quot; 
+##                                                                               &quot;msla0572.wifi.med.umich.edu&quot; 
 ##                                                                                                     machine 
 ##                                                                                                    &quot;x86_64&quot; 
 ##                                                                                                       login 
@@ -650,8 +650,8 @@ Sys.info()</code></pre>
 <div id="load-metdadata" class="section level1">
 <h1>Load metdadata</h1>
 <pre class="r"><code>metadata &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/dataset/isolate_metadata.RDS&quot;)
-paste0(&quot;Number of entries in curated mettadata from PENN: &quot;, nrow(metadata))</code></pre>
-<pre><code>## [1] &quot;Number of entries in curated mettadata from PENN: 260&quot;</code></pre>
+paste0(&quot;Number of entries in curated metadata from PENN: &quot;, nrow(metadata))</code></pre>
+<pre><code>## [1] &quot;Number of entries in curated metadata from PENN: 260&quot;</code></pre>
 </div>
 <div id="load-sequencing-sample-lookup" class="section level1">
 <h1>Load sequencing sample lookup</h1>
@@ -689,8 +689,8 @@ the isolates were not sequenced in that position as AGC collapsed plates
    readxl::read_xlsx(path,sheet = sheet, col_names = FALSE) %&gt;% as.data.frame %&gt;% `rownames&lt;-`(eight)%&gt;% `colnames&lt;-`(c(1:ncol(.))) 
 }</code></pre>
 </div>
-<div id="paths" class="section level2">
-<h2>Paths</h2>
+<div id="iteratively-load-the-platemaps-using-sheet-numbering" class="section level2">
+<h2>Iteratively load the platemaps using sheet numbering</h2>
 <pre class="r"><code>eight &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;,&quot;F&quot;,&quot;G&quot;,&quot;H&quot;) 
 
 # Original Maps
@@ -1032,19 +1032,177 @@ sequencing_fin &lt;- left_join(sequencing,newmap) </code></pre>
 <pre class="r"><code>colnames(sequencing_fin) &lt;- gsub(&quot;\\.&quot;,&quot;_&quot;,colnames(sequencing_fin))
 paste0(&quot;How sequencing list looks like...&quot;)</code></pre>
 <pre><code>## [1] &quot;How sequencing list looks like...&quot;</code></pre>
-<pre class="r"><code>head(sequencing_fin,n = 3)</code></pre>
-<pre><code>##                  Sample_ID Genome_ID               Sequencing_plate Prep_method
-## 1           126H V1 S1A C1  MERLIN_1 Sequencing plate MERLIN 1, A-1     Seqwell
-## 2                  MER 203  MERLIN_2 Sequencing plate MERLIN 1, B-1     Seqwell
-## 3 MER 209 (320H) V1 PN1AC1  MERLIN_3 Sequencing plate MERLIN 1, C-1     Seqwell
-##    batch plate_final column_final row_final                 map_name column row
-## 1 MERLIN           1            1         A           126H V1 S1A C1      1   A
-## 2 MERLIN           1            1         B                  MER 203      1   B
-## 3 MERLIN           1            1         C MER 209 (320H) V1 PN1AC1      1   C
-##   plate position
-## 1     1       A1
-## 2     1       B1
-## 3     1       C1</code></pre>
+<pre class="r"><code>head(sequencing_fin,n = 3) %&gt;% gontjesr::favorite_kable()</code></pre>
+<table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
+<thead>
+<tr>
+<th style="text-align:left;">
+Sample_ID
+</th>
+<th style="text-align:left;">
+Genome_ID
+</th>
+<th style="text-align:left;">
+Sequencing_plate
+</th>
+<th style="text-align:left;">
+Prep_method
+</th>
+<th style="text-align:left;">
+batch
+</th>
+<th style="text-align:left;">
+plate_final
+</th>
+<th style="text-align:left;">
+column_final
+</th>
+<th style="text-align:left;">
+row_final
+</th>
+<th style="text-align:left;">
+map_name
+</th>
+<th style="text-align:left;">
+column
+</th>
+<th style="text-align:left;">
+row
+</th>
+<th style="text-align:left;">
+plate
+</th>
+<th style="text-align:left;">
+position
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+126H V1 S1A C1
+</td>
+<td style="text-align:left;">
+MERLIN_1
+</td>
+<td style="text-align:left;">
+Sequencing plate MERLIN 1, A-1
+</td>
+<td style="text-align:left;">
+Seqwell
+</td>
+<td style="text-align:left;">
+MERLIN
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+126H V1 S1A C1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+A1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MER 203
+</td>
+<td style="text-align:left;">
+MERLIN_2
+</td>
+<td style="text-align:left;">
+Sequencing plate MERLIN 1, B-1
+</td>
+<td style="text-align:left;">
+Seqwell
+</td>
+<td style="text-align:left;">
+MERLIN
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:left;">
+MER 203
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+B1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MER 209 (320H) V1 PN1AC1
+</td>
+<td style="text-align:left;">
+MERLIN_3
+</td>
+<td style="text-align:left;">
+Sequencing plate MERLIN 1, C-1
+</td>
+<td style="text-align:left;">
+Seqwell
+</td>
+<td style="text-align:left;">
+MERLIN
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+MER 209 (320H) V1 PN1AC1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+C1
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="merge-initial-platemap-w-barcode-data" class="section level1">
 <h1>Merge Initial Platemap w/ Barcode Data</h1>
@@ -1052,19 +1210,20 @@ paste0(&quot;How sequencing list looks like...&quot;)</code></pre>
 <pre><code>## Joining with `by = join_by(plate, position)`</code></pre>
 <pre class="r"><code>metadata$no_correct_platemap &lt;- ifelse(is.na(metadata$map_name) == T,T,F)
 
+# No correct platemap entry (i.e., NA)
 no_correct_platemap &lt;- subset(metadata,no_correct_platemap==T)
 paste0(nrow(no_correct_platemap),&quot; isolates w/o genotyping data due to sequencing not run yet&quot;) </code></pre>
 <pre><code>## [1] &quot;0 isolates w/o genotyping data due to sequencing not run yet&quot;</code></pre>
-<pre class="r"><code>table(no_correct_platemap$plate,useNA = &#39;ifany&#39;) </code></pre>
-<pre><code>## &lt; table of extent 0 &gt;</code></pre>
-<pre class="r"><code># Edit platemap
+<pre class="r"><code># Edit platemap for two isolates
 # Naming issue with 126H V3 PS 2A C1 (00837)
-paste0(&quot;One of them had an issue w/ their naming. &quot;)</code></pre>
-<pre><code>## [1] &quot;One of them had an issue w/ their naming. &quot;</code></pre>
+paste0(&quot;One of them had an issue w/ their map name: &quot;)</code></pre>
+<pre><code>## [1] &quot;One of them had an issue w/ their map name: &quot;</code></pre>
 <pre class="r"><code>metadata$map_name &lt;- ifelse(metadata$household_number_recode==&quot;126H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id ==&#39;Pet Stool 2A C1&#39; &amp; metadata$lab_vantage_s_number == &quot;S-220606-00837&quot;,&#39;126H V3 PS 2A C1 (00837)&#39;,metadata$map_name)
 
 # 345H V3 S1A C1 - ALso found on P5 C9 in original map
-metadata$map_name &lt;- ifelse(metadata$household_number_recode==&quot;345H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Stool 1A C1&quot;,&quot;345H V3 S1A C1&quot;,metadata$map_name)</code></pre>
+paste0(&quot;The other had an issue with their map name: &quot;)</code></pre>
+<pre><code>## [1] &quot;The other had an issue with their map name: &quot;</code></pre>
+<pre class="r"><code>metadata$map_name &lt;- ifelse(metadata$household_number_recode==&quot;345H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Stool 1A C1&quot;,&quot;345H V3 S1A C1&quot;,metadata$map_name)</code></pre>
 </div>
 <div id="merge-w-metadata-with-sequencing-data" class="section level1">
 <h1>Merge w metadata with sequencing data</h1>
@@ -1082,8 +1241,8 @@ metadata_wo_genomic_id &lt;- subset(metadata_w_genomic_id,is.na(Genome_ID) == T)
 paste0(&quot;Number of metadata entries without genomic id: &quot;,nrow(metadata_wo_genomic_id))</code></pre>
 <pre><code>## [1] &quot;Number of metadata entries without genomic id: 0&quot;</code></pre>
 </div>
-<div id="qc-passing-genomes" class="section level1">
-<h1>QC Passing genomes</h1>
+<div id="qc-flag-generation" class="section level1">
+<h1>QC Flag Generation</h1>
 <pre class="r"><code>qcd &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS&quot;)
 
 get_qc_flag &lt;- function(ID,QC_data){

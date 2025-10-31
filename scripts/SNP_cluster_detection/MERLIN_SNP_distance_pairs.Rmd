@@ -33,7 +33,7 @@ df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-m
 paste0("Number of considered isolates: ",nrow(df))
 ``` 
 
-# Species with more than one isolate
+# Load distances matrices for species with more than one isolate
 ```{r}
 species <- table(df$Species) %>% subset(.>1)  %>% names
 
@@ -45,7 +45,7 @@ species_simple <- str_split(string = species,pattern = " ",simplify = T) %>% app
 dist_matrices <- readRDS('./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_matrices.RDS')
 ```
 
-# Subset metadata to species of interest 
+# Subset metadata to species and isolates of interest 
 ```{r}
 # Subset metadata to species
 clean_datasets <- function(metadata,mat,species){
@@ -71,6 +71,7 @@ for(i in species){
 ```
 
 # Get pairwise distances
+## Get distance data (i.e., info for each cell)
 ```{r}
 get_cell_info <- function(mat) {
   idx <- which(!is.na(mat) & lower.tri(mat) , arr.ind = TRUE)
@@ -82,6 +83,7 @@ get_cell_info <- function(mat) {
 }
 ```
 
+## Get pair types matrix with updated info (i.e., info for each member of the pair)
 ```{r}
 get_pair_types_mat <- function(dataset,mat,type,voi){ 
   pair_types <- get_cell_info(mat = mat)
@@ -108,18 +110,20 @@ update_pair_types_w_info <- function(pair_types_df,df,voi){
 } 
 ```
 
+## Run the code!
 ```{r}
-voi = c("household",'subject_id','ncbi_id',"visit","collect_date","Species","Species_ST","subject_category",'subject_category_simplified')
+voi = c("household",'subject_id','ncbi_id',"visit","collect_date","Species","Species_ST","subject_category",'subject_category_simplified',"subject_type",'index')
 
 pairtype_datasets <- pbmcapply::pbmclapply(species_simple,FUN=function(x){ 
   data <- get(paste0(x,"_data"))
   get_pair_types_mat(data$df,data$mat,type="type",voi=voi)   
-},mc.cores=6) %>% `names<-`(species_simple)
+}, mc.cores=6) %>% `names<-`(species_simple)
 
 # Overall
-overall_pair_types <- do.call(rbind,pairtype_datasets) 
+overall_pair_types <- do.call(rbind, pairtype_datasets) 
 ```
 
+## Save the dataset
 ```{r} 
 saveRDS(overall_pair_types,'./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_pairs_dataset.RDS') 
 ```

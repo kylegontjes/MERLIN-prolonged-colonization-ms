@@ -27,12 +27,14 @@ Sys.info()
 sessionInfo()
 ```
 
+# Load dataset
 ```{r} 
 df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") %>% subset(WGS_escre==T & qc_pass==T)
 
 paste0("Number of considered isolates: ",nrow(df))
 ``` 
 
+# Load fasta files and create pairwise SNP matrices
 ```{r}
 # Load
 setwd("~/Desktop/gl_merlin/Sequence_data/variant_calling/2025-04-15_SNPKIT/")
@@ -67,6 +69,7 @@ dist_matrix <- pbmcapply::pbmclapply(species,FUN=function(x){
 },mc.cores=6) %>% `names<-`(species)
 ```
 
+# Save file
 ```{r}
 setwd('~/Desktop/gl_merlin/')
 saveRDS(dist_matrix,'./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_matrices.RDS')
