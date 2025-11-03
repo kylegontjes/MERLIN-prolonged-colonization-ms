@@ -30,6 +30,7 @@ sessionInfo()
 # Load data
 ```{r cars} 
 df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") 
+
 final_isolates <- subset(df,WGS_escre == TRUE & qc_pass == TRUE) %>% .$genomic_id 
 paste0("Number of final isolates that were ESCRE and QC passing: ", length(final_isolates))
 ```
@@ -38,7 +39,8 @@ paste0("Number of final isolates that were ESCRE and QC passing: ", length(final
 ```{bash}
 cd ./data/amrfinder/
 
-head -n1 MERLIN_100_amrfinder.out  > amrfinder_all.txt
+head -n1 MERLIN_1_amrfinder.out  > amrfinder_all.txt
+
 for isolate in `ls *amrfinder.out`
 do
 echo $isolate
@@ -50,24 +52,29 @@ done
 ```{r}
 amrfinder <- read.delim(file="./data/amrfinder/amrfinder_all.txt")
 
+# Get genomic ID
 amrfinder$genomic_id <- sapply(amrfinder$Contig.id,FUN=function(x){
- x %>% str_split(.,"_") %>% unlist %>% .[1:2] %>% paste0(.,collapse = "_")
+  x %>% str_split(.,"_") %>% unlist %>% .[1:length(.)-1] %>% paste0(.,collapse = "_") 
 })
 
+# Contig
 amrfinder$contig <- sapply(amrfinder$Contig.id,FUN=function(x){
- x %>% str_split(.,"_") %>% unlist %>% .[3]   
-})
+ x %>% str_split(.,"_") %>% unlist %>% .[length(.)]   
+}) 
 
 colnames(amrfinder) <- snakecase::to_snake_case(colnames(amrfinder) ) %>% gsub("x_","",.)
 
+# Drop protein id variables
 amrfinder <- amrfinder %>% select(-protein_id,-hmm_accession,-hmm_description) 
+
+# Restrict to final isolates
 amrfinder <- subset(amrfinder, genomic_id %in% final_isolates)
 
-# Curate new element_symbol
+# Curate new element_symbol that's informative
 amrfinder$element_symbol_renamed <- apply(amrfinder,1,FUN=function(x){
   name <- x[["element_symbol"]] 
   # Get name
-    if(x[["type"]] == "AMR" & x[["class"]] == "BETA-LACTAM" ){
+    if(x[["type"]] == "AMR" & x[["class"]] == "BETA-LACTAM"){
       if(grepl("-",name) == F| str_split(name,"-",simplify=T) %>% .[,ncol(.)] %>% grepl("[0-9]", .) ==F){
         if(x[["coverage_of_reference"]] < 100 | x[["identity_to_reference"]] < 100){
           name <- str_split(x[["closest_reference_name"]],pattern = " ",simplify = T) %>% .[,ncol(.)] %>% paste0('bla',.)
@@ -86,17 +93,30 @@ amrfinder$element_symbol_renamed <- apply(amrfinder,1,FUN=function(x){
     return(name)
 })
 
+# Save as RDS
 saveRDS(amrfinder,file="./data/amrfinder/amrfinder_cleaned.RDS")
+``` 
 
+# Get amrfinder matrix
+```{r}
+# Function
 get_amrfinder_matrix <- function(amrfinder,isolates){
   unique_genes <- amrfinder$element_symbol_renamed %>% unique
-  lapply(unique_genes,FUN =function(x,amrfinder){
+  unique_genes_by_isolate <- lapply(unique_genes,FUN =function(x,amrfinder){
     isolates_with_gene <-  subset(amrfinder,element_symbol_renamed == x) %>% select(genomic_id) %>% unlist
     row <- assign(paste0(x),ifelse(isolates %in% isolates_with_gene,1,0))
-    return(row)},amrfinder) %>% do.call(bind_cols,.) %>% as.data.frame %>% `colnames<-`(unique_genes) %>% `rownames<-`(isolates)
+    return(row)},amrfinder) 
+  
+  amrfinder_matrix <- do.call(bind_cols,unique_genes_by_isolate)
+  amrfinder_matrix <- as.data.frame(amrfinder_matrix)
+  colnames(amrfinder_matrix) <- unique_genes
+  rownames(amrfinder_matrix) <- isolates 
+  return(amrfinder_matrix)
 }
 
-amrfinder_mat <- get_amrfinder_matrix(amrfinder = amrfinder,isolates = final_isolates)
+# Implementation
+amrfinder_mat <- get_amrfinder_matrix(amrfinder = amrfinder, isolates = final_isolates)
 
-saveRDS(amrfinder_mat,file="./data/amrfinder/amrfinder_matrix.RDS")
-``` 
+# Save as RDS
+saveRDS(amrfinder_mat, file="./data/amrfinder/amrfinder_matrix.RDS")
+```

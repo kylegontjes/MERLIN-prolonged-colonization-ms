@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
 <title>Data Cleaning Step 2 - Curate the sequencing [QCD] data</title>
 
@@ -353,15 +353,17 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 2 - Curate the
 sequencing [QCD] data</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
 
 <p>Notes:</p>
 <ol style="list-style-type: decimal">
-<li>Removed three isolates from consideration on 10/30/25. See section
-“Drop isolates” for details.</li>
+<li><p>Removed three isolates from consideration on 10/30/25. See
+section “Drop isolates” for details.</p></li>
+<li><p>See Sequence_data/illumina_fastq folder for QC data and
+decision-making</p></li>
 </ol>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
@@ -380,7 +382,7 @@ Sys.info()</code></pre>
 ##                                                                                                     version 
 ## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
 ##                                                                                                    nodename 
-##                                                                               &quot;msla0572.wifi.med.umich.edu&quot; 
+##                                                                                            &quot;msla0572.local&quot; 
 ##                                                                                                     machine 
 ##                                                                                                    &quot;x86_64&quot; 
 ##                                                                                                       login 
@@ -435,7 +437,11 @@ master_qc$genomic_id &lt;- master_qc$Sample
 # Pass QC
 master_qc$qc_pass &lt;- ifelse(master_qc$QC_Check==&#39;PASS&#39;, TRUE, FALSE) 
 # Genus
-master_qc$Genus &lt;- str_split(master_qc$Species,&quot; &quot;,simplify=T) %&gt;% .[,1]</code></pre>
+master_qc$Genus &lt;- str_split(master_qc$Species,&quot; &quot;,simplify=T) %&gt;% .[,1]
+# Sequence type (ST)
+master_qc$ST &lt;- ifelse(master_qc$ST ==&quot;-&quot;,&quot;Unknown&quot;,master_qc$ST) 
+# Species + ST
+master_qc$Species_ST &lt;- paste0(master_qc$Species,&quot; ST &quot;,master_qc$ST) %&gt;% trimws(.,&quot;both&quot;)</code></pre>
 </div>
 <div id="escre-wgs-call" class="section level1">
 <h1>ESCrE WGS Call</h1>
@@ -495,9 +501,9 @@ master_qc$sequencing_run &lt;- sapply(master_qc$Sample,get_sequencing_run,sequen
 <h1>Drop isolates</h1>
 <div id="as-of-103025-drop-merlin_285-merlin_246-and-merlin_231" class="section level2">
 <h2>As of 10/30/25: Drop MERLIN_285, MERLIN_246, and MERLIN_231</h2>
-<div id="merlin_285---s-221005-00370---transcription-error-which-could-not-be-resolved" class="section level3">
+<div id="merlin_285---s-221005-00370---transcription-error-which-could-not-be-resolved." class="section level3">
 <h3>MERLIN_285 - S-221005-00370 - Transcription error which could not be
-resolved</h3>
+resolved.</h3>
 </div>
 <div id="merlin_246---s-221019-01336---based-on-plate-map-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_211.-removed-melrin_246-in-preference-of-merlin_211.-needed-to-change-the-merlin_remove_duplicates-file-to-reflect-this" class="section level3">
 <h3>MERLIN_246 - S-221019-01336 - Based on plate map review and
@@ -523,11 +529,6 @@ paste0(&quot;Number of qc entries at this stage: &quot;,nrow(master_qc))</code><
 <pre><code>## [1] &quot;Number of qc entries at this stage: 417&quot;</code></pre>
 </div>
 </div>
-</div>
-<div id="curate-sequencing-data" class="section level1">
-<h1>Curate sequencing data</h1>
-<pre class="r"><code>master_qc$ST &lt;- ifelse(master_qc$ST ==&quot;-&quot;,&quot;Unknown&quot;,master_qc$ST) 
-master_qc$Species_ST &lt;- paste0(master_qc$Species,&quot; ST &quot;,master_qc$ST) %&gt;% trimws(.,&quot;both&quot;)</code></pre>
 </div>
 <div id="save-the-data" class="section level1">
 <h1>Save the data</h1>

@@ -30,7 +30,7 @@ Sys.info()
 sessionInfo()
 ```
 
-# Data
+# Load prolonged colonization data
 ```{r } 
 prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS")
 ```
@@ -49,7 +49,7 @@ prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summar
 ```{r,fig.width=6,fig.height=7.5}
 summary_data <- prolonged_melt%>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value))  
 
-figure_1 <- ggplot(data=prolonged_melt) + geom_bar(aes(x=variable,fill=value)) + xlab("") + ylab("Count") +  geom_text(data=summary_data,aes(x=variable,y = n,label=n), vjust=0,nudge_y=0.5,color ='black',size = 5)  + prolonged_colonization_scale + theme_bw_me + figure_1_format 
+figure_1 <- ggplot(data=prolonged_melt) + geom_bar(aes(x=variable,fill=value)) + xlab("") + ylab("Number of subjects") +  geom_text(data=summary_data,aes(x=variable,y = n,label=n), vjust=0,nudge_y=0.5,color ='black',size = 5)  + prolonged_colonization_scale + theme_bw_me + figure_1_format 
 
 figure_1
 ```

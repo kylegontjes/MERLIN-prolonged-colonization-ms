@@ -11,6 +11,10 @@ opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/')
 ```
+
+# Notes
+
+1. We received SRA metadata from UPENN that enables easy tracing of what specimen belongs to what subject
  
 # Environment
 
@@ -40,10 +44,12 @@ simplified_metadata_for_sra <- simplified_metadata_for_sra %>% rename('lab_vanta
 df <- left_join(df ,simplified_metadata_for_sra %>% select(-visit,-plate,-position))
 ```
 
-# Organize dataset
+# Curate additional useful variables pertaining to specimen type and categories
 ```{r}
-# Specimen categories
+# Subject variables 
+## Category: The category of specimen (i.e., humanindex, bath1) in relation to the household
 df$subject_category <- df$subject_id %>% str_split(.,"_",simplify = T) %>% .[,2]
+## Simplified category that removes the household number  
 df$subject_category_simplified <-  ifelse(df$subject_category == 'humanindex','Index',
                                      ifelse(df$subject_category %in% c("bath1","bath2",'bath2c1'),"Bath",
                                             ifelse(df$subject_category %in% c("humanfemale1",'humanfemale2'),"Female housemate",
@@ -55,10 +61,12 @@ df$subject_category_simplified <-  ifelse(df$subject_category == 'humanindex','I
                                                                                                                  ifelse(df$subject_category %in% c("livingroom"),"Living room",
                                                                                                                         ifelse(df$subject_category %in% c("washingmachine"),"Washing machine","Other"))))))))))
 
+## Subject type: Environment, pet, or human
 df$subject_type <- ifelse(df$subject_category_simplified %in% c("Bath","Kitchen","Living room","Washing machine"),"Environment",
                           ifelse(df$subject_category_simplified %in% c("Cat","Dog"),"Pet",
                                  ifelse(df$subject_category_simplified %in% c("Index","Female housemate","Male housemate"),"Human","Other")))
 
+## Index isolate logical flag
 df$index <-  df$subject_category == 'humanindex' 
 ```
 

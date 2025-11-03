@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
 <title>Prolonged colonization</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">Prolonged colonization</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -375,7 +375,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
+                                                                                           &quot;msla0572.local&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -425,15 +425,15 @@ loaded via a namespace (and not attached):
 <h1>Load data</h1>
 <pre class="r"><code>df_index &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS&quot;) 
 plasmid_data &lt;- readRDS(&quot;./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS&quot;) %&gt;% subset(genomic_id %in% df_index$genomic_id)
-
 df_index &lt;- left_join(df_index,plasmid_data)</code></pre>
 </div>
-<div id="positive-specimens" class="section level1">
-<h1>Positive specimens</h1>
+<div id="households-with-index-positive-data-i.e.-only-can-consider-those" class="section level1">
+<h1>Households with index positive data (i.e., only can consider
+those)</h1>
 <pre class="r"><code>ESCrE_index_positive_households &lt;- df_index %&gt;% subset(visit ==0 &amp; WGS_escre==T) %&gt;% .$household</code></pre>
 </div>
-<div id="species-level" class="section level1">
-<h1>Species level</h1>
+<div id="taxonomical-prolonged-colonization" class="section level1">
+<h1>Taxonomical prolonged colonization</h1>
 <div id="function" class="section level2">
 <h2>Function</h2>
 <pre class="r"><code>get_prolonged_colonization &lt;- function(isolate,metadata,variable){
@@ -456,19 +456,26 @@ df_index &lt;- left_join(df_index,plasmid_data)</code></pre>
 </div>
 <div id="data-generation" class="section level2">
 <h2>Data generation</h2>
-<pre class="r"><code>any_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;WGS_escre&#39;) %&gt;% do.call(rbind,.) 
+<pre class="r"><code># Any ESCrE
+any_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;WGS_escre&#39;) %&gt;% do.call(rbind,.) 
+
+# Species
 species_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;Species&#39;) %&gt;% do.call(rbind,.)
+
+# Species + ST
 species_ST_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;Species_ST&#39;) %&gt;% do.call(rbind,.)
+
+# Species + ST + Cluster
 species_ST_cluster_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;Species_ST_cluster&#39;) %&gt;% do.call(rbind,.)
 
 prolonged_df &lt;- left_join(any_prolonged,species_prolonged) %&gt;% left_join(.,species_ST_prolonged) %&gt;% left_join(.,species_ST_cluster_prolonged)</code></pre>
 </div>
 </div>
-<div id="plasmid-level-prolonged-colonization" class="section level1">
-<h1>Plasmid level prolonged colonization</h1>
+<div id="genotype-level-prolonged-colonization" class="section level1">
+<h1>Genotype level prolonged colonization</h1>
 <div id="function-1" class="section level2">
 <h2>Function</h2>
-<pre class="r"><code># Generic
+<pre class="r"><code># Generic analysis
 get_prolonged_colonization_str_split &lt;- function(isolate,metadata,variable,split){
   isolate_df &lt;- subset(metadata,household==isolate)
   isolate_index &lt;- subset(isolate_df,visit==0) %&gt;% .[[variable]] %&gt;% str_split(.,split) %&gt;% unlist %&gt;% subset(is.na(.)==F &amp; .!=&#39;&#39;)
@@ -492,7 +499,7 @@ get_prolonged_colonization_str_split &lt;- function(isolate,metadata,variable,sp
   return(results)
 }
 
-# Plasmid aware
+# Plasmid aware analysis
 get_prolonged_colonization_str_split_plasmid_aware &lt;- function(isolate,metadata,chromosome_variable,plasmid_variable,split){
   isolate_df &lt;- subset(metadata,household==isolate)
   isolate_index &lt;- subset(isolate_df,visit==0) 
@@ -525,10 +532,13 @@ get_prolonged_colonization_str_split_plasmid_aware &lt;- function(isolate,metada
 </div>
 <div id="data-generation-1" class="section level2">
 <h2>Data generation</h2>
-<pre class="r"><code>maldi_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable=&#39;maldi&#39;,split=&quot;,&quot;) %&gt;% do.call(rbind,.)
+<pre class="r"><code># MALDI classification from study laboratory
+maldi_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable=&#39;maldi&#39;,split=&quot;,&quot;) %&gt;% do.call(rbind,.)
 
+# ESCrE genes
 ESCrE_genes_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable=&#39;ESCrE_genes&#39;,split=&quot;;&quot;) %&gt;% do.call(rbind,.)
  
+# ESCrE plasmid aware
 ESCrE_plasmid_aware_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split_plasmid_aware,df_index,chromosome_variable=&#39;ESCrE_chromosome_genes&#39;,plasmid_variable = &quot;ESCrE_plasmid_genes&quot;,split=&quot;;&quot;) %&gt;% do.call(rbind,.)
 
 prolonged_df &lt;- left_join(prolonged_df,ESCrE_genes_sharing)  %&gt;% left_join(.,ESCrE_plasmid_aware_sharing) %&gt;% left_join(.,maldi_sharing)</code></pre>
@@ -536,7 +546,10 @@ prolonged_df &lt;- left_join(prolonged_df,ESCrE_genes_sharing)  %&gt;% left_join
 </div>
 <div id="generate-merged-datapoints" class="section level1">
 <h1>Generate merged datapoints</h1>
-<pre class="r"><code>prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes &lt;- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes ==1,1,0) 
+<pre class="r"><code># Cluster + ESCrE genes
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes &lt;- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes ==1,1,0) 
+
+# Cluster + Plasmid-linked ESCrE genes
 prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware &lt;- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware ==1,1,0) </code></pre>
 </div>
 <div id="save-dataset" class="section level1">

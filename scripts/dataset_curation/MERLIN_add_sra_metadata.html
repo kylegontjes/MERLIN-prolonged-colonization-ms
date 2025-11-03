@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
 <title>Data Cleaning Step 6 - Add SRA Simplified metadata</title>
 
@@ -353,11 +353,18 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 6 - Add SRA Simplified
 metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
 
+<div id="notes" class="section level1">
+<h1>Notes</h1>
+<ol style="list-style-type: decimal">
+<li>We received SRA metadata from UPENN that enables easy tracing of
+what specimen belongs to what subject</li>
+</ol>
+</div>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
 <pre class="r"><code>#Packages
@@ -376,7 +383,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
+                                                                                           &quot;msla0572.local&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -430,10 +437,13 @@ simplified_metadata_for_sra &lt;- read_csv(&quot;./Analysis/data/merlin_sra_subm
                                                                       &#39;sra_location_or_participant&#39;=&#39;location_or_participant&#39;) 
 df &lt;- left_join(df ,simplified_metadata_for_sra %&gt;% select(-visit,-plate,-position))</code></pre>
 </div>
-<div id="organize-dataset" class="section level1">
-<h1>Organize dataset</h1>
-<pre class="r"><code># Specimen categories
+<div id="curate-additional-useful-variables-pertaining-to-specimen-type-and-categories" class="section level1">
+<h1>Curate additional useful variables pertaining to specimen type and
+categories</h1>
+<pre class="r"><code># Subject variables 
+## Category: The category of specimen (i.e., humanindex, bath1) in relation to the household
 df$subject_category &lt;- df$subject_id %&gt;% str_split(.,&quot;_&quot;,simplify = T) %&gt;% .[,2]
+## Simplified category that removes the household number  
 df$subject_category_simplified &lt;-  ifelse(df$subject_category == &#39;humanindex&#39;,&#39;Index&#39;,
                                      ifelse(df$subject_category %in% c(&quot;bath1&quot;,&quot;bath2&quot;,&#39;bath2c1&#39;),&quot;Bath&quot;,
                                             ifelse(df$subject_category %in% c(&quot;humanfemale1&quot;,&#39;humanfemale2&#39;),&quot;Female housemate&quot;,
@@ -445,10 +455,12 @@ df$subject_category_simplified &lt;-  ifelse(df$subject_category == &#39;humanin
                                                                                                                  ifelse(df$subject_category %in% c(&quot;livingroom&quot;),&quot;Living room&quot;,
                                                                                                                         ifelse(df$subject_category %in% c(&quot;washingmachine&quot;),&quot;Washing machine&quot;,&quot;Other&quot;))))))))))
 
+## Subject type: Environment, pet, or human
 df$subject_type &lt;- ifelse(df$subject_category_simplified %in% c(&quot;Bath&quot;,&quot;Kitchen&quot;,&quot;Living room&quot;,&quot;Washing machine&quot;),&quot;Environment&quot;,
                           ifelse(df$subject_category_simplified %in% c(&quot;Cat&quot;,&quot;Dog&quot;),&quot;Pet&quot;,
                                  ifelse(df$subject_category_simplified %in% c(&quot;Index&quot;,&quot;Female housemate&quot;,&quot;Male housemate&quot;),&quot;Human&quot;,&quot;Other&quot;)))
 
+## Index isolate logical flag
 df$index &lt;-  df$subject_category == &#39;humanindex&#39; </code></pre>
 </div>
 <div id="save" class="section level1">

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
 <title>Data Cleaning Step 7 - Curate final metadata files for MERLIN projects</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 7 - Curate final
 metadata files for MERLIN projects</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -381,7 +381,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
+                                                                                           &quot;msla0572.local&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -429,13 +429,25 @@ loaded via a namespace (and not attached):
 <pre class="r"><code>df &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS&quot;) 
 cluster_25_SNPs &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_25_SNP_clusters.RDS&quot;)
 ecoli_phylogroup &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS&quot;) </code></pre>
-<div id="merge-clustering-data" class="section level2">
-<h2>Merge clustering data</h2>
+</div>
+<div id="merge-clustering-data" class="section level1">
+<h1>Merge clustering data</h1>
+<div id="nothing-needed-to-do-here" class="section level2">
+<h2>Nothing needed to do here</h2>
 <pre class="r"><code>df &lt;- left_join(df,cluster_25_SNPs)</code></pre>
 </div>
-<div id="add-ecoli-phylogroup-data" class="section level2">
-<h2>Add ecoli phylogroup data</h2>
-<pre class="r"><code>get_clermont_data &lt;- function(genomic_id, clermont_data){
+</div>
+<div id="merge-ecoli-phylogroup-data" class="section level1">
+<h1>Merge ecoli phylogroup data</h1>
+<div id="for-genomes-with-e.-coli-they-should-provide-an-e.-coli-phylogroup" class="section level2">
+<h2>For genomes with E. coli, they should provide an E. coli
+phylogroup</h2>
+</div>
+<div id="if-genome-is-not-escherichia-this-would-be-clarified-as-not-escherichia" class="section level2">
+<h2>If genome is not Escherichia, this would be clarified as “Not
+Escherichia”</h2>
+<pre class="r"><code># Function
+get_clermont_data &lt;- function(genomic_id, clermont_data){
   ids &lt;- str_split(genomic_id,&quot;;&quot;) %&gt;% unlist
   clermont_sub &lt;- clermont_data %&gt;% subset(genomic_id %in% ids)
   if(nrow(clermont_sub) &gt;0 ){
@@ -445,6 +457,7 @@ ecoli_phylogroup &lt;- readRDS(&quot;./Analysis/Household_transmission/MERLIN-pr
     }
 }
 
+# Implementation
 df$ecoli_phylogroup &lt;- sapply(df$genomic_id, get_clermont_data, clermont_data = ecoli_phylogroup)</code></pre>
 </div>
 </div>

@@ -1,5 +1,5 @@
 ---
-title: "Supplemental Table 1: Location of ESBL genes on short-read assemblies"
+title: "Supplemental Table 1: Location of ESCrE genes on short-read assemblies"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -48,7 +48,7 @@ colnames(ESBL_prop_data) <- c("ESCrE","Category","No. chromosomal","No. plasmidi
 ESBL_prop_data %>% favorite_kable() 
 ```
 
-# Save table
+# Save table as CSV and RDS file
 ```{r}
 saveRDS(ESBL_prop_data,"./tables/s_table_1_ESBL_proportion_plasmidic.RDS")
 write_csv(ESBL_prop_data,"./tables/s_table_1_ESBL_proportion_plasmidic.csv")

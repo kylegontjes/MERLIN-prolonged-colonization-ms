@@ -49,10 +49,12 @@ df <- left_join(df,amrfinder_mat %>% mutate(genomic_id = rownames(.))) %>% left_
 
 # Get BLA and ESBL genes
 ```{r} 
+# Blactamase genes
 bla_genes <- ESCrE_genotype_info$element_symbol_renamed%>% unique %>% sort
 paste0("Number of beta-lactamase genes identified: " , length(ESCrE_genotype_info$element_symbol_renamed %>% unique))
 table(ESCrE_genotype_info$element_symbol_renamed,ESCrE_genotype_info$blactam_class) 
 
+# ESCrE genes
 escre_genotypes <- subset(ESCrE_genotype_info,ESCrE==T)
 ESCrE_genes = escre_genotypes$element_symbol_renamed %>% sort %>% unique
 paste0("ESCrE beta-lactamase genes identified: " ,nrow(escre_genotypes)) 
@@ -71,13 +73,20 @@ ESCrE_prop_data <- lapply(ESCrE_genes,analyze_frequency_on_plasmid,plasmid_data)
 ESCrE_prop_data %>% arrange(prop_plasmid) %>% gontjesr::favorite_kable()
 plasmidic_ESCrEs <- subset(ESCrE_prop_data,prop_plasmid>0) %>% .$ESCrE %>% sort
 
+paste0("Number of genes: ",nrow(ESCrE_prop_data))
+paste0("Number of plasmidic genes: ",nrow(ESCrE_prop_data %>% subset(prop_plasmid >0)))
+
+# Save
 saveRDS(ESCrE_prop_data,"./data/ESBL_plasmids/MERLIN_cohort_ESCrE_proportion_plasmidic.RDS")
 
+# Generate plasmid presence
 ESCrE_plasmidic_presence <- lapply(df$genomic_id,get_plasmidic_ESCrE,mobsuite_gene_pres,plasmidic_ESCrEs) %>% do.call(rbind,.)
 ```
 
 # Save overall data
 ```{r}
+# Merge
 plasmid_data <-  left_join(plasmid_data,ESCrE_plasmidic_presence) 
+# Save
 saveRDS(plasmid_data,"./data/ESBL_plasmids/MERLIN_cohort_beta_lactam_location_data.RDS")
 ```

@@ -5,7 +5,6 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-
 ```{r setup, include=FALSE}
 require(knitr)
 opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
@@ -38,14 +37,14 @@ prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolo
 clinical_prolonged_colonization <- read_csv("./data/prolonged_colonization/merlin_prolonged_colonization.csv")
 ```
  
-# Get numer of positive households
+# Get number of positive households with index specimen sequenced
 ```{r}
 ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & WGS_escre==T) %>% .$household
 paste0("Number of subjects with index specimens positive: ", length(ESCrE_index_positive_households))
 paste0("Proportion of subjects with index specimens positive: ", length(ESCrE_index_positive_households) / 40)
 ```
 
-# How many of the MALDI-level prolonged colonization had sequencing?
+# How many of the MALDI-level prolonged colonization had a QC-passing genome for their index genome?
 ```{r}
 clinical_definition_prolonged <- clinical_prolonged_colonization %>% subset(prolonged_colonization==1) %>% .[["household_number"]]
 paste0("How many of the prolonged colonization episodes we had their index sequenced: ", length(clinical_definition_prolonged))

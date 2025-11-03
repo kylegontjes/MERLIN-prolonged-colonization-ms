@@ -11,9 +11,9 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
-<title>mobsuite_AMR_gene_data_curation</title>
+<title>Generate AMRFinder + MOB-Suite linked data on gene presence</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,9 +350,10 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">mobsuite_AMR_gene_data_curation</h1>
+<h1 class="title toc-ignore">Generate AMRFinder + MOB-Suite linked data
+on gene presence</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -375,7 +376,7 @@ Sys.info()</code></pre>
 ##                                                                                                     version 
 ## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
 ##                                                                                                    nodename 
-##                                                                               &quot;msla0572.wifi.med.umich.edu&quot; 
+##                                                                                            &quot;msla0572.local&quot; 
 ##                                                                                                     machine 
 ##                                                                                                    &quot;x86_64&quot; 
 ##                                                                                                       login 
@@ -422,10 +423,11 @@ Sys.info()</code></pre>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
-<pre class="r"><code>df &lt;-  readRDS(&quot;./data/dataset/MERLIN_cohort_metadata_final.RDS&quot;)   %&gt;% subset(WGS_escre == TRUE &amp; qc_pass == TRUE) 
+<pre class="r"><code># Dataframe
+df &lt;-  readRDS(&quot;./data/dataset/MERLIN_cohort_metadata_final.RDS&quot;)  %&gt;% subset(WGS_escre == TRUE &amp; qc_pass == TRUE) 
 isolates &lt;- df$genomic_id
 
-# AMRFINDER
+# AMRFinder
 amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.RDS&quot;)  %&gt;% subset(genomic_id %in% isolates)
 amrfinder_mat &lt;- readRDS(&quot;./data/amrfinder/amrfinder_matrix.RDS&quot;) %&gt;% subset(rownames(.) %in% isolates)
 ESCrE_genotype_info &lt;- readRDS(&quot;./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS&quot;)
@@ -450,22 +452,26 @@ gene_pres &lt;- lapply(genes,FUN=annotate_contigs,amrfinder_df = amrfinder,mobsu
 
 mobsuite_contigs &lt;- left_join(mobsuite_contigs,gene_pres)</code></pre>
 <pre><code>## Joining with `by = join_by(contig_id)`</code></pre>
+</div>
+<div id="binary-variable-indicating-chromosmoe-or-plasmid-as-chromosome-or-plasmid" class="section level1">
+<h1>Binary variable indicating chromosmoe or plasmid as chromosome or
+plasmid</h1>
 <pre class="r"><code>mobsuite_contigs$chromosome &lt;- ifelse(mobsuite_contigs$molecule_type == &quot;chromosome&quot;, T, F)
 mobsuite_contigs$plasmid &lt;- ifelse(mobsuite_contigs$molecule_type == &quot;plasmid&quot;, T, F) </code></pre>
 </div>
 <div id="contig-data" class="section level1">
 <h1>Contig data</h1>
 <pre class="r"><code>count_chromosome &lt;- function(isolate,genes,isolate_contigs){
-  chromosome &lt;- subset(isolate_contigs,molecule_type ==&quot;chromosome&quot;)
+  chromosome &lt;- subset(isolate_contigs, molecule_type == &quot;chromosome&quot;)
   chromosome_sum &lt;- chromosome %&gt;% select(genes) %&gt;% summarise_all(sum)
-  chromosome_sum_row &lt;- cbind(genomic_id = isolate,type=&quot;chromosome&quot;,chromosome_sum)
+  chromosome_sum_row &lt;- cbind(genomic_id = isolate, type = &quot;chromosome&quot;, chromosome_sum)
   return(chromosome_sum_row)
 }
 
 count_plasmid &lt;- function(cluster,isolate,genes,isolate_contigs){
-  plasmid &lt;- subset(isolate_contigs,primary_cluster_id ==cluster)
-  plasmid_sum &lt;- plasmid %&gt;% select(genes) %&gt;%summarise_all(sum)
-  plasmid_sum_row &lt;- cbind(genomic_id = isolate,type = cluster,plasmid_sum)
+  plasmid &lt;- subset(isolate_contigs, primary_cluster_id == cluster)
+  plasmid_sum &lt;- plasmid %&gt;% select(genes) %&gt;% summarise_all(sum)
+  plasmid_sum_row &lt;- cbind(genomic_id = isolate, type = cluster, plasmid_sum)
   return(plasmid_sum_row)
 }
 
@@ -506,10 +512,11 @@ mobsuite_gene_pres$AMR_contig &lt;- ifelse(mobsuite_gene_pres %&gt;% select(any_
 mobsuite_gene_pres$BETA_LACTAM_contig &lt;- ifelse(mobsuite_gene_pres %&gt;% select(any_of(BLA_genes)) %&gt;% rowSums()&gt;0,T,F) 
 mobsuite_gene_pres$ESCrE_contig &lt;- ifelse(mobsuite_gene_pres %&gt;% select(any_of(ESCrE_genes)) %&gt;% rowSums()&gt;0,T,F) 
 
+# Save the mobsuite gene presence data
 saveRDS(mobsuite_gene_pres,&quot;./data/ESBL_plasmids/amrfinder_mobsuite_beta_lactamase_presence.RDS&quot;)</code></pre>
 </div>
-<div id="get-isolates" class="section level1">
-<h1>Get isolate’s</h1>
+<div id="get-isolates-plasmid-clusters-with-bla-and-escre-genes" class="section level1">
+<h1>Get isolate’s plasmid clusters with BLA and ESCrE genes</h1>
 <pre class="r"><code>plasmid_sum_info_blactam &lt;- mobsuite_gene_pres %&gt;% subset(BETA_LACTAM_contig ==T)
 plasmid_sum_info_ESCrE &lt;- mobsuite_gene_pres %&gt;% subset(ESCrE_contig ==T)
 
@@ -526,6 +533,8 @@ get_mobtyper_cluster_from_amrfinder &lt;- function (df, mobtyper)
         `colnames&lt;-`(plasmid_cluster) %&gt;% `rownames&lt;-`(df$genomic_id)
 }
 
+# B-lactamase gene contig matrix
+## Implementation
 blactam_plasmid_contigs &lt;- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum_info_blactam)</code></pre>
 <pre><code>## New names:
 ## • `` -&gt; `...1`
@@ -565,8 +574,11 @@ blactam_plasmid_contigs &lt;- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum
 ## • `` -&gt; `...35`
 ## • `` -&gt; `...36`
 ## • `` -&gt; `...37`</code></pre>
-<pre class="r"><code>saveRDS(blactam_plasmid_contigs,&quot;./data/ESBL_plasmids/amrfinder_beta_lactam_contig_matrix.RDS&quot;)
+<pre class="r"><code>## Save
+saveRDS(blactam_plasmid_contigs,&quot;./data/ESBL_plasmids/amrfinder_beta_lactam_contig_matrix.RDS&quot;)
 
+# ESCrE gene contig matrix
+## Implementation
 ESCrE_plasmid_contigs &lt;- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum_info_ESCrE)</code></pre>
 <pre><code>## New names:
 ## • `` -&gt; `...1`
@@ -596,7 +608,8 @@ ESCrE_plasmid_contigs &lt;- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum_i
 ## • `` -&gt; `...25`
 ## • `` -&gt; `...26`
 ## • `` -&gt; `...27`</code></pre>
-<pre class="r"><code>saveRDS(ESCrE_plasmid_contigs,&quot;./data/ESBL_plasmids/amrfinder_ESCrE_contig_matrix.RDS&quot;)</code></pre>
+<pre class="r"><code>## Save
+saveRDS(ESCrE_plasmid_contigs,&quot;./data/ESBL_plasmids/amrfinder_ESCrE_contig_matrix.RDS&quot;)</code></pre>
 </div>
 
 

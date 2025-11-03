@@ -30,7 +30,7 @@ Sys.info()
 sessionInfo()
 ```
 
-# Data
+# Load data
 ```{r cars} 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
 plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
@@ -44,7 +44,7 @@ df_index <- left_join(df_index,plasmid_data)
 ```{r}
 df_index$household_numeric <- gsub("H","",df_index$household) %>% as.numeric
   
-s_table_2 <- df_index %>% arrange(household_numeric,visit,Species_ST_cluster) %>% select(household,visit,Species_ST_cluster,plasmids,ESCrE_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,ESCrE_plasmids) %>% mutate(plasmids = gsub(";",", ",plasmids),ESCrE_genes = gsub(";",", ",ESCrE_genes),ESCrE_chromosome_genes = gsub(";",", ",ESCrE_chromosome_genes),ESCrE_plasmid_genes = gsub(";",", ",ESCrE_plasmid_genes),ESCrE_plasmids = gsub(";",", ",ESCrE_plasmids)) %>%  `colnames<-`(c("Household","Visit","Strain","Plasmids","ESCrE genes",'Chromosomal ESCrE genes','Plasmid-linked ESCrE genes','ESCrE plasmids'))
+s_table_2 <- df_index %>% arrange(household_numeric,visit,Species_ST_cluster) %>% select(household,visit,Species_ST_cluster,bla_genes,ESCrE_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,plasmids,ESCrE_plasmids) %>% mutate(plasmids = gsub(";",", ",plasmids),ESCrE_genes = gsub(";",", ",ESCrE_genes),ESCrE_chromosome_genes = gsub(";",", ",ESCrE_chromosome_genes),ESCrE_plasmid_genes = gsub(";",", ",ESCrE_plasmid_genes),ESCrE_plasmids = gsub(";",", ",ESCrE_plasmids)) %>%  `colnames<-`(c("Household","Visit","Strain","Β-lactamase gene(s)","ESCrE gene(s)",'Chromosomal ESCrE gene(s)','Plasmid-linked ESCrE gene(s)',"Plasmid(s)",'ESCrE plasmid(s)'))
 ```
 
 ```{r}

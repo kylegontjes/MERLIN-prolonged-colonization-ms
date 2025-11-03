@@ -93,16 +93,16 @@ comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()
 ```
 
 # Curate figure
-```{r,fig.height=9.75,fig.width=7.8}
-A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity (%)") + xlab(NULL)+ theme_bw_me+ ylim(NA,100.1)  + figure_2_format  +   geom_text(aes(label=paste0(format(spec, nsmall = 1), "%")), vjust=0,nudge_y=1) 
-B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=precision)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1)  + figure_2_format  +  geom_text(aes(label=paste0(format(precision, nsmall = 1), "%")), vjust=0,nudge_y=1)  
-C<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1) + figure_2_format + geom_text(aes(label=paste0(format(accuracy, nsmall = 1), "%")), vjust=0,nudge_y=1)  
+```{r,fig.height=5.625,fig.width=7.5}
+A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity (%)") + xlab(NULL)+ theme_bw_me+ ylim(NA,100.1)  + s_figure_2_format  +   geom_text(aes(label=paste0(format(spec, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3) 
+B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=precision)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1)  + s_figure_2_format  +  geom_text(aes(label=paste0(format(precision, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3)  
+C<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1) + s_figure_2_format + geom_text(aes(label=paste0(format(accuracy, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3)  
 
-figure_2 <- cowplot::plot_grid(A,B,C,labels = "AUTO",ncol=2)
-figure_2
+s_figure_2 <- cowplot::plot_grid(A,B,C,labels = "AUTO",ncol=3)
+s_figure_2
 ```
 
 # Save figure
 ```{r}
-ggsave(plot = figure_2,filename = './figures/s_figure_2_diagnostic_statistics_species_prolonged_colonization.png',dpi = 900,width = 7.8,height = 9.75,bg='white')
+ggsave(plot = s_figure_2,filename = './figures/s_figure_2_diagnostic_statistics_species_prolonged_colonization.png',dpi = 900,width = 7.5,height = 5.625,bg='white')
 ```

@@ -32,6 +32,7 @@ qcd <- readRDS("./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS")
 
 # Merge qcd data
 ```{r}
+# Take the genomic IDs and QC flag entry. Subset to those matching WGS ID and merge by ; values
 merge_qcd_data <- function(WGS_id, QC_flag){
   samples <- str_split(WGS_id,";") %>% unlist
   qcd_subset <- qcd %>% subset(Sample %in% samples & qc_pass==QC_flag)
@@ -43,9 +44,12 @@ merge_qcd_data <- function(WGS_id, QC_flag){
   return(qcd_subset)
 }
 
+# Passing genomes
+## Preferentially get only the passing ones!
 qcd_entries <- lapply(metadata$genomic_id,merge_qcd_data,QC_flag='TRUE') %>% do.call(rbind,.) %>% distinct() 
 
 # Failing genomes
+## For those, feel free to mergy them! That's fine, because we don't care about duplicates here
 failed_genomes <- metadata %>% subset(WGS_qc_pass_runs_num == 0 ) %>% .$Genome_ID
  
 qcd_entries_failed <-  lapply(failed_genomes,merge_qcd_data,QC_flag='FALSE') %>% do.call(rbind,.) %>% distinct()

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
 <title>Generate Beta-lactam presence and location data for each index isolate</title>
 
@@ -577,7 +577,7 @@ display: none;
 <h1 class="title toc-ignore">Generate Beta-lactam presence and location
 data for each index isolate</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -603,7 +603,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
+                                                                                           &quot;msla0572.local&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -660,13 +660,14 @@ ESCrE_plasmid_clusters &lt;- readRDS(&quot;./data/ESBL_plasmids/amrfinder_ESCrE_
 paste0(&quot;Total tested genomes: &quot;,nrow(df))</code></pre>
 <pre><code>[1] &quot;Total tested genomes: 98&quot;</code></pre>
 </div>
-<div id="merge" class="section level1">
-<h1>Merge</h1>
+<div id="merge-datasets" class="section level1">
+<h1>Merge datasets</h1>
 <pre class="r"><code>df &lt;- left_join(df,amrfinder_mat %&gt;% mutate(genomic_id = rownames(.))) %&gt;% left_join(ESCrE_plasmid_clusters %&gt;% mutate(genomic_id=rownames(.)))</code></pre>
 </div>
 <div id="get-bla-and-esbl-genes" class="section level1">
 <h1>Get BLA and ESBL genes</h1>
-<pre class="r"><code>bla_genes &lt;- ESCrE_genotype_info$element_symbol_renamed%&gt;% unique %&gt;% sort
+<pre class="r"><code># Bla genes
+bla_genes &lt;- ESCrE_genotype_info$element_symbol_renamed%&gt;% unique %&gt;% sort
 paste0(&quot;Number of beta-lactamase genes identified: &quot; , length(ESCrE_genotype_info$element_symbol_renamed %&gt;% unique))</code></pre>
 <pre><code>[1] &quot;Number of beta-lactamase genes identified: 36&quot;</code></pre>
 <pre class="r"><code>table(ESCrE_genotype_info$element_symbol_renamed,ESCrE_genotype_info$blactam_class) </code></pre>
@@ -708,7 +709,8 @@ paste0(&quot;Number of beta-lactamase genes identified: &quot; , length(ESCrE_ge
   blaTEM-1?*   1 0 0
   blaTEM-105?* 1 0 0
   blaTEM-214   1 0 0</code></pre>
-<pre class="r"><code>escre_genotypes &lt;- subset(ESCrE_genotype_info,ESCrE==T)
+<pre class="r"><code># ESCrE genes
+escre_genotypes &lt;- subset(ESCrE_genotype_info,ESCrE==T)
 ESCrE_genes = escre_genotypes$element_symbol_renamed %&gt;% sort %&gt;% unique
 paste0(&quot;ESCrE beta-lactamase genes identified: &quot; ,nrow(escre_genotypes)) </code></pre>
 <pre><code>[1] &quot;ESCrE beta-lactamase genes identified: 25&quot;</code></pre>
@@ -919,7 +921,7 @@ blaEC-5
 blaEC-5*
 </td>
 <td style="text-align:right;">
-39
+40
 </td>
 <td style="text-align:right;">
 0
@@ -975,13 +977,13 @@ blaCMY-2
 blaCTX-M-15
 </td>
 <td style="text-align:right;">
-26
+27
 </td>
 <td style="text-align:right;">
 19
 </td>
 <td style="text-align:right;">
-42.22
+41.30
 </td>
 </tr>
 <tr>
@@ -1100,13 +1102,22 @@ blaKPC-3
 </table>
 <pre class="r"><code>plasmidic_ESCrEs &lt;- subset(ESCrE_prop_data,prop_plasmid&gt;0) %&gt;% .$ESCrE %&gt;% sort
 
+paste0(&quot;Number of genes: &quot;,nrow(ESCrE_prop_data))</code></pre>
+<pre><code>[1] &quot;Number of genes: 25&quot;</code></pre>
+<pre class="r"><code>paste0(&quot;Number of plasmidic genes: &quot;,nrow(ESCrE_prop_data %&gt;% subset(prop_plasmid &gt;0)))</code></pre>
+<pre><code>[1] &quot;Number of plasmidic genes: 10&quot;</code></pre>
+<pre class="r"><code># Save
 saveRDS(ESCrE_prop_data,&quot;./data/ESBL_plasmids/MERLIN_index_cohort_ESCrE_proportion_plasmidic.RDS&quot;)
 
+# Generate plasmid presence
 ESCrE_plasmidic_presence &lt;- lapply(df$genomic_id,get_plasmidic_ESCrE,mobsuite_gene_pres,plasmidic_ESCrEs) %&gt;% do.call(rbind,.)</code></pre>
 </div>
 <div id="save-overall-data" class="section level1">
 <h1>Save overall data</h1>
-<pre class="r"><code>plasmid_data &lt;-  left_join(plasmid_data,ESCrE_plasmidic_presence) 
+<pre class="r"><code># Merge
+plasmid_data &lt;-  left_join(plasmid_data,ESCrE_plasmidic_presence)
+
+# Save 
 saveRDS(plasmid_data,&quot;./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS&quot;)</code></pre>
 </div>
 

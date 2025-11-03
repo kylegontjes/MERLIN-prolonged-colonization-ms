@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
 <title>Data Cleaning Step 3 - Platemap Harmonization with Metadata</title>
 
@@ -577,7 +577,7 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 3 - Platemap
 Harmonization with Metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -601,7 +601,7 @@ Sys.info()</code></pre>
 ##                                                                                                     version 
 ## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
 ##                                                                                                    nodename 
-##                                                                               &quot;msla0572.wifi.med.umich.edu&quot; 
+##                                                                                            &quot;msla0572.local&quot; 
 ##                                                                                                     machine 
 ##                                                                                                    &quot;x86_64&quot; 
 ##                                                                                                       login 
@@ -665,8 +665,8 @@ sequencing_IMPALA_plate$Sequencing.plate &lt;- gsub(&quot;Sequencing plate &quot
 </div>
 <div id="fix-one-bad-entry-in-impala-plate" class="section level1">
 <h1>Fix one bad entry in IMPALA plate</h1>
-<div id="trim-the-whitespace" class="section level2">
-<h2>Trim the whitespace!!!</h2>
+<div id="trim-the-whitespace-for-this-entry" class="section level2">
+<h2>Trim the whitespace for this entry</h2>
 <pre class="r"><code>sequencing_IMPALA_plate$Sample.ID &lt;- ifelse(sequencing_IMPALA_plate$Sample.ID == &#39;118H V2 B1 C1 &#39;,&#39;118H V2 B1 C1&#39;, sequencing_IMPALA_plate$Sample.ID)</code></pre>
 </div>
 </div>
@@ -833,9 +833,9 @@ platemap_consolidated_1 &lt;- load_plate_map(consolidated_path,1,eight)</code></
   dataframe &lt;- cbind.data.frame(name,col,ro,plate,position) %&gt;% `colnames&lt;-`(c(&quot;map_name&quot;,&quot;column&quot;,&quot;row&quot;,&quot;plate&quot;,&quot;position&quot;))  %&gt;% subset(map_name != &quot;POS&quot;)
   return(dataframe)
 }</code></pre>
-<div id="old-maps" class="section level2">
-<h2>Old maps</h2>
-<pre class="r"><code># Old Map
+<div id="old-plate-maps" class="section level2">
+<h2>Old plate maps</h2>
+<pre class="r"><code># Parse the old plate maps
 old_map_sum_1 &lt;- parse_map(platemap_original_1,&quot;1&quot;)
 old_map_sum_2 &lt;- parse_map(platemap_original_2,&quot;2&quot;)
 old_map_sum_3 &lt;- parse_map(platemap_original_3,&quot;3&quot;)
@@ -1266,6 +1266,8 @@ paste0(&quot;Number of distinct metadata genome entires: &quot;, nrow(qc_summary
 <pre><code>## [1] &quot;Number of distinct metadata genome entires: 258&quot;</code></pre>
 <pre class="r"><code>paste0(&quot;Duplicated metadata genome entries: &quot;)</code></pre>
 <pre><code>## [1] &quot;Duplicated metadata genome entries: &quot;</code></pre>
+<pre class="r"><code>paste0(&quot;We can ignore 169H because they&#39;re not ESCrE!&quot;)</code></pre>
+<pre><code>## [1] &quot;We can ignore 169H because they&#39;re not ESCrE!&quot;</code></pre>
 <pre class="r"><code>metadata_w_genomic_id%&gt;% subset(Genome_ID %in% c(metadata_w_genomic_id$Genome_ID[duplicated(metadata_w_genomic_id$Genome_ID)])) %&gt;% favorite_kable()</code></pre>
 <table style="width:100%; color: black; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed table-responsive">
 <thead>

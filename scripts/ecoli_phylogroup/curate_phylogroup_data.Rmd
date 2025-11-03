@@ -29,7 +29,12 @@ sessionInfo()
 # Load and clean data
 
 ```{r}
-clermont_data <- read.delim("~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_phylogroups.txt",header = F) %>% `colnames<-`(c("file","PCR_detected_genes","quadruplex_genotype",'quadruplex_ambiguity','ecoli_phylogroup',"mash_file")) %>% select(-mash_file)
+# Load data
+clermont_data <- read.delim("~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_phylogroups.txt",header = F) 
+colnames(clermont_data) <-  c("file","PCR_detected_genes","quadruplex_genotype",'quadruplex_ambiguity','ecoli_phylogroup',"mash_file")
+clermont_data <- clermont_data %>% select(-mash_file)  
+
+# Add genomic ID variable
 clermont_data$genomic_id <- gsub("_contigs_l1000.fasta","",clermont_data$file)
 clermont_data <- clermont_data %>% select(-file)
 ```

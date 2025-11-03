@@ -42,7 +42,7 @@ sequencing_IMPALA_plate$Sequencing.plate <- gsub("Sequencing plate ","Sequencing
 ```
 
 # Fix one bad entry in IMPALA plate
-## Trim the whitespace!!!
+## Trim the whitespace for this entry
 ```{r}
 sequencing_IMPALA_plate$Sample.ID <- ifelse(sequencing_IMPALA_plate$Sample.ID == '118H V2 B1 C1 ','118H V2 B1 C1', sequencing_IMPALA_plate$Sample.ID)
 ```
@@ -104,9 +104,9 @@ parse_map <- function(map,num){
 }
 ```
 
-## Old maps 
+## Old plate maps 
 ```{r}
-# Old Map
+# Parse the old plate maps
 old_map_sum_1 <- parse_map(platemap_original_1,"1")
 old_map_sum_2 <- parse_map(platemap_original_2,"2")
 old_map_sum_3 <- parse_map(platemap_original_3,"3")
@@ -361,6 +361,7 @@ qc_summary <- lapply(metadata_w_genomic_id$Genome_ID,FUN=get_qc_flag,QC_data=qcd
 paste0("Number of distinct metadata genome entires: ", nrow(qc_summary))
 
 paste0("Duplicated metadata genome entries: ")
+paste0("We can ignore 169H because they're not ESCrE!")
 metadata_w_genomic_id%>% subset(Genome_ID %in% c(metadata_w_genomic_id$Genome_ID[duplicated(metadata_w_genomic_id$Genome_ID)])) %>% favorite_kable()
 
 qc_summary$WGS_qc_pass_runs_num <- sapply(qc_summary$WGS_qc_pass,FUN=function(x){

@@ -251,7 +251,7 @@ MERLIN_13_MERLIN_19_cfreundii <- MERLIN_13_MERLIN_19 %>% subset(Species == 'Citr
 paste0("Enterobacter hormaechei")
 MERLIN_13_MERLIN_19_ehormaechei <- MERLIN_13_MERLIN_19 %>% subset(Species == 'Enterobacter hormaechei') %>% .$Sample
 
-MERLIN_13_MERLIN_19_mapname <- subset(metadata,metadata$genomic_id ==  duplicates[7]) %>% .$map_name %>% unique
+MERLIN_13_MERLIN_19_mapname <- subset(metadata,metadata$genomic_id ==  "MERLIN_13;MERLIN_19") %>% .$map_name %>% unique
 
 metadata$genomic_id <- ifelse(metadata$map_name == MERLIN_13_MERLIN_19_mapname & metadata$maldi=='Citrobacter freundii',MERLIN_13_MERLIN_19_cfreundii,metadata$genomic_id)
 metadata$genomic_id <- ifelse(metadata$map_name == MERLIN_13_MERLIN_19_mapname & metadata$maldi=='Enterobacter hormaechei',MERLIN_13_MERLIN_19_ehormaechei,metadata$genomic_id)
@@ -383,7 +383,9 @@ paste0("Remaining genomic_id values to deal with: ",paste0(remaining_duplicates,
 
 if (num_remaining_duplicates > 0) {
   stop("Did not deal with a duplicate. Fix.") 
-} 
+} else {
+  message("Good job, all genomic_id duplicates resolved")
+}
 ```
 
 # Curate the final genomic_id variable

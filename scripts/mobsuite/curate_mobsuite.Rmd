@@ -20,6 +20,7 @@ packages <- c("tidyverse")
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
+
 # Functions
 source("./scripts/mobsuite/mobsuite_functions.R")
 
@@ -29,7 +30,7 @@ Sys.info()
 sessionInfo()
 ```
 
-# Load data
+# Load dataset
 
 ```{r cars} 
 df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
@@ -39,17 +40,18 @@ df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(WGS_
 
 ```{r}
 # Mobtyper Results
-mobtyper <- read_mobtyper_results(path='./data/mobsuite/MERLIN_mobtyper_results.txt',df) 
-mobsuite_contigs <- read_mobtyper_results(path='./data/mobsuite/MERLIN_contig_report.txt',df)
-mobsuite_contigs$location <- ifelse(mobsuite_contigs$primary_cluster_id=="-","chromosome",mobsuite_contigs$primary_cluster_id)
+mobtyper <- read_mobtyper_results(path = './data/mobsuite/MERLIN_mobtyper_results.txt', df = df) 
+mobsuite_contigs <- read_mobtyper_results(path = './data/mobsuite/MERLIN_contig_report.txt', df = df)
+mobsuite_contigs$location <- ifelse(mobsuite_contigs$primary_cluster_id=="-", "chromosome", mobsuite_contigs$primary_cluster_id)
 
 # Save reports
 saveRDS(mobtyper,file="./data/mobsuite/mobtyper.RDS")
 saveRDS(mobsuite_contigs,file="./data/mobsuite/mobsuite_contigs.RDS") 
 
-# Convert Mobtyper data into a binary plasmid presence/absence matrix
-mash_nn_matrix <- get_mobtyper_mash_nn_matrix(df,mobtyper)  
-cluster_matrix <- get_mobtyper_cluster_matrix(df,mobtyper) 
+# Convert Mobtyper data into a binary plasmid presence/absence matrix on the primary cluster and mash nearest neighbor level
+## We will preferentially use the cluster matrix for downstream analyses
+mash_nn_matrix <- get_mobtyper_mash_nn_matrix(df = df, mobtyper = mobtyper)  
+cluster_matrix <- get_mobtyper_cluster_matrix(df = df, mobtyper = mobtyper) 
 
 # Save matrices
 saveRDS(mash_nn_matrix,file="./data/mobsuite/plasmid_mash_nn_matrix.RDS")

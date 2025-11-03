@@ -1,5 +1,5 @@
 ---
-title: "Data Cleaning Step 1 - Curate raw MERLIN metadata"
+title: "Data Cleaning Step 1 - Curate raw MERLIN metadata (Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_*.xlsx)"
 author: "Kyle Gontjes"
 output: html_document
 date: "`r Sys.Date()`"
@@ -53,7 +53,7 @@ sessionInfo()
 # Load Data
 
 ```{r}
-metadata <- readxl::read_xlsx('../data/Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_20251017.xlsx',trim_ws = T)  
+metadata <- readxl::read_xlsx('../data/Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_20251017.xlsx', trim_ws = T)  
 metadata <- as.data.frame(metadata) 
 ```
 
@@ -65,42 +65,42 @@ metadata <- as.data.frame(metadata)
 # Harmonize isolate ID information
 metadata$isolate_id_recode <- metadata$isolate_id
 ## Petnape -> Pet Nape
-metadata$isolate_id_recode <- gsub(pattern = "Petnape",replacement = "Pet Nape",metadata$isolate_id_recode)
+metadata$isolate_id_recode <- gsub(pattern = "Petnape", replacement = "Pet Nape", metadata$isolate_id_recode)
 ## Petstool -> Pet Stool
-metadata$isolate_id_recode <- gsub(pattern = "Petstool",replacement = "Pet Stool",metadata$isolate_id_recode)
+metadata$isolate_id_recode <- gsub(pattern = "Petstool", replacement = "Pet Stool", metadata$isolate_id_recode)
 ```
 
 ## Household id (correct lowercase)
 
 ```{r}
 # Correct lowercase
-metadata$household_number_recode <- recode(metadata$household_number,'49h' = '49H')
+metadata$household_number_recode <- recode(metadata$household_number, '49h' = '49H')
 ```
 
-# Edit specific isolates with coding differences in the platemap
+# Edit isolates with coding differences in the platemap
 
 ## Specifically to enable proper merging with metadata
 
 ```{r}
 # 113H_2_Pet Stool 1A C1: Remove C1
-metadata$isolate_id_recode <- ifelse(metadata$household_number_recode=="113H" & metadata$visit ==2 & metadata$isolate_id == "Pet Stool 1A C1", "Pet Stool 1A",metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode=="113H" & metadata$visit ==2 & metadata$isolate_id == "Pet Stool 1A C1", "Pet Stool 1A", metadata$isolate_id_recode)
 
 # 113H: Add "C1" to Visit 2 Washing Machine  
-metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "113H" & metadata$visit == 2 & metadata$isolate_id == "Washing Machine","Washing Machine C1", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "113H" & metadata$visit == 2 & metadata$isolate_id == "Washing Machine", "Washing Machine C1", metadata$isolate_id_recode)
  
 # 160H: Add "C1" to Visit 1 Bath 1
-metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "160H" & metadata$visit == 1 & metadata$isolate_id == "Bath 1","Bath 1 C1", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "160H" & metadata$visit == 1 & metadata$isolate_id == "Bath 1", "Bath 1 C1", metadata$isolate_id_recode)
 
 # 182H: Add "C1" to Visit 3 Bath 1 
-metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "182H" & metadata$visit == 3 & metadata$isolate_id == "Bath 1","Bath 1 C1", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "182H" & metadata$visit == 3 & metadata$isolate_id == "Bath 1", "Bath 1 C1", metadata$isolate_id_recode)
 
 # 197H: Add "C1" to Visit 2 Living Room 
 metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "197H" & metadata$visit == 2 & metadata$isolate_id == "Living Room", "Living Room C1", metadata$isolate_id_recode)
 
 # 151H: Remove "C1" from  Visit 3 Living Room & Washing Room
-metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "151H" & metadata$visit == 3 & metadata$isolate_id == "Living Room C1","Living Room", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "151H" & metadata$visit == 3 & metadata$isolate_id == "Living Room C1", "Living Room", metadata$isolate_id_recode)
 
-metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "151H" & metadata$visit == 3 & metadata$isolate_id == "Washing Machine C1","Washing Machine", metadata$isolate_id_recode)
+metadata$isolate_id_recode <- ifelse(metadata$household_number_recode == "151H" & metadata$visit == 3 & metadata$isolate_id == "Washing Machine C1", "Washing Machine", metadata$isolate_id_recode)
 ```
 
 # Save metadata

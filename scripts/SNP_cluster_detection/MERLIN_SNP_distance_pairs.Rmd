@@ -11,6 +11,7 @@ opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
 opts_knit$set(root.dir='~/Desktop/gl_merlin/')
 ```
+
 # Environment
 
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
@@ -45,9 +46,9 @@ species_simple <- str_split(string = species,pattern = " ",simplify = T) %>% app
 dist_matrices <- readRDS('./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_SNP_distance_matrices.RDS')
 ```
 
-# Subset metadata to species and isolates of interest 
+# Curate metadata to species and isolates of interest 
 ```{r}
-# Subset metadata to species
+# Subset metadata and matrix to species
 clean_datasets <- function(metadata,mat,species){
   # Curate datasets
   ## Species of interest
@@ -60,6 +61,7 @@ clean_datasets <- function(metadata,mat,species){
   return(results)
 }
 
+# Curate metadata
 for(i in species){
   species_abrev <- str_split(string = i,pattern = " ",simplify = T) %>% apply(.,1,FUN=function(x){
   genus <- x[1] %>% substr(.,1,1)  %>% tolower()
@@ -71,7 +73,7 @@ for(i in species){
 ```
 
 # Get pairwise distances
-## Get distance data (i.e., info for each cell)
+## Get distance data (i.e., info for each cell) [This is MUCH quicker than other methods like regentrans]
 ```{r}
 get_cell_info <- function(mat) {
   idx <- which(!is.na(mat) & lower.tri(mat) , arr.ind = TRUE)
@@ -94,6 +96,7 @@ get_pair_types_mat <- function(dataset,mat,type,voi){
 }
 
 update_pair_types_w_info <- function(pair_types_df,df,voi){ 
+  # Subset to variables of interest
   df_subset <- df[, c("genomic_id", voi), drop = FALSE]
 
   # Join on isolate1
@@ -119,7 +122,7 @@ pairtype_datasets <- pbmcapply::pbmclapply(species_simple,FUN=function(x){
   get_pair_types_mat(data$df,data$mat,type="type",voi=voi)   
 }, mc.cores=6) %>% `names<-`(species_simple)
 
-# Overall
+# Overall (Join cause why not and it helps data analysis)
 overall_pair_types <- do.call(rbind, pairtype_datasets) 
 ```
 

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
 <title>Cluster detection using 25 SNPs</title>
 
@@ -576,7 +576,7 @@ display: none;
 
 <h1 class="title toc-ignore">Cluster detection using 25 SNPs</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -599,7 +599,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
+                                                                                           &quot;msla0572.local&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -724,8 +724,9 @@ table(cluster_df$cluster)</code></pre>
 
 recode_ST_data &lt;- function(ST,metadata){
   ST_df &lt;- metadata[ metadata$Species_ST == ST,]  
-  clusters &lt;-table( ST_df$cluster %&gt;% subset(.!= &quot;singleton&quot;)) %&gt;% sort(decreasing=T) %&gt;% subset(. &gt;0) %&gt;% names
+  clusters &lt;- table( ST_df$cluster %&gt;% subset(.!= &quot;singleton&quot;)) %&gt;% sort(decreasing=T) %&gt;% subset(. &gt;0) %&gt;% names
   # Recode clusters
+  ## We&#39;re recoding clusters bsaed on their frequency in the sequence type, thus cluster 1 = largest cluster in its sequence type
   if(length(clusters)&gt;0){
   new_name &lt;- 1:length(clusters) %&gt;% as.character
   names(new_name) &lt;-clusters  
@@ -737,6 +738,7 @@ recode_ST_data &lt;- function(ST,metadata){
   # Create species ST cluster dataframe
   ST_df$Species_ST_cluster &lt;- ifelse(ST_df$clusters_recode==&quot;singleton&quot;,paste0(ST_df$Species_ST,&quot; Singleton&quot;), paste0(ST_df$Species_ST,&quot; Cluster &quot;,ST_df$clusters_recode)) 
   
+  # Remove clusters recode variable, as unnecessary variable at this stage
   ST_df &lt;- ST_df %&gt;% select(-clusters_recode)
   return(ST_df)
 }
@@ -882,8 +884,10 @@ Citrobacter portucalensis ST Unknown Singleton
              Escherichia coli ST 131 Cluster 1 
                                              9 </code></pre>
 </div>
-<div id="descriptive-stats-1" class="section level2">
-<h2>Descriptive stats</h2>
+<div id="descriptive-statistics-for-the-number-of-clusters-at-this-threshold-can-be-run-on-many-thresholds-if-you-want-to-know-the-impact-of-varying-snp-threshold-values" class="section level2">
+<h2>Descriptive statistics for the number of clusters at this threshold
+(can be run on many thresholds if you want to know the impact of varying
+SNP threshold values)</h2>
 <pre class="r"><code>num_clusters &lt;- function(cluster_list,df){
   clusters &lt;- cluster_list %&gt;% unlist %&gt;% subset(.!=&quot;&quot;) %&gt;% unlist
   no_cluster &lt;- unique(clusters) %&gt;% length

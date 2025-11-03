@@ -86,7 +86,7 @@ lapply(not_plasmid_linked_ESCrE_,FUN=function(x){
 
 # Summary: Four cases where prolonged colonization at species-level found, but not strain-level
 
-## One case was different sequence type but not shared ESCrE gene (i.e., acquisition)
+## One case was different sequence type but no shared ESCrE gene (i.e., likely acquisition)
 ```{r,results='asis'}
 same_ESCrE_species_not_same_strain_no_ESBL_sharing <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_genes==0 &index_at_1_and_or_2_Species==1) %>% .$household
 
@@ -96,9 +96,11 @@ lapply(same_ESCrE_species_not_same_strain_no_ESBL_sharing,FUN=function(x){
 ```
 
 ## Example cases explained by ESCrE but not strain
+
 ### Novel strain acquisition:
 #### 1. 100H - Different E. coli ST - Linked by blaEC-8, but this was on the chromosome of both genomes...
 #### 2. 169H- Different E. coli ST 131 clusters - Linked by CTX-M-15 and blaEC-5*. While blaEC-5 was chromosomal, CTX-M-15 was found on plasmid in 1 isolate, suggestive of HGT and/or co-colonization... 
+
 ### Plasmid sharing:
 #### 1. 1H - Initial colonized with E. coli ST69 with blaCTX-M-15 and blaEC-8*. While blaEC-8 was found in subsequent chromosome of E. coli ST6321 strain, blaCTX-M-15 was found on a plasmid in every strain collected!!
 

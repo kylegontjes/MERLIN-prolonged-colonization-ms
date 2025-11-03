@@ -31,16 +31,15 @@ sessionInfo()
 ```{r} 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
 plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
-
 df_index <- left_join(df_index,plasmid_data)
 ```
 
-# Positive specimens
+# Households with index positive data (i.e., only can consider those) 
 ```{r}
 ESCrE_index_positive_households <- df_index %>% subset(visit ==0 & WGS_escre==T) %>% .$household
 ```
 
-# Species level
+# Taxonomical prolonged colonization 
 
 ## Function
 ```{r }
@@ -65,18 +64,25 @@ get_prolonged_colonization <- function(isolate,metadata,variable){
 
 ## Data generation
 ```{r }
+# Any ESCrE
 any_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='WGS_escre') %>% do.call(rbind,.) 
+
+# Species
 species_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species') %>% do.call(rbind,.)
+
+# Species + ST
 species_ST_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species_ST') %>% do.call(rbind,.)
+
+# Species + ST + Cluster
 species_ST_cluster_prolonged <- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable='Species_ST_cluster') %>% do.call(rbind,.)
 
 prolonged_df <- left_join(any_prolonged,species_prolonged) %>% left_join(.,species_ST_prolonged) %>% left_join(.,species_ST_cluster_prolonged)
 ```
 
-# Plasmid level prolonged colonization
+# Genotype level prolonged colonization
 ## Function
 ```{r}
-# Generic
+# Generic analysis
 get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split){
   isolate_df <- subset(metadata,household==isolate)
   isolate_index <- subset(isolate_df,visit==0) %>% .[[variable]] %>% str_split(.,split) %>% unlist %>% subset(is.na(.)==F & .!='')
@@ -100,7 +106,7 @@ get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split
   return(results)
 }
 
-# Plasmid aware
+# Plasmid aware analysis
 get_prolonged_colonization_str_split_plasmid_aware <- function(isolate,metadata,chromosome_variable,plasmid_variable,split){
   isolate_df <- subset(metadata,household==isolate)
   isolate_index <- subset(isolate_df,visit==0) 
@@ -134,10 +140,13 @@ get_prolonged_colonization_str_split_plasmid_aware <- function(isolate,metadata,
 
 ## Data generation
 ```{r} 
+# MALDI classification from study laboratory
 maldi_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='maldi',split=",") %>% do.call(rbind,.)
 
+# ESCrE genes
 ESCrE_genes_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESCrE_genes',split=";") %>% do.call(rbind,.)
  
+# ESCrE plasmid aware
 ESCrE_plasmid_aware_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split_plasmid_aware,df_index,chromosome_variable='ESCrE_chromosome_genes',plasmid_variable = "ESCrE_plasmid_genes",split=";") %>% do.call(rbind,.)
 
 prolonged_df <- left_join(prolonged_df,ESCrE_genes_sharing)  %>% left_join(.,ESCrE_plasmid_aware_sharing) %>% left_join(.,maldi_sharing)
@@ -145,7 +154,10 @@ prolonged_df <- left_join(prolonged_df,ESCrE_genes_sharing)  %>% left_join(.,ESC
 
 # Generate merged datapoints
 ```{r}
+# Cluster + ESCrE genes
 prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes ==1,1,0) 
+
+# Cluster + Plasmid-linked ESCrE genes
 prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware ==1,1,0) 
 ```
 

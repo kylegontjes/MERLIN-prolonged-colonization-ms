@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
 <title>Supplemental Table 2: Strain and ESBL gene presence stratified by household</title>
 
@@ -577,7 +577,7 @@ display: none;
 <h1 class="title toc-ignore">Supplemental Table 2: Strain and ESBL gene
 presence stratified by household</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -603,7 +603,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
+                                                                                           &quot;msla0572.local&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -648,8 +648,8 @@ loaded via a namespace (and not attached):
 [37] farver_2.1.2       rmarkdown_2.29     tools_4.5.1        pkgconfig_2.0.3   
 [41] htmltools_0.5.8.1 </code></pre>
 </div>
-<div id="data" class="section level1">
-<h1>Data</h1>
+<div id="load-data" class="section level1">
+<h1>Load data</h1>
 </div>
 <div id="supplemental-table-2" class="section level1">
 <h1>Supplemental Table 2</h1>
@@ -669,19 +669,22 @@ Visit
 Strain
 </th>
 <th style="text-align:left;">
-Plasmids
+Β-lactamase gene(s)
 </th>
 <th style="text-align:left;">
-ESCrE genes
+ESCrE gene(s)
 </th>
 <th style="text-align:left;">
-Chromosomal ESCrE genes
+Chromosomal ESCrE gene(s)
 </th>
 <th style="text-align:left;">
-Plasmid-linked ESCrE genes
+Plasmid-linked ESCrE gene(s)
 </th>
 <th style="text-align:left;">
-ESCrE plasmids
+Plasmid(s)
+</th>
+<th style="text-align:left;">
+ESCrE plasmid(s)
 </th>
 </tr>
 </thead>
@@ -697,8 +700,7 @@ ESCrE plasmids
 Escherichia coli ST 69 Singleton
 </td>
 <td style="text-align:left;">
-AA277, AA337, AA474, AA553, AA579, AA619, AA977, AC431,
-novel_79f30b0d6dbdbf76081706ab79ee0ca0
+blaCTX-M-15;blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-8*
@@ -708,6 +710,10 @@ blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA277, AA337, AA474, AA553, AA579, AA619, AA977, AC431,
+novel_79f30b0d6dbdbf76081706ab79ee0ca0
 </td>
 <td style="text-align:left;">
 AA474
@@ -724,7 +730,7 @@ AA474
 Escherichia coli ST 6321 Cluster 1
 </td>
 <td style="text-align:left;">
-AA110, AA378, AA474, AA579, AA619, AA977, AB685, AC431
+blaCTX-M-15;blaEC-8*;blaTEM-1?
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-8*
@@ -734,6 +740,9 @@ blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA110, AA378, AA474, AA579, AA619, AA977, AB685, AC431
 </td>
 <td style="text-align:left;">
 AA378
@@ -750,15 +759,18 @@ AA378
 Klebsiella pneumoniae ST 45 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaSHV-1?;blaTEM-1?<em>;blaTEM-105?</em>
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
 AA031, AA110, AA123, AA277, AB531, AC082, AD094
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
 </td>
 <td style="text-align:left;">
 AA277
@@ -775,7 +787,7 @@ AA277
 Escherichia coli ST 6321 Cluster 1
 </td>
 <td style="text-align:left;">
-AA110, AA378, AA552, AA579, AA619, AA977, AB685, AC026
+blaCTX-M-15;blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-8*
@@ -785,6 +797,9 @@ blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA110, AA378, AA552, AA579, AA619, AA977, AB685, AC026
 </td>
 <td style="text-align:left;">
 AC026
@@ -801,15 +816,18 @@ AC026
 Klebsiella pneumoniae ST 45 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaTEM-1?<em>;blaTEM-105?</em>
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
 AA277, AB183, AB531, AE974
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
 </td>
 <td style="text-align:left;">
 AA277
@@ -835,6 +853,8 @@ Proteus mirabilis ST Unknown Singleton
 </td>
 <td style="text-align:left;">
 </td>
+<td style="text-align:left;">
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -847,7 +867,7 @@ Proteus mirabilis ST Unknown Singleton
 Escherichia coli ST 69 Singleton
 </td>
 <td style="text-align:left;">
-AA977, AC026
+blaCTX-M-55;blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCTX-M-55, blaEC-8*
@@ -857,6 +877,9 @@ blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCTX-M-55
+</td>
+<td style="text-align:left;">
+AA977, AC026
 </td>
 <td style="text-align:left;">
 AC026
@@ -873,7 +896,7 @@ AC026
 Enterobacter hormaechei ST 974 Singleton
 </td>
 <td style="text-align:left;">
-AA422, AA424
+blaACT-115;blaCTX-M-15;blaOXA-1;blaTEM-1
 </td>
 <td style="text-align:left;">
 blaACT-115, blaCTX-M-15
@@ -883,6 +906,9 @@ blaACT-115
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA422, AA424
 </td>
 <td style="text-align:left;">
 AA424
@@ -899,7 +925,7 @@ AA424
 Escherichia coli ST 744 Cluster 1
 </td>
 <td style="text-align:left;">
-AA176, AB065, AB233, AB714, novel_360ee3544ec2ea0f520a6839fe2fd8f9
+blaCTX-M-55;blaEC;blaTEM-214
 </td>
 <td style="text-align:left;">
 blaCTX-M-55, blaEC
@@ -909,6 +935,9 @@ blaEC
 </td>
 <td style="text-align:left;">
 blaCTX-M-55
+</td>
+<td style="text-align:left;">
+AA176, AB065, AB233, AB714, novel_360ee3544ec2ea0f520a6839fe2fd8f9
 </td>
 <td style="text-align:left;">
 AB714
@@ -925,15 +954,18 @@ AB714
 Escherichia coli ST 744 Cluster 1
 </td>
 <td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA175, AA176, AA327, AA473, AB065, AB233, AG658
-</td>
-<td style="text-align:left;">
-blaEC
-</td>
-<td style="text-align:left;">
-blaEC
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -949,15 +981,18 @@ blaEC
 Escherichia coli ST 744 Cluster 1
 </td>
 <td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+blaEC
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA175, AA327, AA474, AB065, AB233, AC770, AD312
-</td>
-<td style="text-align:left;">
-blaEC
-</td>
-<td style="text-align:left;">
-blaEC
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -973,15 +1008,18 @@ blaEC
 Klebsiella pneumoniae ST 628 Singleton
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaOXA-1;blaSHV-1;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA277
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -997,15 +1035,18 @@ blaCTX-M-15
 Klebsiella pneumoniae ST 323 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaSHV-1;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA276, AB045, AB049, AG456
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1021,15 +1062,18 @@ blaCTX-M-15
 Klebsiella pneumoniae ST 323 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaSHV-1;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA276, AB045, AC302
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1045,15 +1089,18 @@ blaCTX-M-15
 Klebsiella pneumoniae ST 323 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaSHV-1;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA276, AB045
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1069,7 +1116,7 @@ blaCTX-M-15
 Escherichia coli ST 1193 Cluster 1
 </td>
 <td style="text-align:left;">
-AA171, AA174, AA190, AB443, AB685, AC748
+blaCTX-M-15;blaCTX-M-27;blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaCTX-M-27, blaEC-5
@@ -1079,6 +1126,9 @@ blaCTX-M-15, blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA174, AA190, AB443, AB685, AC748
 </td>
 <td style="text-align:left;">
 AA174
@@ -1095,7 +1145,7 @@ AA174
 Escherichia coli ST 1193 Cluster 1
 </td>
 <td style="text-align:left;">
-AA190, AA352, AB443, AB685, AC748
+blaCTX-M-27;blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5
@@ -1105,6 +1155,9 @@ blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA190, AA352, AB443, AB685, AC748
 </td>
 <td style="text-align:left;">
 AA352
@@ -1121,7 +1174,7 @@ AA352
 Escherichia coli ST 1193 Cluster 1
 </td>
 <td style="text-align:left;">
-AA190, AA352, AB443, AB595, AB685, AC748
+blaCTX-M-27;blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5
@@ -1131,6 +1184,9 @@ blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA190, AA352, AB443, AB595, AB685, AC748
 </td>
 <td style="text-align:left;">
 AA352
@@ -1147,7 +1203,7 @@ AA352
 Escherichia coli ST 131 Cluster 5
 </td>
 <td style="text-align:left;">
-AA147, AA579, AA735, AA977, AB445, AB688, AC748, AE235
+blaCTX-M-15;blaEC-5*;blaOXA-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-5*
@@ -1157,6 +1213,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA147, AA579, AA735, AA977, AB445, AB688, AC748, AE235
 </td>
 <td style="text-align:left;">
 AA735
@@ -1173,7 +1232,7 @@ AA735
 Escherichia coli ST 131 Cluster 5
 </td>
 <td style="text-align:left;">
-AA147, AA579, AA735, AA977, AB445, AB688, AC748, AE235
+blaCTX-M-15;blaEC-5*;blaOXA-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-5*
@@ -1183,6 +1242,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA147, AA579, AA735, AA977, AB445, AB688, AC748, AE235
 </td>
 <td style="text-align:left;">
 AA735
@@ -1199,7 +1261,7 @@ AA735
 Escherichia coli ST 131 Cluster 5
 </td>
 <td style="text-align:left;">
-AA147, AA579, AA735, AA977, AB445, AB688, AC748, AE235
+blaCTX-M-15;blaEC-5*;blaOXA-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-5*
@@ -1209,6 +1271,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA147, AA579, AA735, AA977, AB445, AB688, AC748, AE235
 </td>
 <td style="text-align:left;">
 AA735
@@ -1225,7 +1290,7 @@ AA735
 Escherichia coli ST 131 Cluster 5
 </td>
 <td style="text-align:left;">
-AA147, AA579, AA735, AA977, AB445, AB688, AC748, AE235
+blaCTX-M-15;blaEC-5*;blaOXA-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-5*
@@ -1235,6 +1300,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA147, AA579, AA735, AA977, AB445, AB688, AC748, AE235
 </td>
 <td style="text-align:left;">
 AA735
@@ -1251,7 +1319,7 @@ AA735
 Escherichia coli ST 973 Singleton
 </td>
 <td style="text-align:left;">
-AA474, AA579
+blaCMY-2;blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCMY-2, blaEC-8*
@@ -1261,6 +1329,9 @@ blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCMY-2
+</td>
+<td style="text-align:left;">
+AA474, AA579
 </td>
 <td style="text-align:left;">
 AA474
@@ -1277,15 +1348,18 @@ AA474
 Escherichia coli ST 38 Cluster 2
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-8*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-8*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-8*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337, AA579, AA977, AB687
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-8*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-8*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1301,15 +1375,18 @@ blaCTX-M-15, blaEC-8*
 Escherichia coli ST 38 Cluster 2
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-8*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-8*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-8*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337, AA579, AA977, AB595, AB687
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-8*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-8*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1325,10 +1402,7 @@ blaCTX-M-15, blaEC-8*
 Escherichia coli ST 1193 Cluster 2
 </td>
 <td style="text-align:left;">
-AA171, AA174, AA352, AA474, AA476, AA579, AB443, AB685, AB687, AC511,
-AC748, novel_236e327b6e945ee035c1ec7620c2e90b,
-novel_274ddd5d9a0e3df059f68299b2ade951,
-novel_814bae8c63a91243fd0f1c6e54e29348
+blaCTX-M-27;blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5
@@ -1338,6 +1412,12 @@ blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA174, AA352, AA474, AA476, AA579, AB443, AB685, AB687, AC511,
+AC748, novel_236e327b6e945ee035c1ec7620c2e90b,
+novel_274ddd5d9a0e3df059f68299b2ade951,
+novel_814bae8c63a91243fd0f1c6e54e29348
 </td>
 <td style="text-align:left;">
 AA474
@@ -1354,7 +1434,7 @@ AA474
 Escherichia coli ST 1193 Cluster 2
 </td>
 <td style="text-align:left;">
-AA171, AA174, AA579, AB443, AB685, AC511, AC748
+blaCTX-M-27;blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5
@@ -1364,6 +1444,9 @@ blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA174, AA579, AB443, AB685, AC511, AC748
 </td>
 <td style="text-align:left;">
 AA171
@@ -1380,7 +1463,7 @@ AA171
 Escherichia coli ST 1193 Cluster 2
 </td>
 <td style="text-align:left;">
-AA171, AA174, AA579, AB443, AB685, AC511, AC748
+blaCTX-M-27;blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5
@@ -1390,6 +1473,9 @@ blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA174, AA579, AB443, AB685, AC511, AC748
 </td>
 <td style="text-align:left;">
 AA171
@@ -1406,7 +1492,7 @@ AA171
 Escherichia coli ST 1193 Cluster 2
 </td>
 <td style="text-align:left;">
-AA171, AA174, AA579, AB443, AB685, AC511, AC748
+blaCTX-M-27;blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5
@@ -1416,6 +1502,9 @@ blaEC-5
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA174, AA579, AB443, AB685, AC511, AC748
 </td>
 <td style="text-align:left;">
 AA171
@@ -1432,7 +1521,7 @@ AA171
 Escherichia coli ST 216 Singleton
 </td>
 <td style="text-align:left;">
-AA474, AA552, AA833
+blaEC-15*;blaKPC-3;blaTEM-1
 </td>
 <td style="text-align:left;">
 blaEC-15*, blaKPC-3
@@ -1442,6 +1531,9 @@ blaEC-15*
 </td>
 <td style="text-align:left;">
 blaKPC-3
+</td>
+<td style="text-align:left;">
+AA474, AA552, AA833
 </td>
 <td style="text-align:left;">
 AA552
@@ -1458,15 +1550,18 @@ AA552
 Klebsiella pneumoniae ST 6602 Singleton
 </td>
 <td style="text-align:left;">
+blaKPC-3;blaSHV-11;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaKPC-3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+blaKPC-3
+</td>
+<td style="text-align:left;">
 AA275, AA552, AB685, AC082
-</td>
-<td style="text-align:left;">
-blaKPC-3
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-blaKPC-3
 </td>
 <td style="text-align:left;">
 AA552
@@ -1483,7 +1578,7 @@ AA552
 Escherichia coli ST 73 Singleton
 </td>
 <td style="text-align:left;">
-AA337, AA552
+blaEC-5;blaKPC-3;blaTEM-1
 </td>
 <td style="text-align:left;">
 blaEC-5, blaKPC-3
@@ -1493,6 +1588,9 @@ blaEC-5
 </td>
 <td style="text-align:left;">
 blaKPC-3
+</td>
+<td style="text-align:left;">
+AA337, AA552
 </td>
 <td style="text-align:left;">
 AA552
@@ -1509,15 +1607,18 @@ AA552
 Escherichia coli ST 4118 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCMY-2;blaEC-8*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCMY-2, blaEC-8*
+</td>
+<td style="text-align:left;">
+blaCMY-2, blaEC-8*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA474, AA581
-</td>
-<td style="text-align:left;">
-blaCMY-2, blaEC-8*
-</td>
-<td style="text-align:left;">
-blaCMY-2, blaEC-8*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1533,15 +1634,18 @@ blaCMY-2, blaEC-8*
 Escherichia coli ST 4118 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCMY-2;blaEC-8*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCMY-2, blaEC-8*
+</td>
+<td style="text-align:left;">
+blaCMY-2, blaEC-8*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA474, AA581
-</td>
-<td style="text-align:left;">
-blaCMY-2, blaEC-8*
-</td>
-<td style="text-align:left;">
-blaCMY-2, blaEC-8*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1557,15 +1661,18 @@ blaCMY-2, blaEC-8*
 Escherichia coli ST 4118 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCMY-2;blaEC-8*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCMY-2, blaEC-8*
+</td>
+<td style="text-align:left;">
+blaCMY-2, blaEC-8*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA474, AA581, AA747
-</td>
-<td style="text-align:left;">
-blaCMY-2, blaEC-8*
-</td>
-<td style="text-align:left;">
-blaCMY-2, blaEC-8*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1581,15 +1688,18 @@ blaCMY-2, blaEC-8*
 Escherichia coli ST 4118 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCMY-2;blaEC-8*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCMY-2, blaEC-8*
+</td>
+<td style="text-align:left;">
+blaCMY-2, blaEC-8*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA474, AA581
-</td>
-<td style="text-align:left;">
-blaCMY-2, blaEC-8*
-</td>
-<td style="text-align:left;">
-blaCMY-2, blaEC-8*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1605,7 +1715,7 @@ blaCMY-2, blaEC-8*
 Escherichia coli ST 38 Cluster 1
 </td>
 <td style="text-align:left;">
-AA142, AA372, AA579, AB685
+blaCTX-M-15;blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-8*
@@ -1615,6 +1725,9 @@ blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA142, AA372, AA579, AB685
 </td>
 <td style="text-align:left;">
 AA372
@@ -1631,7 +1744,7 @@ AA372
 Escherichia coli ST 38 Cluster 1
 </td>
 <td style="text-align:left;">
-AA282, AA579, AB685, AC741
+blaCMY-4;blaCTX-M-15;blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCMY-4, blaCTX-M-15, blaEC-8*
@@ -1641,6 +1754,9 @@ blaCTX-M-15, blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCMY-4
+</td>
+<td style="text-align:left;">
+AA282, AA579, AB685, AC741
 </td>
 <td style="text-align:left;">
 AA282
@@ -1657,7 +1773,7 @@ AA282
 Escherichia coli ST 38 Cluster 1
 </td>
 <td style="text-align:left;">
-AA282, AA579, AB685
+blaCMY-4;blaCTX-M-15;blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCMY-4, blaCTX-M-15, blaEC-8*
@@ -1667,6 +1783,9 @@ blaCTX-M-15, blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCMY-4
+</td>
+<td style="text-align:left;">
+AA282, AA579, AB685
 </td>
 <td style="text-align:left;">
 AA282
@@ -1683,7 +1802,7 @@ AA282
 Escherichia coli ST 38 Cluster 1
 </td>
 <td style="text-align:left;">
-AA142, AA282, AA579, AB685, AC741
+blaCMY-4;blaCTX-M-15;blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCMY-4, blaCTX-M-15, blaEC-8*
@@ -1693,6 +1812,9 @@ blaCTX-M-15, blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCMY-4
+</td>
+<td style="text-align:left;">
+AA142, AA282, AA579, AB685, AC741
 </td>
 <td style="text-align:left;">
 AA282
@@ -1709,13 +1831,15 @@ AA282
 Klebsiella pneumoniae ST 45 Singleton
 </td>
 <td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA275, AA450
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1731,15 +1855,18 @@ AA275, AA450
 Klebsiella pneumoniae ST 29 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaSHV-187;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
 AA452
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
 </td>
 <td style="text-align:left;">
 AA452
@@ -1756,7 +1883,7 @@ AA452
 Escherichia coli ST 38 Singleton
 </td>
 <td style="text-align:left;">
-AA374, AA474
+blaCMY-2;blaCTX-M-15;blaEC-8*;blaTEM-1
 </td>
 <td style="text-align:left;">
 blaCMY-2, blaCTX-M-15, blaEC-8*
@@ -1766,6 +1893,9 @@ blaCTX-M-15, blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCMY-2
+</td>
+<td style="text-align:left;">
+AA374, AA474
 </td>
 <td style="text-align:left;">
 AA474
@@ -1782,7 +1912,7 @@ AA474
 Escherichia coli ST 131 Cluster 6
 </td>
 <td style="text-align:left;">
-AA171, AA336, AA474, AA579, AB228, AB443, AB685, AC511, AC748
+blaCTX-M-27;blaEC-5*;blaTEM-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5*
@@ -1792,6 +1922,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA336, AA474, AA579, AB228, AB443, AB685, AC511, AC748
 </td>
 <td style="text-align:left;">
 AA474
@@ -1808,7 +1941,7 @@ AA474
 Escherichia coli ST 131 Cluster 6
 </td>
 <td style="text-align:left;">
-AA171, AA336, AA474, AB228, AB685, AC748
+blaCTX-M-27;blaEC-5*;blaTEM-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5*
@@ -1818,6 +1951,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA336, AA474, AB228, AB685, AC748
 </td>
 <td style="text-align:left;">
 AA171
@@ -1834,7 +1970,7 @@ AA171
 Escherichia coli ST 131 Cluster 6
 </td>
 <td style="text-align:left;">
-AA161, AA171, AA336, AA474, AB228, AB685, AC748
+blaCTX-M-27;blaEC-5*;blaTEM-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5*
@@ -1844,6 +1980,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA161, AA171, AA336, AA474, AB228, AB685, AC748
 </td>
 <td style="text-align:left;">
 AA171
@@ -1860,6 +1999,9 @@ AA171
 Klebsiella pneumoniae ST 20 Singleton
 </td>
 <td style="text-align:left;">
+blaSHV-187
+</td>
+<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1881,15 +2023,18 @@ Klebsiella pneumoniae ST 20 Singleton
 Escherichia coli ST 131 Cluster 3
 </td>
 <td style="text-align:left;">
+blaCTX-M-27;blaEC-5*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337, novel_5d1ea3302989a0609d13de4e98b5b1aa
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1905,15 +2050,18 @@ blaCTX-M-27, blaEC-5*
 Escherichia coli ST 131 Cluster 3
 </td>
 <td style="text-align:left;">
+blaCTX-M-27;blaEC-5*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337, novel_f6308afd395808e70ab8ea14046ca670
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1929,15 +2077,18 @@ blaCTX-M-27, blaEC-5*
 Escherichia coli ST 131 Cluster 3
 </td>
 <td style="text-align:left;">
+blaCTX-M-27;blaEC-5*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA315, AA352
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1953,15 +2104,18 @@ blaCTX-M-27, blaEC-5*
 Escherichia coli ST 131 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA171, AA172, AA579, AB687, AC748
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -1977,7 +2131,7 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 11
 </td>
 <td style="text-align:left;">
-AA324
+blaCTX-M-15;blaEC-5*;blaOXA-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-5*
@@ -1987,6 +2141,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA324
 </td>
 <td style="text-align:left;">
 AA324
@@ -2003,15 +2160,18 @@ AA324
 Escherichia coli ST 131 Cluster 11
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*;blaOXA-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA173, AA324
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2027,12 +2187,15 @@ blaCTX-M-15, blaEC-5*
 Citrobacter portucalensis ST Unknown Singleton
 </td>
 <td style="text-align:left;">
+blaCMY-13*
+</td>
+<td style="text-align:left;">
+blaCMY-13*
 </td>
 <td style="text-align:left;">
 blaCMY-13*
 </td>
 <td style="text-align:left;">
-blaCMY-13*
 </td>
 <td style="text-align:left;">
 </td>
@@ -2050,12 +2213,15 @@ blaCMY-13*
 Citrobacter portucalensis ST 13 Singleton
 </td>
 <td style="text-align:left;">
+blaCMY-25*
+</td>
+<td style="text-align:left;">
+blaCMY-25*
 </td>
 <td style="text-align:left;">
 blaCMY-25*
 </td>
 <td style="text-align:left;">
-blaCMY-25*
 </td>
 <td style="text-align:left;">
 </td>
@@ -2073,15 +2239,18 @@ blaCMY-25*
 Escherichia coli ST 131 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA171, AA579, AC748
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2097,15 +2266,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA190, AA336, AA579, AB687, AC512, AC748
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2121,15 +2293,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA336, AA579, AC512, AC748
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2145,15 +2320,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA190, AA336, AA579, AC512, AC748
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2169,7 +2347,7 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 10
 </td>
 <td style="text-align:left;">
-AA282, AA324
+blaCTX-M-15;blaEC-5*;blaOXA-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-5*
@@ -2179,6 +2357,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA282, AA324
 </td>
 <td style="text-align:left;">
 AA324
@@ -2195,7 +2376,7 @@ AA324
 Escherichia coli ST 131 Cluster 10
 </td>
 <td style="text-align:left;">
-AA282, AA324
+blaCTX-M-15;blaEC-5*;blaOXA-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-5*
@@ -2205,6 +2386,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA282, AA324
 </td>
 <td style="text-align:left;">
 AA324
@@ -2221,7 +2405,7 @@ AA324
 Escherichia coli ST 131 Cluster 10
 </td>
 <td style="text-align:left;">
-AA282, AA324, AA552
+blaCTX-M-15;blaEC-5*;blaOXA-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-15, blaEC-5*
@@ -2231,6 +2415,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-15
+</td>
+<td style="text-align:left;">
+AA282, AA324, AA552
 </td>
 <td style="text-align:left;">
 AA324
@@ -2247,7 +2434,7 @@ AA324
 Citrobacter freundii ST 251 Cluster 1
 </td>
 <td style="text-align:left;">
-AA002, AB036
+blaCMY-65*;blaKPC-2;blaOXA-1
 </td>
 <td style="text-align:left;">
 blaCMY-65*, blaKPC-2
@@ -2257,6 +2444,9 @@ blaCMY-65*
 </td>
 <td style="text-align:left;">
 blaKPC-2
+</td>
+<td style="text-align:left;">
+AA002, AB036
 </td>
 <td style="text-align:left;">
 AA002
@@ -2273,7 +2463,7 @@ AA002
 Citrobacter freundii ST 251 Cluster 1
 </td>
 <td style="text-align:left;">
-AA002, AB036
+blaCMY-65*;blaKPC-2;blaOXA-1
 </td>
 <td style="text-align:left;">
 blaCMY-65*, blaKPC-2
@@ -2283,6 +2473,9 @@ blaCMY-65*
 </td>
 <td style="text-align:left;">
 blaKPC-2
+</td>
+<td style="text-align:left;">
+AA002, AB036
 </td>
 <td style="text-align:left;">
 AA002
@@ -2299,7 +2492,7 @@ AA002
 Enterobacter hormaechei ST 200 Singleton
 </td>
 <td style="text-align:left;">
-AA002, AA739, AB040, AB186
+blaACT-75*;blaKPC-2;blaOXA-1;blaSHV-12;blaTEM-1
 </td>
 <td style="text-align:left;">
 blaACT-75*, blaKPC-2, blaSHV-12
@@ -2309,6 +2502,9 @@ blaACT-75*
 </td>
 <td style="text-align:left;">
 blaKPC-2, blaSHV-12
+</td>
+<td style="text-align:left;">
+AA002, AA739, AB040, AB186
 </td>
 <td style="text-align:left;">
 AA002, AA739
@@ -2325,15 +2521,18 @@ AA002, AA739
 Klebsiella michiganensis ST 41 Singleton
 </td>
 <td style="text-align:left;">
+blaOXY-1-11
+</td>
+<td style="text-align:left;">
+blaOXY-1-11
+</td>
+<td style="text-align:left;">
+blaOXY-1-11
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA130, AA435, AB531, AF571, novel_dd26926855591b739c43aec46e4ce251
-</td>
-<td style="text-align:left;">
-blaOXY-1-11
-</td>
-<td style="text-align:left;">
-blaOXY-1-11
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2349,7 +2548,7 @@ blaOXY-1-11
 Escherichia coli ST 7808 Singleton
 </td>
 <td style="text-align:left;">
-AA147, AA282, AA327, AA474, AA579, AC511, AE762
+blaCTX-M-55<em>;blaEC-8</em>;blaTEM-1?
 </td>
 <td style="text-align:left;">
 blaCTX-M-55<em>, blaEC-8</em>
@@ -2359,6 +2558,9 @@ blaEC-8*
 </td>
 <td style="text-align:left;">
 blaCTX-M-55*
+</td>
+<td style="text-align:left;">
+AA147, AA282, AA327, AA474, AA579, AC511, AE762
 </td>
 <td style="text-align:left;">
 AA327
@@ -2375,7 +2577,7 @@ AA327
 Escherichia coli ST 131 Cluster 2
 </td>
 <td style="text-align:left;">
-AA171, AA977, AB685
+blaCTX-M-27;blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5*
@@ -2385,6 +2587,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA977, AB685
 </td>
 <td style="text-align:left;">
 AA171
@@ -2401,7 +2606,7 @@ AA171
 Escherichia coli ST 131 Cluster 2
 </td>
 <td style="text-align:left;">
-AA171, AA977, AB685
+blaCTX-M-27;blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5*
@@ -2411,6 +2616,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA977, AB685
 </td>
 <td style="text-align:left;">
 AA171
@@ -2427,7 +2635,7 @@ AA171
 Escherichia coli ST 131 Cluster 2
 </td>
 <td style="text-align:left;">
-AA171, AA977, AB685
+blaCTX-M-27;blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5*
@@ -2437,6 +2645,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA977, AB685
 </td>
 <td style="text-align:left;">
 AA171
@@ -2453,7 +2664,7 @@ AA171
 Escherichia coli ST 131 Cluster 2
 </td>
 <td style="text-align:left;">
-AA171, AA977, AB685
+blaCTX-M-27;blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27, blaEC-5*
@@ -2463,6 +2674,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-27
+</td>
+<td style="text-align:left;">
+AA171, AA977, AB685
 </td>
 <td style="text-align:left;">
 AA171
@@ -2479,15 +2693,18 @@ AA171
 Escherichia coli ST 131 Cluster 4
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2503,15 +2720,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 4
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2527,15 +2747,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 4
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2551,15 +2774,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 4
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2575,15 +2801,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 4
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2599,15 +2828,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 7
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA171, AA174
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2623,15 +2855,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 7
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA171, AA174
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2647,15 +2882,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 7
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA171, AA174
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2671,12 +2909,18 @@ blaCTX-M-15, blaEC-5*
 Escherichia coli ST 131 Cluster 7
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
 </td>
 <td style="text-align:left;">
 </td>
 <td style="text-align:left;">
-</td>
-<td style="text-align:left;">
+AA171, AA174
 </td>
 <td style="text-align:left;">
 </td>
@@ -2692,12 +2936,15 @@ Escherichia coli ST 131 Cluster 7
 Escherichia coli ST 3306 Singleton
 </td>
 <td style="text-align:left;">
+blaEC-5*
+</td>
+<td style="text-align:left;">
+blaEC-5*
 </td>
 <td style="text-align:left;">
 blaEC-5*
 </td>
 <td style="text-align:left;">
-blaEC-5*
 </td>
 <td style="text-align:left;">
 </td>
@@ -2715,15 +2962,18 @@ blaEC-5*
 Enterobacter hormaechei ST 78 Cluster 1
 </td>
 <td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AB040, AB169, AC542
-</td>
-<td style="text-align:left;">
-blaACT-24
-</td>
-<td style="text-align:left;">
-blaACT-24
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2739,15 +2989,18 @@ blaACT-24
 Enterobacter hormaechei ST 78 Cluster 1
 </td>
 <td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AB040, AB169, AC542
-</td>
-<td style="text-align:left;">
-blaACT-24
-</td>
-<td style="text-align:left;">
-blaACT-24
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2763,12 +3016,15 @@ blaACT-24
 Citrobacter sp ST Unknown Singleton
 </td>
 <td style="text-align:left;">
+blaCMY-190*
+</td>
+<td style="text-align:left;">
+blaCMY-190*
 </td>
 <td style="text-align:left;">
 blaCMY-190*
 </td>
 <td style="text-align:left;">
-blaCMY-190*
 </td>
 <td style="text-align:left;">
 </td>
@@ -2786,15 +3042,18 @@ blaCMY-190*
 Enterobacter hormaechei ST 78 Cluster 1
 </td>
 <td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+blaACT-24
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AB040
-</td>
-<td style="text-align:left;">
-blaACT-24
-</td>
-<td style="text-align:left;">
-blaACT-24
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2810,15 +3069,18 @@ blaACT-24
 Enterobacter hormaechei ST 45 Singleton
 </td>
 <td style="text-align:left;">
+blaACT-17;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaACT-17
+</td>
+<td style="text-align:left;">
+blaACT-17
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA424, AA523, AB040, AE430, novel_58bf5b5de73eff86afc3ef5829ceb7ce
-</td>
-<td style="text-align:left;">
-blaACT-17
-</td>
-<td style="text-align:left;">
-blaACT-17
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2834,15 +3096,18 @@ blaACT-17
 Enterobacter hormaechei ST 45 Cluster 1
 </td>
 <td style="text-align:left;">
+blaACT-17;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaACT-17
+</td>
+<td style="text-align:left;">
+blaACT-17
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA419, AA424, AB040
-</td>
-<td style="text-align:left;">
-blaACT-17
-</td>
-<td style="text-align:left;">
-blaACT-17
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2858,15 +3123,18 @@ blaACT-17
 Enterobacter hormaechei ST 45 Cluster 1
 </td>
 <td style="text-align:left;">
+blaACT-17;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaACT-17
+</td>
+<td style="text-align:left;">
+blaACT-17
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA419, AA424, AB040
-</td>
-<td style="text-align:left;">
-blaACT-17
-</td>
-<td style="text-align:left;">
-blaACT-17
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2882,15 +3150,18 @@ blaACT-17
 Escherichia coli ST 131 Cluster 8
 </td>
 <td style="text-align:left;">
+blaCTX-M-27;blaEC-5*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2906,15 +3177,18 @@ blaCTX-M-27, blaEC-5*
 Escherichia coli ST 131 Cluster 8
 </td>
 <td style="text-align:left;">
+blaCTX-M-27;blaEC-5*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2930,15 +3204,18 @@ blaCTX-M-27, blaEC-5*
 Escherichia coli ST 131 Cluster 8
 </td>
 <td style="text-align:left;">
+blaCTX-M-27;blaEC-5*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA337
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2954,15 +3231,18 @@ blaCTX-M-27, blaEC-5*
 Escherichia coli ST 131 Cluster 8
 </td>
 <td style="text-align:left;">
+blaCTX-M-27;blaEC-5*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-27, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA002, AA337, novel_6d376b67d5de7de7561485045887729d
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-27, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -2978,15 +3258,18 @@ blaCTX-M-27, blaEC-5*
 Citrobacter freundii ST Unknown Singleton
 </td>
 <td style="text-align:left;">
+blaCMY-67*
+</td>
+<td style="text-align:left;">
+blaCMY-67*
+</td>
+<td style="text-align:left;">
+blaCMY-67*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AB130
-</td>
-<td style="text-align:left;">
-blaCMY-67*
-</td>
-<td style="text-align:left;">
-blaCMY-67*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>
@@ -3002,7 +3285,7 @@ blaCMY-67*
 Escherichia coli ST 1236 Singleton
 </td>
 <td style="text-align:left;">
-AA002, AA176
+blaCTX-M-3;blaEC-5*;blaTEM-1
 </td>
 <td style="text-align:left;">
 blaCTX-M-3, blaEC-5*
@@ -3012,6 +3295,9 @@ blaEC-5*
 </td>
 <td style="text-align:left;">
 blaCTX-M-3
+</td>
+<td style="text-align:left;">
+AA002, AA176
 </td>
 <td style="text-align:left;">
 AA002
@@ -3028,16 +3314,19 @@ AA002
 Klebsiella pneumoniae ST 15 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaSHV-28;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
 AA024, AA277, AA810, AB687, AD092, AG600,
 novel_c4cbcd9229542950b70cf3873d91ead5
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
 </td>
 <td style="text-align:left;">
 AA277
@@ -3054,15 +3343,18 @@ AA277
 Klebsiella pneumoniae ST 15 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaSHV-28;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
 AA277, AA452, AB687, AG600
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
 </td>
 <td style="text-align:left;">
 AA452
@@ -3079,15 +3371,18 @@ AA452
 Klebsiella pneumoniae ST 15 Cluster 1
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaSHV-28;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+blaCTX-M-15
+</td>
+<td style="text-align:left;">
 AA450, AA554, AB687
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-blaCTX-M-15
 </td>
 <td style="text-align:left;">
 AA554
@@ -3104,15 +3399,18 @@ AA554
 Escherichia coli ST 131 Singleton
 </td>
 <td style="text-align:left;">
+blaCTX-M-15;blaEC-5*;blaTEM-1
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+blaCTX-M-15, blaEC-5*
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
 AA336, AB233, AD158
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
-blaCTX-M-15, blaEC-5*
-</td>
-<td style="text-align:left;">
 </td>
 <td style="text-align:left;">
 </td>

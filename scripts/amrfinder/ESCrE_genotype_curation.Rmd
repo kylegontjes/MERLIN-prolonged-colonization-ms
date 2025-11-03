@@ -80,7 +80,6 @@ paste0("ESCrE genotypes:")
 blactam_info %>% subset(ESCrE ==T) %>% .$element_symbol_renamed %>% unique %>% sort
 
 paste0("Overall data:")
-
 blactam_info %>% select(-class) %>%  arrange(element_symbol) %>% gontjesr::favorite_kable()
 
 # Arrange by symbol

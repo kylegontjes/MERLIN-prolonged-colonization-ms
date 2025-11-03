@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
 <title>SNP Clustering Step 1: Generate SNP Distance Matrices</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">SNP Clustering Step 1: Generate SNP
 Distance Matrices</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -376,7 +376,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
+                                                                                           &quot;msla0572.local&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -456,6 +456,7 @@ species &lt;- table(df$Species) %&gt;% subset(.&gt;1) %&gt;% names %&gt;% str_sp
   paste0(genus,species)
 })  
 
+# Create distance matrices
 dist_matrix &lt;- pbmcapply::pbmclapply(species,FUN=function(x){  
   # Load file
   if(x %in% c(&#39;cportucalensis&#39;,&#39;sliquefaciens&#39;)){
@@ -474,7 +475,7 @@ dist_matrix &lt;- pbmcapply::pbmclapply(species,FUN=function(x){
   if(x == &quot;ecoli&quot;){
     dna_matrix &lt;- dna_matrix %&gt;% select(-&#39;NZ_UFZF01000006.1&#39;) %&gt;% subset(rownames(.) != &#39;NZ_UFZF01000006.1&#39;)
   }   
-  # Remove unnecessary
+  # Remove unnecessary files
   dna_matrix &lt;- dna_matrix %&gt;% subset(rownames(.) %in% df$genomic_id) %&gt;% select(any_of(df$genomic_id))
   return(dna_matrix)
 },mc.cores=6) %&gt;% `names&lt;-`(species)</code></pre>

@@ -7,7 +7,7 @@ blaCTX-M-3,ESBL,0,1,100
 blaCTX-M-55*,ESBL,0,1,100
 blaSHV-12,ESBL,0,1,100
 blaCTX-M-27,ESBL,7,14,66.67
-blaCTX-M-15,ESBL,26,19,42.22
+blaCTX-M-15,ESBL,27,19,41.3
 blaCMY-2,ESBL,4,2,33.33
 blaACT-115,ampC-like,1,0,0
 blaACT-75*,ampC-like,1,0,0
@@ -23,4 +23,4 @@ blaACT-24,ampC-like,3,0,0
 blaEC,ampC-like,3,0,0
 blaEC-5,ampC-like,8,0,0
 blaEC-8*,ampC-like,17,0,0
-blaEC-5*,ampC-like,39,0,0
+blaEC-5*,ampC-like,40,0,0

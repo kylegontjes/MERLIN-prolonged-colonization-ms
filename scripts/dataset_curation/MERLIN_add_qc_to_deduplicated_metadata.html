@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
 <title>Data Cleaning Step 5 - Add sequencing [QCD] data to de-duplicated metadata</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">Data Cleaning Step 5 - Add sequencing [QCD]
 data to de-duplicated metadata</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -375,7 +375,7 @@ Sys.info()</code></pre>
 ##                                                                                                     version 
 ## &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
 ##                                                                                                    nodename 
-##                                                                               &quot;msla0572.wifi.med.umich.edu&quot; 
+##                                                                                            &quot;msla0572.local&quot; 
 ##                                                                                                     machine 
 ##                                                                                                    &quot;x86_64&quot; 
 ##                                                                                                       login 
@@ -425,7 +425,8 @@ qcd &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_al
 </div>
 <div id="merge-qcd-data" class="section level1">
 <h1>Merge qcd data</h1>
-<pre class="r"><code>merge_qcd_data &lt;- function(WGS_id, QC_flag){
+<pre class="r"><code># Take the genomic IDs and QC flag entry. Subset to those matching WGS ID and merge by ; values
+merge_qcd_data &lt;- function(WGS_id, QC_flag){
   samples &lt;- str_split(WGS_id,&quot;;&quot;) %&gt;% unlist
   qcd_subset &lt;- qcd %&gt;% subset(Sample %in% samples &amp; qc_pass==QC_flag)
   if(nrow(qcd_subset)&gt;1){
@@ -436,9 +437,12 @@ qcd &lt;- readRDS(&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_al
   return(qcd_subset)
 }
 
+# Passing genomes
+## Preferentially get only the passing ones!
 qcd_entries &lt;- lapply(metadata$genomic_id,merge_qcd_data,QC_flag=&#39;TRUE&#39;) %&gt;% do.call(rbind,.) %&gt;% distinct() 
 
 # Failing genomes
+## For those, feel free to mergy them! That&#39;s fine, because we don&#39;t care about duplicates here
 failed_genomes &lt;- metadata %&gt;% subset(WGS_qc_pass_runs_num == 0 ) %&gt;% .$Genome_ID
  
 qcd_entries_failed &lt;-  lapply(failed_genomes,merge_qcd_data,QC_flag=&#39;FALSE&#39;) %&gt;% do.call(rbind,.) %&gt;% distinct()

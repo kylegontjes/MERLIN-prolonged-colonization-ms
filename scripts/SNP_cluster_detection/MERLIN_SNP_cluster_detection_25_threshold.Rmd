@@ -92,8 +92,9 @@ ST_list <- cluster_df$Species_ST %>% unique %>% sort
 
 recode_ST_data <- function(ST,metadata){
   ST_df <- metadata[ metadata$Species_ST == ST,]  
-  clusters <-table( ST_df$cluster %>% subset(.!= "singleton")) %>% sort(decreasing=T) %>% subset(. >0) %>% names
+  clusters <- table( ST_df$cluster %>% subset(.!= "singleton")) %>% sort(decreasing=T) %>% subset(. >0) %>% names
   # Recode clusters
+  ## We're recoding clusters bsaed on their frequency in the sequence type, thus cluster 1 = largest cluster in its sequence type
   if(length(clusters)>0){
   new_name <- 1:length(clusters) %>% as.character
   names(new_name) <-clusters  
@@ -105,6 +106,7 @@ recode_ST_data <- function(ST,metadata){
   # Create species ST cluster dataframe
   ST_df$Species_ST_cluster <- ifelse(ST_df$clusters_recode=="singleton",paste0(ST_df$Species_ST," Singleton"), paste0(ST_df$Species_ST," Cluster ",ST_df$clusters_recode)) 
   
+  # Remove clusters recode variable, as unnecessary variable at this stage
   ST_df <- ST_df %>% select(-clusters_recode)
   return(ST_df)
 }
@@ -117,7 +119,7 @@ ST_df <- lapply(ST_list,recode_ST_data,cluster_df) %>% do.call(rbind,.)
 table(ST_df$Species_ST_cluster) %>% sort
 ```
 
-## Descriptive stats
+## Descriptive statistics for the number of clusters at this threshold (can be run on many thresholds if you want to know the impact of varying SNP threshold values)
 ```{r}
 num_clusters <- function(cluster_list,df){
   clusters <- cluster_list %>% unlist %>% subset(.!="") %>% unlist

@@ -11,9 +11,9 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2025-10-31" />
+<meta name="date" content="2025-11-03" />
 
-<title>Data Cleaning Step 1 - Curate raw MERLIN metadata</title>
+<title>Data Cleaning Step 1 - Curate raw MERLIN metadata (Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_*.xlsx)</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -351,9 +351,9 @@ display: none;
 
 
 <h1 class="title toc-ignore">Data Cleaning Step 1 - Curate raw MERLIN
-metadata</h1>
+metadata (Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_*.xlsx)</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2025-10-31</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -394,7 +394,7 @@ Sys.info()</code></pre>
                                                                                                     version 
 &quot;Darwin Kernel Version 24.6.0: Mon Aug 11 21:16:05 PDT 2025; root:xnu-11417.140.69.701.11~1/RELEASE_X86_64&quot; 
                                                                                                    nodename 
-                                                                              &quot;msla0572.wifi.med.umich.edu&quot; 
+                                                                                           &quot;msla0572.local&quot; 
                                                                                                     machine 
                                                                                                    &quot;x86_64&quot; 
                                                                                                       login 
@@ -439,7 +439,7 @@ loaded via a namespace (and not attached):
 </div>
 <div id="load-data" class="section level1">
 <h1>Load Data</h1>
-<pre class="r"><code>metadata &lt;- readxl::read_xlsx(&#39;../data/Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_20251017.xlsx&#39;,trim_ws = T)  
+<pre class="r"><code>metadata &lt;- readxl::read_xlsx(&#39;../data/Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_20251017.xlsx&#39;, trim_ws = T)  
 metadata &lt;- as.data.frame(metadata) </code></pre>
 </div>
 <div id="clean-datasets" class="section level1">
@@ -449,39 +449,39 @@ metadata &lt;- as.data.frame(metadata) </code></pre>
 <pre class="r"><code># Harmonize isolate ID information
 metadata$isolate_id_recode &lt;- metadata$isolate_id
 ## Petnape -&gt; Pet Nape
-metadata$isolate_id_recode &lt;- gsub(pattern = &quot;Petnape&quot;,replacement = &quot;Pet Nape&quot;,metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- gsub(pattern = &quot;Petnape&quot;, replacement = &quot;Pet Nape&quot;, metadata$isolate_id_recode)
 ## Petstool -&gt; Pet Stool
-metadata$isolate_id_recode &lt;- gsub(pattern = &quot;Petstool&quot;,replacement = &quot;Pet Stool&quot;,metadata$isolate_id_recode)</code></pre>
+metadata$isolate_id_recode &lt;- gsub(pattern = &quot;Petstool&quot;, replacement = &quot;Pet Stool&quot;, metadata$isolate_id_recode)</code></pre>
 </div>
 <div id="household-id-correct-lowercase" class="section level2">
 <h2>Household id (correct lowercase)</h2>
 <pre class="r"><code># Correct lowercase
-metadata$household_number_recode &lt;- recode(metadata$household_number,&#39;49h&#39; = &#39;49H&#39;)</code></pre>
+metadata$household_number_recode &lt;- recode(metadata$household_number, &#39;49h&#39; = &#39;49H&#39;)</code></pre>
 </div>
 </div>
-<div id="edit-specific-isolates-with-coding-differences-in-the-platemap" class="section level1">
-<h1>Edit specific isolates with coding differences in the platemap</h1>
+<div id="edit-isolates-with-coding-differences-in-the-platemap" class="section level1">
+<h1>Edit isolates with coding differences in the platemap</h1>
 <div id="specifically-to-enable-proper-merging-with-metadata" class="section level2">
 <h2>Specifically to enable proper merging with metadata</h2>
 <pre class="r"><code># 113H_2_Pet Stool 1A C1: Remove C1
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode==&quot;113H&quot; &amp; metadata$visit ==2 &amp; metadata$isolate_id == &quot;Pet Stool 1A C1&quot;, &quot;Pet Stool 1A&quot;,metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode==&quot;113H&quot; &amp; metadata$visit ==2 &amp; metadata$isolate_id == &quot;Pet Stool 1A C1&quot;, &quot;Pet Stool 1A&quot;, metadata$isolate_id_recode)
 
 # 113H: Add &quot;C1&quot; to Visit 2 Washing Machine  
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;113H&quot; &amp; metadata$visit == 2 &amp; metadata$isolate_id == &quot;Washing Machine&quot;,&quot;Washing Machine C1&quot;, metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;113H&quot; &amp; metadata$visit == 2 &amp; metadata$isolate_id == &quot;Washing Machine&quot;, &quot;Washing Machine C1&quot;, metadata$isolate_id_recode)
  
 # 160H: Add &quot;C1&quot; to Visit 1 Bath 1
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;160H&quot; &amp; metadata$visit == 1 &amp; metadata$isolate_id == &quot;Bath 1&quot;,&quot;Bath 1 C1&quot;, metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;160H&quot; &amp; metadata$visit == 1 &amp; metadata$isolate_id == &quot;Bath 1&quot;, &quot;Bath 1 C1&quot;, metadata$isolate_id_recode)
 
 # 182H: Add &quot;C1&quot; to Visit 3 Bath 1 
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;182H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Bath 1&quot;,&quot;Bath 1 C1&quot;, metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;182H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Bath 1&quot;, &quot;Bath 1 C1&quot;, metadata$isolate_id_recode)
 
 # 197H: Add &quot;C1&quot; to Visit 2 Living Room 
 metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;197H&quot; &amp; metadata$visit == 2 &amp; metadata$isolate_id == &quot;Living Room&quot;, &quot;Living Room C1&quot;, metadata$isolate_id_recode)
 
 # 151H: Remove &quot;C1&quot; from  Visit 3 Living Room &amp; Washing Room
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Living Room C1&quot;,&quot;Living Room&quot;, metadata$isolate_id_recode)
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Living Room C1&quot;, &quot;Living Room&quot;, metadata$isolate_id_recode)
 
-metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Washing Machine C1&quot;,&quot;Washing Machine&quot;, metadata$isolate_id_recode)</code></pre>
+metadata$isolate_id_recode &lt;- ifelse(metadata$household_number_recode == &quot;151H&quot; &amp; metadata$visit == 3 &amp; metadata$isolate_id == &quot;Washing Machine C1&quot;, &quot;Washing Machine&quot;, metadata$isolate_id_recode)</code></pre>
 </div>
 </div>
 <div id="save-metadata" class="section level1">

@@ -34,20 +34,25 @@ sessionInfo()
 ```
 
 # Load data
+
 ```{r}  
 df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") 
 cluster_25_SNPs <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_25_SNP_clusters.RDS")
 ecoli_phylogroup <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS") 
 ``` 
 
-## Merge clustering data
+# Merge clustering data 
+## Nothing needed to do here
 
 ```{r}
 df <- left_join(df,cluster_25_SNPs)
 ```
 
-## Add ecoli phylogroup data
+# Merge ecoli phylogroup data
+## For genomes with E. coli, they should provide an E. coli phylogroup
+## If genome is not Escherichia, this would be clarified as "Not Escherichia"
 ```{r}
+# Function
 get_clermont_data <- function(genomic_id, clermont_data){
   ids <- str_split(genomic_id,";") %>% unlist
   clermont_sub <- clermont_data %>% subset(genomic_id %in% ids)
@@ -58,6 +63,7 @@ get_clermont_data <- function(genomic_id, clermont_data){
     }
 }
 
+# Implementation
 df$ecoli_phylogroup <- sapply(df$genomic_id, get_clermont_data, clermont_data = ecoli_phylogroup)
 ```
  
