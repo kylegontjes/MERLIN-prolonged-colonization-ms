@@ -72,7 +72,6 @@ table(prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,prolonged_coloni
 plasmid_linked_ESCrE_ <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_aware==1) %>% .$household
 
 lapply(plasmid_linked_ESCrE_,FUN=function(x){
-  
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
 }) %>% lapply(.,gontjesr::favorite_kable)
 ```
@@ -82,7 +81,6 @@ lapply(plasmid_linked_ESCrE_,FUN=function(x){
 not_plasmid_linked_ESCrE_ <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_aware==0) %>% .$household
 
 lapply(not_plasmid_linked_ESCrE_,FUN=function(x){
-  
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
 }) %>% lapply(.,gontjesr::favorite_kable)
 ```
@@ -98,7 +96,7 @@ lapply(same_ESCrE_species_not_same_strain_no_ESBL_sharing,FUN=function(x){
 }) %>% lapply(.,gontjesr::favorite_kable)
 ```
 
-## Example cases explained by ESCrE but not strain
+# Cases explained by ESCrE persistence but not strain
 
 ### Novel strain acquisition:
 #### 1. 100H - Different E. coli ST - Linked by blaEC-8, but this was on the chromosome of both genomes...
@@ -111,7 +109,6 @@ lapply(same_ESCrE_species_not_same_strain_no_ESBL_sharing,FUN=function(x){
 same_ESCrE_not_same_strain <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_genes==1) %>% .$household
 
 lapply(same_ESCrE_not_same_strain,FUN=function(x){
-  
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
 }) %>% lapply(.,gontjesr::favorite_kable)
 ```
@@ -121,10 +118,6 @@ lapply(same_ESCrE_not_same_strain,FUN=function(x){
 same_ESCrE_plasmid_linked <-  prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_genes_plasmid_linked==1) %>% .$household
 
 lapply(same_ESCrE_plasmid_linked,FUN=function(x){
-  
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
 }) %>% lapply(.,gontjesr::favorite_kable)
 ```
-
-
- 
