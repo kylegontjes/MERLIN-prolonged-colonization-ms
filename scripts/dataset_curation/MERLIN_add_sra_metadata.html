@@ -361,8 +361,12 @@ metadata</h1>
 <div id="notes" class="section level1">
 <h1>Notes</h1>
 <ol style="list-style-type: decimal">
-<li>We received SRA metadata from UPENN that enables easy tracing of
-what specimen belongs to what subject</li>
+<li><p>We received SRA metadata from UPENN that enables easy tracing of
+what specimen belongs to what subject</p></li>
+<li><p>De-duplicated the UPENN ncbi_id variable and added isolate_[No.]
+at the end for specimens with &gt;1 genome. The number (No.) was
+determined by the genomic_id number (often indicative of sequencing
+run/plate)</p></li>
 </ol>
 </div>
 <div id="environment" class="section level1">
@@ -440,7 +444,31 @@ df &lt;- left_join(df ,simplified_metadata_for_sra %&gt;% select(-visit,-plate,-
 <div id="curate-additional-useful-variables-pertaining-to-specimen-type-and-categories" class="section level1">
 <h1>Curate additional useful variables pertaining to specimen type and
 categories</h1>
-<pre class="r"><code># Subject variables 
+<pre class="r"><code># De-duplicate ncbi_id (isolate identifier) 
+isolates &lt;- unique(df[[&quot;ncbi_id&quot;]]) %&gt;% sort
+duplicated_isolates &lt;- df[[&quot;ncbi_id&quot;]][duplicated(df[[&quot;ncbi_id&quot;]])]
+df$ncbi_id_deduplicated &lt;- df$ncbi_id
+for(i in isolates){
+  if(i %in% duplicated_isolates){
+    # I didn&#39;t de-duplicate H169_kitchen_v2 because it was not ESCrE
+    if(i == &quot;H169_kitchen_v2&quot;){
+    subset_pathogen &lt;- df %&gt;% subset(ncbi_id == i) 
+    subset_pathogen &lt;- subset_pathogen %&gt;% arrange(lab_vantage_s_number)
+    for(j in 1:nrow(subset_pathogen)){
+      df[which(df[[&quot;lab_vantage_s_number&quot;]]== subset_pathogen[[&#39;lab_vantage_s_number&#39;]][j]),&quot;ncbi_id_deduplicated&quot;] &lt;- paste0(i,&quot;_isolate_&quot;,j)
+    }
+    } else {
+    subset_pathogen &lt;- df %&gt;% subset(ncbi_id == i) 
+    subset_pathogen$sample_numeric &lt;- gsub(&quot;MERLIN_&quot;,&quot;&quot;,subset_pathogen[[&quot;genomic_id&quot;]]) %&gt;% as.numeric
+    subset_pathogen &lt;- subset_pathogen %&gt;% arrange(sample_numeric)
+    for(j in 1:nrow(subset_pathogen)){
+      df[which(df[[&quot;genomic_id&quot;]]== subset_pathogen[[&#39;genomic_id&#39;]][j]),&quot;ncbi_id_deduplicated&quot;] &lt;- paste0(i,&quot;_isolate_&quot;,j)
+    }
+  }
+  }
+}
+
+# Subject variables 
 ## Category: The category of specimen (i.e., humanindex, bath1) in relation to the household
 df$subject_category &lt;- df$subject_id %&gt;% str_split(.,&quot;_&quot;,simplify = T) %&gt;% .[,2]
 ## Simplified category that removes the household number  

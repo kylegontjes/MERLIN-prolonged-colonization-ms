@@ -16,6 +16,8 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/')
 
 1. We received SRA metadata from UPENN that enables easy tracing of what specimen belongs to what subject
  
+2. De-duplicated the UPENN ncbi_id variable and added isolate_[No.] at the end for specimens with >1 genome. The number (No.) was determined by the genomic_id number (often indicative of sequencing run/plate)
+ 
 # Environment
 
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
@@ -46,6 +48,30 @@ df <- left_join(df ,simplified_metadata_for_sra %>% select(-visit,-plate,-positi
 
 # Curate additional useful variables pertaining to specimen type and categories
 ```{r}
+# De-duplicate ncbi_id (isolate identifier) 
+isolates <- unique(df[["ncbi_id"]]) %>% sort
+duplicated_isolates <- df[["ncbi_id"]][duplicated(df[["ncbi_id"]])]
+df$ncbi_id_deduplicated <- df$ncbi_id
+for(i in isolates){
+  if(i %in% duplicated_isolates){
+    # I didn't de-duplicate H169_kitchen_v2 because it was not ESCrE
+    if(i == "H169_kitchen_v2"){
+    subset_pathogen <- df %>% subset(ncbi_id == i) 
+    subset_pathogen <- subset_pathogen %>% arrange(lab_vantage_s_number)
+    for(j in 1:nrow(subset_pathogen)){
+      df[which(df[["lab_vantage_s_number"]]== subset_pathogen[['lab_vantage_s_number']][j]),"ncbi_id_deduplicated"] <- paste0(i,"_isolate_",j)
+    }
+    } else {
+    subset_pathogen <- df %>% subset(ncbi_id == i) 
+    subset_pathogen$sample_numeric <- gsub("MERLIN_","",subset_pathogen[["genomic_id"]]) %>% as.numeric
+    subset_pathogen <- subset_pathogen %>% arrange(sample_numeric)
+    for(j in 1:nrow(subset_pathogen)){
+      df[which(df[["genomic_id"]]== subset_pathogen[['genomic_id']][j]),"ncbi_id_deduplicated"] <- paste0(i,"_isolate_",j)
+    }
+  }
+  }
+}
+
 # Subject variables 
 ## Category: The category of specimen (i.e., humanindex, bath1) in relation to the household
 df$subject_category <- df$subject_id %>% str_split(.,"_",simplify = T) %>% .[,2]
