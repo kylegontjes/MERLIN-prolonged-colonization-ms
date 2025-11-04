@@ -44,7 +44,7 @@ paste0("Number of subjects with index specimens positive: ", length(ESCrE_index_
 paste0("Proportion of subjects with index specimens positive: ", length(ESCrE_index_positive_households) / 40)
 ```
 
-# How many of the MALDI-level prolonged colonization had a QC-passing genome for their index genome?
+# How many of the MALDI characterized species-level prolonged colonization had a QC-passing genome for their index genome?
 ```{r}
 clinical_definition_prolonged <- clinical_prolonged_colonization %>% subset(prolonged_colonization==1) %>% .[["household_number"]]
 paste0("How many of the prolonged colonization episodes we had their index sequenced: ", length(clinical_definition_prolonged))
