@@ -37,16 +37,16 @@ prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolo
 
 # Generate frequency plot
 ```{r}
-prolonged_melt <- reshape2::melt(prolonged_colonization_df %>% select(household,index_at_1_and_or_2_WGS_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster,index_at_1_and_or_2_ESCrE_genes,index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes,index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware),id.vars="household")
+prolonged_melt <- reshape2::melt(prolonged_colonization_df %>% select(household,index_at_1_and_or_2_WGS_escre,index_at_1_and_or_2_Species,index_at_1_and_or_2_Species_ST,index_at_1_and_or_2_Species_ST_cluster,index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_linked),id.vars="household")
 prolonged_melt$value <- factor(prolonged_melt$value,levels = c(0,1))
 prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_WGS_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Sequence type','index_at_1_and_or_2_Species_ST_cluster'='Strain','index_at_1_and_or_2_ESCrE_genes'='ESCrE gene','index_at_1_and_or_2_ESCrE_plasmidic_genes'= 'Plasmidic ESCrE gene','index_at_1_and_or_2_ESCrE_plasmids'= 'ESCrE plasmid',
   'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes'='Strain + ESCrE gene',
-  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware'='Strain + plasmid-linked ESCrE gene')
+  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_linked'='Strain + plasmid-linked ESCrE gene')
 
 prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value)) %>% favorite_kable()
 ```
 
-```{r,fig.width=6,fig.height=7.5}
+```{r,fig.width=5,fig.height=7.5}
 summary_data <- prolonged_melt%>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value))  
 
 figure_1 <- ggplot(data=prolonged_melt) + geom_bar(aes(x=variable,fill=value)) + xlab("") + ylab("Number of subjects") +  geom_text(data=summary_data,aes(x=variable,y = n,label=n), vjust=0,nudge_y=0.5,color ='black',size = 5)  + prolonged_colonization_scale + theme_bw_me + figure_1_format 
@@ -55,5 +55,5 @@ figure_1
 ```
 
 ```{r}
-ggsave(plot = figure_1,filename = './figures/figure_1_prolonged_colonization.png', dpi = 900, width = 6, height = 7.5,bg='white')
+ggsave(plot = figure_1,filename = './figures/figure_1_prolonged_colonization.png', dpi = 900, width = 5, height = 7.5,bg='white')
 ```

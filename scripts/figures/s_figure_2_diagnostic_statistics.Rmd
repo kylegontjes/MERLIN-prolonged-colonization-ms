@@ -79,7 +79,7 @@ get_marginal_stats <- function(feature,outcome){
 
 # Generate data
 ```{r,fig.height=9.75,fig.width=7.8}
-outcomes <- c('index_at_1_and_or_2_Species_ST','index_at_1_and_or_2_Species_ST_cluster','index_at_1_and_or_2_ESCrE_genes','index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes',"index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware")
+outcomes <- c('index_at_1_and_or_2_Species_ST','index_at_1_and_or_2_Species_ST_cluster',"index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_linked")
 
 comparison_of_any_ESCRE_to_WGS_outcomes <- lapply(outcomes,FUN=function(x){
   get_marginal_stats(prolonged_colonization_df$index_at_1_and_or_2_Species,prolonged_colonization_df[[x]])
@@ -87,16 +87,16 @@ comparison_of_any_ESCRE_to_WGS_outcomes <- lapply(outcomes,FUN=function(x){
 
 comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- recode(comparison_of_any_ESCRE_to_WGS_outcomes$outcome,'index_at_1_and_or_2_WGS_escre'='Any ESCrE','index_at_1_and_or_2_Species'='Species','index_at_1_and_or_2_Species_ST'='Sequence type','index_at_1_and_or_2_Species_ST_cluster'='Strain','index_at_1_and_or_2_ESCrE_genes'='ESCrE gene','index_at_1_and_or_2_ESCrE_plasmidic_genes'= 'Plasmidic ESCrE gene','index_at_1_and_or_2_ESCrE_plasmids'= 'ESCrE plasmid',
   'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes'='Strain + ESCrE gene',
-  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware'='Strain + plasmid-linked ESCrE gene') %>% factor(.,levels = c("Species","Sequence type","Strain","ESCrE gene",'Strain + ESCrE gene',"Strain + plasmid-linked ESCrE gene"))
+  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_linked'='Strain + plasmid-linked ESCrE gene') %>% factor(.,levels = c("Sequence type","Strain","Strain + plasmid-linked ESCrE gene"))
 
 comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()
 ```
 
 # Curate figure
-```{r,fig.height=5.625,fig.width=7.5}
-A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity (%)") + xlab(NULL)+ theme_bw_me+ ylim(NA,100.1)  + s_figure_2_format  +   geom_text(aes(label=paste0(format(spec, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3) 
-B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=precision)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1)  + s_figure_2_format  +  geom_text(aes(label=paste0(format(precision, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3)  
-C<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1) + s_figure_2_format + geom_text(aes(label=paste0(format(accuracy, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3)  
+```{r,fig.height=5,fig.width=6}
+A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity (%)") + xlab(NULL)+ theme_bw_me+ ylim(NA,100.1)  + s_figure_2_format  +   geom_text(aes(label=paste0(format(spec, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3.25) 
+B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=precision)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1)  + s_figure_2_format  +  geom_text(aes(label=paste0(format(precision, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3.25)  
+C<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1) + s_figure_2_format + geom_text(aes(label=paste0(format(accuracy, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3.25)  
 
 s_figure_2 <- cowplot::plot_grid(A,B,C,labels = "AUTO",ncol=3)
 s_figure_2

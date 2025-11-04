@@ -107,7 +107,7 @@ get_prolonged_colonization_str_split <- function(isolate,metadata,variable,split
 }
 
 # Plasmid aware analysis
-get_prolonged_colonization_str_split_plasmid_aware <- function(isolate,metadata,chromosome_variable,plasmid_variable,split){
+get_prolonged_colonization_str_split_plasmid_aware <- function(isolate,metadata,chromosome_variable,plasmid_variable,split,require_shared_plasmid=NULL,plasmid_cluster_variable=NULL,name){
   isolate_df <- subset(metadata,household==isolate)
   isolate_index <- subset(isolate_df,visit==0) 
   isolate_index_plasmid <- isolate_index[[plasmid_variable]] %>% str_split(.,split) %>% unlist %>% subset(is.na(.)==F & .!='')
@@ -122,17 +122,25 @@ get_prolonged_colonization_str_split_plasmid_aware <- function(isolate,metadata,
     }  else { 
   isolate_one_month_plasmid <- subset(isolate_df,visit==2) %>% .[[plasmid_variable]]  %>% str_split(.,split) %>% unlist
   isolate_one_month_chromosome <-  subset(isolate_df,visit==2) %>% .[[chromosome_variable]]  %>% str_split(.,split) %>% unlist
-  isolate_one_month_same <- ifelse(sum(isolate_index_plasmid %in% isolate_one_month_chromosome) | sum(isolate_index_chromosome %in% isolate_one_month_plasmid) >0 | sum(isolate_index_plasmid %in%isolate_one_month_plasmid ) >0,1,0)
+  isolate_one_month_same <- ifelse(sum(isolate_index_plasmid %in% isolate_one_month_chromosome) | sum(isolate_index_chromosome %in% isolate_one_month_plasmid) >0 | sum(isolate_index_plasmid %in% isolate_one_month_plasmid ) >0,1,0)
   
   isolate_two_month_plasmid <- subset(isolate_df,visit==3) %>% .[[plasmid_variable]]  %>% str_split(.,split) %>% unlist
   isolate_two_month_chromosome <-  subset(isolate_df,visit==3) %>% .[[chromosome_variable]]  %>% str_split(.,split) %>% unlist
   isolate_two_month_same <- ifelse(sum(isolate_index_plasmid %in% isolate_two_month_chromosome) | sum(isolate_index_chromosome %in% isolate_two_month_plasmid) >0 | sum(isolate_index_plasmid %in%isolate_two_month_plasmid ) >0,1,0) 
  
   index_at_1_and_or_2 <- ifelse(isolate_one_month_same==1 | isolate_two_month_same==1,1,0)
-    }
+  }
+  if(require_shared_plasmid==T){
+    index_plasmids <- isolate_index[[plasmid_cluster_variable]] %>% str_split(.,split) %>% unlist %>% subset(is.na(.)==F & .!='')
+    one_month_plasmids <-  subset(isolate_df,visit==2) %>% .[[plasmid_cluster_variable]] %>% str_split(.,split) %>% unlist %>% subset(is.na(.)==F & .!='')
+    two_month_plasmids <-  subset(isolate_df,visit==3)   %>% .[[plasmid_cluster_variable]] %>% str_split(.,split) %>% unlist %>% subset(is.na(.)==F & .!='')
+    isolate_one_month_same <- ifelse(sum(index_plasmids %in% one_month_plasmids)>0 & isolate_one_month_same==1,1,0)
+    isolate_two_month_same <- ifelse(sum(index_plasmids %in% two_month_plasmids)>0 & isolate_two_month_same==1,1,0)
+    index_at_1_and_or_2 <-  ifelse(sum(index_plasmids %in% c(one_month_plasmids,two_month_plasmids))>0 & index_at_1_and_or_2==1,1,0)
+  }
   
   results <- cbind.data.frame(household=isolate,isolate_one_month_same,isolate_two_month_same,index_at_1_and_or_2)
-  colnames(results) <- c("household",paste0(colnames(results)[-1],"_ESCrE_genes_plasmid_aware"))
+  colnames(results) <- c("household",paste0(colnames(results)[-1],"_ESCrE_genes_plasmid_",name))
   
   return(results)
 } 
@@ -147,9 +155,13 @@ maldi_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonizati
 ESCrE_genes_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split,df_index,variable='ESCrE_genes',split=";") %>% do.call(rbind,.)
  
 # ESCrE plasmid aware
-ESCrE_plasmid_aware_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split_plasmid_aware,df_index,chromosome_variable='ESCrE_chromosome_genes',plasmid_variable = "ESCrE_plasmid_genes",split=";") %>% do.call(rbind,.)
+ESCrE_plasmid_aware_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split_plasmid_aware,df_index,chromosome_variable='ESCrE_chromosome_genes',plasmid_variable = "ESCrE_plasmid_genes",split=";",require_shared_plasmid=F,plasmid_cluster_variable=NULL,name='aware') %>% do.call(rbind,.)
 
-prolonged_df <- left_join(prolonged_df,ESCrE_genes_sharing)  %>% left_join(.,ESCrE_plasmid_aware_sharing) %>% left_join(.,maldi_sharing)
+ESCrE_plasmid_linked_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split_plasmid_aware,df_index,chromosome_variable='ESCrE_chromosome_genes',plasmid_variable = "ESCrE_plasmid_genes",split=";",require_shared_plasmid=T,plasmid_cluster_variable="plasmids",name='linked') %>% do.call(rbind,.)
+
+ESCrE_plasmid_linked_specific_sharing <- lapply(ESCrE_index_positive_households,get_prolonged_colonization_str_split_plasmid_aware,df_index,chromosome_variable='ESCrE_chromosome_genes',plasmid_variable = "ESCrE_plasmid_genes",split=";",require_shared_plasmid=T,plasmid_cluster_variable="ESCrE_plasmids",name='shared') %>% do.call(rbind,.)
+
+prolonged_df <- left_join(prolonged_df,ESCrE_genes_sharing)  %>% left_join(.,ESCrE_plasmid_aware_sharing) %>% left_join(.,ESCrE_plasmid_linked_sharing) %>% left_join(.,ESCrE_plasmid_linked_specific_sharing) 
 ```
 
 # Generate merged datapoints
@@ -157,8 +169,14 @@ prolonged_df <- left_join(prolonged_df,ESCrE_genes_sharing)  %>% left_join(.,ESC
 # Cluster + ESCrE genes
 prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes ==1,1,0) 
 
-# Cluster + Plasmid-linked ESCrE genes
+# Cluster + Plasmid-aware ESCrE genes
 prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware ==1,1,0) 
+
+# Cluster + Plasmid-linked ESCrE  
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_linked <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_linked ==1,1,0) 
+
+# Cluster + Plasmid-linked ESCrE plasmids
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_shared_ESCrE_plasmid  <- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_shared ==1,1,0) 
 ```
 
 # Save dataset
