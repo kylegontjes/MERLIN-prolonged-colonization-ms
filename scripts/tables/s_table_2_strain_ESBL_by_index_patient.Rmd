@@ -44,7 +44,7 @@ df_index <- left_join(df_index,plasmid_data)
 ```{r}
 df_index$household_numeric <- gsub("H","",df_index$household) %>% as.numeric
   
-s_table_2 <- df_index %>% arrange(household_numeric,visit,Species_ST_cluster) %>% select(household,visit,Species_ST_cluster,bla_genes,ESCrE_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,plasmids,ESCrE_plasmids) %>% mutate(plasmids = gsub(";",", ",plasmids),ESCrE_genes = gsub(";",", ",ESCrE_genes),ESCrE_chromosome_genes = gsub(";",", ",ESCrE_chromosome_genes),ESCrE_plasmid_genes = gsub(";",", ",ESCrE_plasmid_genes),ESCrE_plasmids = gsub(";",", ",ESCrE_plasmids)) %>%  `colnames<-`(c("Household","Visit","Strain","Β-lactamase gene(s)","ESCrE gene(s)",'Chromosomal ESCrE gene(s)','Plasmid-linked ESCrE gene(s)',"Plasmid(s)",'ESCrE plasmid(s)'))
+s_table_2 <- df_index %>% arrange(household_numeric,visit,Species_ST_cluster) %>% select(household,visit,Species_ST_cluster,bla_genes,ESCrE_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,plasmids,ESCrE_plasmids) %>% mutate(bla_genes = gsub(";",", ",bla_genes), plasmids = gsub(";",", ",plasmids),ESCrE_genes = gsub(";",", ",ESCrE_genes),ESCrE_chromosome_genes = gsub(";",", ",ESCrE_chromosome_genes),ESCrE_plasmid_genes = gsub(";",", ",ESCrE_plasmid_genes),ESCrE_plasmids = gsub(";",", ",ESCrE_plasmids)) %>%  `colnames<-`(c("Household","Visit","Strain","B-lactamase gene(s)","ESCrE gene(s)",'Chromosomal ESCrE gene(s)','Plasmidic ESCrE gene(s)',"Plasmid(s)",'ESCrE plasmid(s)'))
 ```
 
 ```{r}
