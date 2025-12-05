@@ -14,7 +14,7 @@ figure_1_format <- theme(legend.position = "bottom",
                            legend.text =   element_text(size=20, color="black"),
                            legend.title = element_text(size = 22, color="black"),
                            plot.title = element_text(size = 24, color="black"),
-                           axis.text.x = element_text(size=15, angle=90,hjust=1,vjust=0.5),
+                           axis.text.x = element_text(size=15, angle=45,hjust=1),
                            legend.margin=margin(c(-20,0,0,0))
                          )
 
