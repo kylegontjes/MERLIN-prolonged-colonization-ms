@@ -38,7 +38,7 @@ s_figure_1_inset_format <- theme(legend.position = "none",
                            )
 
 s_figure_1_species_format <- theme(legend.position = "bottom",
-                           axis.text =   element_text(size=8, color="black",hjust=0.5,vjust=0.5),
+                           axis.text =   element_text(size=7.5, color="black",hjust=0.5,vjust=0.5),
                            axis.title = element_text(size = 9, color="black"),
                            legend.text =   element_text(size=7, color="black"),
                            legend.title = element_text(size = 8, color="black"),

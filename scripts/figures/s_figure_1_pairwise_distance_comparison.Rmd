@@ -125,6 +125,9 @@ s_figure_1 <- ggplot(data=pair_types_subset,aes(x=pairwise_dist,fill=same_househ
   if(x %in% c("Enterobacter hormaechei","Klebsiella pneumoniae")){
     s_figure_1 <- s_figure_1 + scale_x_continuous(breaks = scales::pretty_breaks(3))
   } 
+  if(x %in% c("Enterobacter hormaechei","Klebsiella pneumoniae")){
+    s_figure_1 <- s_figure_1 + scale_x_continuous(breaks = scales::pretty_breaks(3))
+  } 
 
 if(max_val > 500 & value_under_500 == T){
   pair_types_under_500 <- pair_types_subset %>% subset(pairwise_dist <500)
@@ -134,10 +137,10 @@ s_figure_1_inlet <- ggplot(data=pair_types_under_500,aes(x=pairwise_dist,fill=sa
       b <- scales::extended_breaks()(x)
       b[b %% 1 == 0]  
     })
-s_figure_1 <- cowplot::plot_grid(s_figure_1,s_figure_1_inlet)
+s_figure_1 <- cowplot::plot_grid(s_figure_1 + theme(plot.margin = margin(t = 0, r = 8, b = 0, l = 5, "pt")),s_figure_1_inlet+ theme(plot.margin = margin(t = 0, r = 8, b = 0, l = 0, "pt"))) 
 
 } else {
-  s_figure_1 <- cowplot::plot_grid(s_figure_1,NULL,ncol=2)
+  s_figure_1 <- cowplot::plot_grid(s_figure_1 + theme(plot.margin = margin(t = 0, r = 8, b = 0, l = 5, "pt")),NULL,ncol=2)
 } 
 
 
@@ -152,7 +155,7 @@ s_figure_1_final
 }) %>% cowplot::plot_grid(plotlist = .,labels = NULL,ncol=2,label_size = 12,hjust = -1.25)
 ```
 
-```{r,fig.width=8,fig.height=10}
+```{r,fig.width=8.5,fig.height=10.625}
 s_figure_1_full <- cowplot::plot_grid(s_figure_1A,s_figure_1B,ncol=1,rel_heights = c(.6,1),labels = c("A","B"),label_size = 16,vjust = 1.5)
 s_figure_1_full
 ```
@@ -160,5 +163,5 @@ s_figure_1_full
 
 # Save figure
 ```{r}
-ggsave(plot = s_figure_1_full,filename = './figures/s_figure_1_pairwise_SNP_distance.png', dpi = 900, width = 8, height = 10,bg='white')
+ggsave(plot = s_figure_1_full,filename = './figures/s_figure_1_pairwise_SNP_distance.png', dpi = 900, width = 8.5, height = 10.625,bg='white')
 ```
