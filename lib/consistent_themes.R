@@ -23,19 +23,28 @@ figure_1_format <- theme(legend.position = "bottom",
 pairtype_fill <- scale_fill_manual(breaks=c(T,F),values = c('#00274C','#FFCB05'),labels = c("Intra-subject",'Inter-subject'), name="Type", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
 
 s_figure_1_format <- theme(legend.position = "bottom",
-                axis.text =   element_text(size=12, color="black",hjust=0.5,vjust=0.5),
-                axis.title = element_text(size = 14, color="black"),
-                legend.text =   element_text(size=12, color="black"),
-                legend.title = element_text(size = 14, color="black"),
-                plot.title = element_text(size = 24, color="black")
+                axis.text =   element_text(size=10, color="black",hjust=0.5,vjust=0.5),
+                axis.title = element_text(size = 12, color="black"),
+                legend.text =   element_text(size=10, color="black"),
+                legend.title = element_text(size = 12, color="black"),
+                plot.title = element_text(size = 0, color="black")
                 )
 
 s_figure_1_inset_format <- theme(legend.position = "none",
-                           axis.text =   element_text(size=12, color="black",hjust=0.5,vjust=0.5),
-                           axis.title = element_text(size = 14, color="black"),
-                           legend.text =   element_text(size=20, color="black"),
-                           legend.title = element_text(size = 22, color="black")
+                           axis.text =   element_text(size=10, color="black",hjust=0.5,vjust=0.5),
+                           axis.title = element_text(size = 12, color="black"),
+                           legend.text =   element_text(size=10, color="black"),
+                           legend.title = element_text(size = 12, color="black")
                            )
+
+s_figure_1_species_format <- theme(legend.position = "bottom",
+                           axis.text =   element_text(size=8, color="black",hjust=0.5,vjust=0.5),
+                           axis.title = element_text(size = 9, color="black"),
+                           legend.text =   element_text(size=7, color="black"),
+                           legend.title = element_text(size = 8, color="black"),
+                           plot.title = element_text(size = 12, color="black")
+)
+
 
 # Supplemental Figure 2
 s_figure_2_format <- theme(axis.text =   element_text(size=10, color="black"),
