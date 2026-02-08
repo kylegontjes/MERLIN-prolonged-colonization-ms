@@ -261,7 +261,7 @@ L_mat <-  grid.grabExpr(draw(K))
 
 heatmaps_cow <- cowplot::plot_grid(I_mat,J_mat,K_mat,L_mat,nrow=1,labels = c('H','I',"J",'K'),rel_widths = c(1,0.4,0.4,0.4),align='hv')
 
-figure <- cowplot::plot_grid(fig_histograms,fig_histograms2,fig_facet_histograms,heatmaps_cow,ncol=1,rel_heights=c(0.7,0.5,0.7,1))
+figure <- cowplot::plot_grid(fig_histograms,fig_histograms2,fig_facet_histograms,NULL,heatmaps_cow,ncol=1,rel_heights=c(0.7,0.5,0.7,0.05,1))
 
 figure
 ```
