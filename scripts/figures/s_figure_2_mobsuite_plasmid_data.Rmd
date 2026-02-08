@@ -267,5 +267,5 @@ figure
 ```
 
 ```{r}
-ggsave("./figures/s_figure_2_mobtyper_plasmid_overview.png",plot=figure, units='in',height=15,width=12,dpi=900,bg='white')
+ggsave("./figures/s_figure_2_mobtyper_plasmid_overview.png",plot=figure, units='in',height=16,width=12.8,dpi=900,bg='white')
 ```
