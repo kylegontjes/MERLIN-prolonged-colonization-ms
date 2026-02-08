@@ -249,10 +249,10 @@ K
 
 # Grouped figure
 ```{r,fig.height=16,fig.width=12.8}
-fig_histograms <- cowplot::plot_grid(A,B ,NULL,ncol=3,labels = c("A","B",""),rel_widths = c(1,1,0.05))
+fig_histograms <- cowplot::plot_grid(A,B,ncol=2,labels = c("A","B"),rel_widths = c(1,1))
 fig_histograms2 <- cowplot::plot_grid(C +theme(legend.position='none'),D+ theme(legend.position='none'),E + theme(legend.position='none'),ncol=3,labels = c("C","D","E"))
 
-fig_facet_histograms <-  cowplot::plot_grid(f,G,NULL,ncol=3,rel_widths=c(1,1,0.05),labels = c("F","G","")) 
+fig_facet_histograms <-  cowplot::plot_grid(f,G,ncol=2,rel_widths=c(1,1),labels = c("F","G")) 
   
 I_mat <-  grid.grabExpr(draw(H))
 J_mat <-  grid.grabExpr(draw(I))
