@@ -69,8 +69,8 @@ get_marginal_stats <- function(feature,outcome){
   recall = round(recall_raw,3) *100
   precision = round(precision_raw,3) *100
   lr_pos = round(sens / (100-spec),2)
-  false_persistence_rate = 100-ppv
-  overall_disagreement = 100-accuracy
+  false_persistence_rate = round(100-ppv,2)
+  overall_disagreement = round(100-accuracy,2)
   
   
   data <- as.data.frame(cbind(phenotype = colnames(outcome),phenotype_count,phenotype_freq,feature_count,feature_freq,tp,fp,fn,tn,sens,spec,ppv,npv,recall,precision,f1,accuracy,lr_pos,false_persistence_rate,overall_disagreement))
