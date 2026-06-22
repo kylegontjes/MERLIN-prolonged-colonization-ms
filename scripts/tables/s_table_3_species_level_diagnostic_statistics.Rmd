@@ -1,0 +1,61 @@
+---
+title: "s_table_3_species_level_diagnostic_statistics"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+# Environment
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
+#Packages
+packages <- c("tidyverse",'kableExtra') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Source library
+source("./lib/consistent_themes.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load data
+```{r}
+comparison_of_any_ESCRE_to_WGS_outcomes <- readRDS("./data/diagnostic_statistics/species_level_diagnostic_statistics.RDS")
+```
+
+# Edit column names
+```{r}
+stable3 <- comparison_of_any_ESCRE_to_WGS_outcomes %>% select(outcome_rename,tp,fp,tn,fn,sens,spec,ppv,npv,false_persistence_rate,overall_disagreement) 
+
+colnames(stable3) <- recode(colnames(stable3),
+                            'outcome_rename' = 'Criteria',
+                            "tp" = "True positive (TP)",
+                            "fp" = "False positive (FP)",
+                            "tn" = "True negative (TN)",
+                            "fn" = "False negative (FN)",
+                            "sens" = "Sensitivity",
+                            'spec' = "Specificity",
+                            "ppv" = 'Positive predictive value (PPV)',
+                            'npv'='Negative predictive value (NPV)',
+                            'false_persistence_rate' = "False persistence rate (1-PPV)",
+                            "overall_disagreement" = "Overall disagreement (1-accuracy)")
+stable3 %>% favorite_kable()
+```
+
+# Save table as CSV and RDS file
+```{r}
+saveRDS(stable3,"./tables/s_table_3_species_level_diagnostic_statistics.RDS")
+write_csv(stable3,"./tables/s_table_3_species_level_diagnostic_statistics.csv")
+```

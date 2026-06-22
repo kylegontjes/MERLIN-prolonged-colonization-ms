@@ -1,4 +1,4 @@
-ESCrE gene,Category,No. chromosomal,No. plasmidic,Percent plasmidic
+ESCrE b-lactamase,Category,No. chromosome-inferred,No. plasmid-inferred,Percent plasmid-inferred
 blaCMY-4,ampC-like,0,3,100%
 blaKPC-2,Carbapenemase,0,3,100%
 blaKPC-3,Carbapenemase,0,3,100%

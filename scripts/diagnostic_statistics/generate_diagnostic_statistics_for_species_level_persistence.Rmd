@@ -1,5 +1,5 @@
 ---
-title: "Supplemental Figure 3: Accuracy of species-level evaluation of prolonged colonization"
+title: "generate_diagnostic_statistics_for_species_level_persistence"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -69,11 +69,11 @@ get_marginal_stats <- function(feature,outcome){
   recall = round(recall_raw,3) *100
   precision = round(precision_raw,3) *100
   lr_pos = round(sens / (100-spec),2)
-  discordance = 100-ppv
-  overall_discordance = 100-accuracy
+  false_persistence_rate = 100-ppv
+  overall_disagreement = 100-accuracy
   
   
-  data <- as.data.frame(cbind(phenotype = colnames(outcome),phenotype_count,phenotype_freq,feature_count,feature_freq,tp,fp,fn,tn,sens,spec,ppv,npv,recall,precision,f1,accuracy,lr_pos,discordance,overall_discordance))
+  data <- as.data.frame(cbind(phenotype = colnames(outcome),phenotype_count,phenotype_freq,feature_count,feature_freq,tp,fp,fn,tn,sens,spec,ppv,npv,recall,precision,f1,accuracy,lr_pos,false_persistence_rate,overall_disagreement))
   rownames(data) <- colnames(feature)
   data$name <-colnames(feature)
   return(data)
@@ -92,23 +92,10 @@ comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- recode(comparison_of_a
   'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes'='Strain + ESCrE gene',
   'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_linked'='Same strain + plasmid-linked ESCrE gene') %>% factor(.,levels = c("Same sequence type","Same strain","Same strain + plasmid-linked ESCrE gene"))
 
-comparison_of_any_ESCRE_to_WGS_outcomes %>% select(outcome_rename,phenotype_count,tp,fp,fn,tn,sens,spec,ppv,npv,precision,accuracy,discordance, overall_discordance)
-
 comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()
 ```
 
-# Curate figure
-```{r,fig.height=6,fig.width=6}
-A <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=spec)) + geom_bar(stat='identity',fill="black") + ylab("Specificity (%)") + xlab(NULL)+ theme_bw_me+ ylim(NA,100.1)  + s_figure_2_format  +   geom_text(aes(label=paste0(format(spec, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3.25) 
-B <- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=precision)) + geom_bar(stat='identity',fill="black") + ylab("Positive predictive value (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1)  + s_figure_2_format  +  geom_text(aes(label=paste0(format(precision, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3.25)  
-C<- ggplot(data=comparison_of_any_ESCRE_to_WGS_outcomes,aes(x=outcome_rename,y=accuracy)) + geom_bar(stat='identity',fill="black") + ylab("Accuracy (%)") + xlab(NULL) + theme_bw_me+ ylim(NA,100.1) + s_figure_2_format + geom_text(aes(label=paste0(format(accuracy, nsmall = 1), "%")), vjust=0,nudge_y=1,size=3.25)  
-D <- 
-
-s_figure_3 <- cowplot::plot_grid(A,B,C,labels = "AUTO",ncol=3)
-s_figure_3
-```
-
-# Save figure
 ```{r}
-ggsave(plot = s_figure_3,filename = './figures/s_figure_3_diagnostic_statistics_species_prolonged_colonization.png',dpi = 900, width = 6, height = 6, bg='white')
+saveRDS(comparison_of_any_ESCRE_to_WGS_outcomes,"./data/diagnostic_statistics/species_level_diagnostic_statistics.RDS")
+write.csv(comparison_of_any_ESCRE_to_WGS_outcomes,"./data/diagnostic_statistics/species_level_diagnostic_statistics.csv")
 ```

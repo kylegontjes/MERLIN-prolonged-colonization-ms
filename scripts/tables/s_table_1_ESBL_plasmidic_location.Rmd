@@ -47,7 +47,7 @@ ESBL_prop_data <- ESCrE_genotype_data %>% select(element_symbol_renamed,category
 
 ESBL_prop_data$prop_plasmid <- paste0(ESBL_prop_data$prop_plasmid,"%")
 
-colnames(ESBL_prop_data) <- c("ESCrE gene","Category","No. chromosomal","No. plasmidic","Percent plasmidic")
+colnames(ESBL_prop_data) <- c("ESCrE b-lactamase","Category","No. chromosome-inferred","No. plasmid-inferred","Percent plasmid-inferred")
  
 ESBL_prop_data %>% favorite_kable() 
 ```
