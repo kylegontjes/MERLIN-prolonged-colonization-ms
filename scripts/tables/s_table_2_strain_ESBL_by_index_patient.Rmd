@@ -47,12 +47,12 @@ df_index$household_numeric <- gsub("H","",df_index$household) %>% as.numeric
 s_table_2 <- df_index %>% arrange(household_numeric,visit,Species_ST_cluster) %>% select(household,visit,Species_ST_cluster,bla_genes,ESCrE_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,plasmids,ESCrE_plasmids) %>% mutate(bla_genes = gsub(";",", ",bla_genes), plasmids = gsub(";",", ",plasmids),ESCrE_genes = gsub(";",", ",ESCrE_genes),ESCrE_chromosome_genes = gsub(";",", ",ESCrE_chromosome_genes),ESCrE_plasmid_genes = gsub(";",", ",ESCrE_plasmid_genes),ESCrE_plasmids = gsub(";",", ",ESCrE_plasmids)) %>%  `colnames<-`(c(  "Household",
   "Visit",
   "Strain",
-  "Detected β-lactamase(s)",
-  "Detected ESCrE β-lactamase(s)",
-  "Chromosome-inferred ESCrE β-lactamase(s)",
-  "Plasmid-inferred ESCrE β-lactamase(s)",
+  "Detected b-lactamase(s)",
+  "Detected ESCrE b-lactamase(s)",
+  "Chromosome-inferred ESCrE b-lactamase(s)",
+  "Plasmid-inferred ESCrE b-lactamase(s)",
   "Plasmid(s)",
-  "ESCrE β-lactamase-harboring plasmid(s)")) 
+  "ESCrE b-lactamase-harboring plasmid(s)")) 
 ```
 
 ```{r}
