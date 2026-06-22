@@ -39,7 +39,9 @@ ESCRE_genotype_info <- readRDS("./data/amrfinder/beta_lactamase_summary_MERLIN_c
 # Curate table
 ```{r}
 ESCrE_genotype_data <- left_join(ESCrE_genotype_data %>% mutate(element_symbol_renamed = ESCrE),ESCRE_genotype_info %>% select(element_symbol_renamed,blactam_class,ESBL,carbapenemase,ampC_like))
-ESCrE_genotype_data$category <- ifelse(ESCrE_genotype_data$ESBL == T,"ESBL",ifelse(ESCrE_genotype_data$carbapenemase == T,"Carbapenemase",ifelse(ESCrE_genotype_data$ampC_like ==T, "ampC-like","Other")))
+ESCrE_genotype_data$category <- ifelse(ESCrE_genotype_data$ampC_like ==T,"ampC-like",
+                                       ifelse(ESCrE_genotype_data$ESBL == T,"ESBL",
+                                              ifelse(ESCrE_genotype_data$carbapenemase == T,"Carbapenemase","Other")))
 
 ESBL_prop_data <- ESCrE_genotype_data %>% select(element_symbol_renamed,category,n_chromosome,n_plasmid,prop_plasmid) %>% arrange(-prop_plasmid,-n_plasmid,n_chromosome)
 

@@ -1,4 +1,7 @@
-# Consistent themes and 
+# Consistent themes 
+library(tidyverse)
+library(hues)
+
 theme_bw_me <- theme(panel.background = element_rect(fill = "white",colour = NA), panel.grid = element_blank(), 
                      strip.background = element_rect(fill = "white",colour = "black"),
                      panel.grid.major = element_blank(),
@@ -57,3 +60,17 @@ favorite_kable <- function (x) {
   x %>% kable(., format = "html", table.attr = "style='width:100%;'", 
               row.names = F) %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 }
+
+# MERLIN Heatmap
+human <- c("Index human","Male housemate","Female housemate 1","Female housemate 2")
+Environment <- c("Bath","Kitchen","Living room","Washing machine")
+Pet <- c("Cat 1","Cat 2","Cat 3","Dog 1","Dog 2")
+
+# Human = reds
+human_colors <- iwanthue(n = length(human), hmin =0,hmax=20 )
+
+# Environment = greens/blues
+env_colors <- iwanthue(n = length(Environment), hmin =120,hmax=140 )
+
+# Pets = purples
+pet_colors <- iwanthue(n = length(Pet), hmin =260,hmax=280 )

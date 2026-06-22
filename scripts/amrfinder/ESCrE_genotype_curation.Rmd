@@ -21,6 +21,9 @@ packages <- c("tidyverse","kableExtra")
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T)) 
 
+# Functions
+source("./lib/consistent_themes.R")
+
 # Print environment
 set.seed(45) 
 Sys.info()
@@ -80,7 +83,7 @@ paste0("ESCrE genotypes:")
 blactam_info %>% subset(ESCrE ==T) %>% .$element_symbol_renamed %>% unique %>% sort
 
 paste0("Overall data:")
-blactam_info %>% select(-class) %>%  arrange(element_symbol) %>% gontjesr::favorite_kable()
+blactam_info %>% select(-class) %>%  arrange(element_symbol) %>% favorite_kable()
 
 # Arrange by symbol
 blactam_info <- blactam_info %>% arrange(element_symbol_renamed)
