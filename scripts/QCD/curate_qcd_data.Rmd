@@ -13,12 +13,13 @@ Notes:
 
 ```{r setup, include=FALSE}
 require(knitr)
-opts_knit$set(echo = TRUE,warning = FALSE, message = FALSE)  
-opts_knit$set(root.dir='~/Desktop/gl_MERLIN/Analysis/Household_transmission/')
+opts_knit$set(echo = TRUE,warning = T, message = T)  
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/')
 ```
 
 # Environment
-```{r environment, echo=T, message=FALSE, include=T, results=T}
+
+```{r environment, echo=T, message=T, include=T, results=T}
 #Packages
 packages <- c("tidyverse")   
 #Load Packages
@@ -30,13 +31,15 @@ Sys.info()
 sessionInfo()
 ```
 
-# Load data
+# Load sequencing QC data (QCD)
+
 ```{r}
 master_qc = read.csv("../../Sequence_data/illumina_fastq/master_qc_summary.csv")
 colnames(master_qc) <- colnames(master_qc) %>% gsub("\\.|\\.\\.\\.","_",.)
 ```
 
-# Variable renames
+# Rename variables to ensure consistency
+
 ```{r}
 # Genomic ID
 master_qc$genomic_id <- master_qc$Sample
@@ -50,7 +53,7 @@ master_qc$ST <- ifelse(master_qc$ST =="-","Unknown",master_qc$ST)
 master_qc$Species_ST <- paste0(master_qc$Species," ST ",master_qc$ST) %>% trimws(.,"both")
 ```
 
-# ESCrE WGS Call
+# ESCrE species calls (thanks to UPENN!) 
 ```{r}
 escre_species_calls <- read_csv("../data/INTEGRATE_MERLIN_WGS_Species_calls_030925_LLC.csv") 
 escre_list <- c(escre_species_calls %>% subset(Enterobacterales ==T)%>% .$Species,"Kluyvera sichuanensis")
@@ -60,6 +63,7 @@ master_qc$WGS_escre <- ifelse(master_qc$Species %in% escre_list,T,F)
 ```
 
 # Get the specimen's sequencing run  
+
 ```{r}
 run_11270_ES <- read.csv('../../Sequence_data/illumina_fastq/2025-03-04_11270-ES/DemuxStats_11270-ES.csv') %>% subset(grepl("MERLIN",Description))%>% mutate(run = '11270-ES')
 run_9200_LL <- read.csv('../../Sequence_data/illumina_fastq/2025-03-04_9200-LL/DemuxStats_9200-LL_updated.csv') %>% mutate(run = '9200-LL')
@@ -83,9 +87,12 @@ master_qc$sequencing_run <- sapply(master_qc$Sample,get_sequencing_run,sequencin
 
 # Drop isolates
 ## As of 10/30/25: Drop MERLIN_285, MERLIN_246, and MERLIN_231
-### MERLIN_285 - S-221005-00370 - Transcription error which could not be resolved.
-### MERLIN_246 - S-221019-01336 - Based on plate map review and sequencing results, this is a duplicate of genomic_id MERLIN_211. Removed MELRIN_246 in preference of MERLIN_211. Needed to change the MERLIN_remove_duplicates file to reflect this...
-### MERLIN_231 - S-221221-00536 - Based on LV review and sequencing results, this is a duplicate of genomic_id MERLIN_250.
+### 1. MERLIN_285 - S-221005-00370 - Transcription error which could not be resolved.
+
+### 2. MERLIN_246 - S-221019-01336 - Based on plate map review and sequencing results, this is a duplicate of genomic_id MERLIN_211. Removed MELRIN_246 in preference of MERLIN_211. Needed to change the MERLIN_remove_duplicates file to reflect this...
+
+### 3. MERLIN_231 - S-221221-00536 - Based on LV review and sequencing results, this is a duplicate of genomic_id MERLIN_250.
+
 ```{r}
 paste0("Number of qc entries at this stage: ",nrow(master_qc))
 # Remove these three isolates
@@ -99,6 +106,7 @@ paste0("Number of qc entries at this stage: ",nrow(master_qc))
 ```
 
 # Save the data
+
 ```{r}
 # All
 saveRDS(master_qc,"./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS")

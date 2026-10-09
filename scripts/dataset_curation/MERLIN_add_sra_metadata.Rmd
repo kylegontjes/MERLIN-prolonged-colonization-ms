@@ -1,5 +1,5 @@
 ---
-title: "Data Cleaning Step 6 - Add SRA Simplified metadata"
+title: "Data Cleaning Step 6 - Add SRA simplified metadata"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -7,9 +7,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 require(knitr)
-opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
-opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/')
+opts_knit$set(echo = T,warning = T, message = T,error=T,comment=NA) 
+opts_chunk$set(echo = T,warning = T, message = T,error=T,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/')
 ```
 
 # Notes
@@ -34,24 +34,29 @@ sessionInfo()
 ```
 
 # Load data
+
 ```{r} 
 df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS") 
 simplified_metadata_for_sra <- read_csv("./Analysis/data/merlin_sra_submission_20251029.csv")
 ```
 
 # Merge data
+
 ```{r}
 simplified_metadata_for_sra <- simplified_metadata_for_sra %>% rename('lab_vantage_s_number'='lv_id',
-                                                                      'sra_location_or_participant'='location_or_participant') 
+                                                                      'sra_location_or_participant'='location_or_participant')
+
 df <- left_join(df ,simplified_metadata_for_sra %>% select(-visit,-plate,-position))
 ```
 
 # Curate additional useful variables pertaining to specimen type and categories
+
 ```{r}
 # De-duplicate ncbi_id (isolate identifier) 
 isolates <- unique(df[["ncbi_id"]]) %>% sort
 duplicated_isolates <- df[["ncbi_id"]][duplicated(df[["ncbi_id"]])]
 df$ncbi_id_deduplicated <- df$ncbi_id
+
 for(i in isolates){
   if(i %in% duplicated_isolates){
     # I didn't de-duplicate H169_kitchen_v2 because it was not ESCrE
@@ -96,7 +101,8 @@ df$subject_type <- ifelse(df$subject_category_simplified %in% c("Bath","Kitchen"
 df$index <-  df$subject_category == 'humanindex' 
 ```
 
-# Save
+# Save the data
+
 ```{r}
 saveRDS(df,'./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS')
 ```

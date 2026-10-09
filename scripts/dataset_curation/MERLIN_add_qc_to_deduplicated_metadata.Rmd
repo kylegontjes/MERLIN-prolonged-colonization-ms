@@ -8,13 +8,15 @@ output: html_document
 ```{r setup, include=FALSE}
 require(knitr)
 knitr::opts_chunk$set(echo = TRUE)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/')
 ```
 
 # Environment
-```{r environment, echo=T, message=FALSE, include=T, results=T}
+
+```{r environment, echo=T, message=T, include=T, results=T}
 #Packages
 packages <- c("tidyverse")   
+
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
 
@@ -25,12 +27,14 @@ sessionInfo()
 ```
 
 # Load data
+
 ```{r}
 metadata <- readRDS("./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed.RDS") 
 qcd <- readRDS("./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS")
 ```
 
-# Merge qcd data
+# Merge QCD data with the metadata dataset
+
 ```{r}
 # Take the genomic IDs and QC flag entry. Subset to those matching WGS ID and merge by ; values
 merge_qcd_data <- function(WGS_id, QC_flag){
@@ -62,7 +66,8 @@ metadata_clean <- metadata %>% select(-no_correct_platemap,-WGS_qc_pass_runs_num
 colnames(metadata_clean) <- gsub("\\.|\\.\\.\\.","_",colnames(metadata_clean))
 ```
 
-# Save file
+# Save the file
+
 ```{r}
 saveRDS(metadata_clean,'./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.RDS')
 write.csv(metadata_clean,'./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd.csv')

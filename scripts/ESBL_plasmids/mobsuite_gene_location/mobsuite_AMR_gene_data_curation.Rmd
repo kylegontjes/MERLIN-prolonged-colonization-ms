@@ -7,14 +7,14 @@ output: html_document
 
 ```{r setup, include=FALSE}
 require(knitr)
-opts_knit$set(echo = TRUE,warning = FALSE, message = FALSE) 
+opts_knit$set(echo = TRUE,warning = T, message = T) 
 rm(list = ls())
-opts_knit$set(root.dir='~/Desktop/gl_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
 # Environment
 
-```{r environment, echo=T, message=FALSE, include=T, results=T}
+```{r environment, echo=T, message=T, include=T, results=T}
 #Packages
 packages <- c("tidyverse","kableExtra") 
 
@@ -63,12 +63,14 @@ mobsuite_contigs <- left_join(mobsuite_contigs,gene_pres)
 ```
 
 # Binary variable indicating chromosmoe or plasmid as chromosome or plasmid
+
 ```{r}
 mobsuite_contigs$chromosome <- ifelse(mobsuite_contigs$molecule_type == "chromosome", T, F)
 mobsuite_contigs$plasmid <- ifelse(mobsuite_contigs$molecule_type == "plasmid", T, F) 
 ```
 
 # Contig data
+
 ```{r}
 count_chromosome <- function(isolate,genes,isolate_contigs){
   chromosome <- subset(isolate_contigs, molecule_type == "chromosome")
@@ -101,6 +103,7 @@ mobsuite_gene_pres <- lapply(qc_genomes,FUN=count_genes_mobsuite,genes=genes,mob
 ```
 
 # Annotate w/ AMR + Blactam categories
+
 ```{r}
 AMR_genes <- amrfinder %>% subset(type =="AMR") %>% .$element_symbol_renamed %>% unique %>% sort 
 BLA_genes <- ESCrE_genotype_info$element_symbol_renamed %>% unique %>% sort
@@ -115,6 +118,7 @@ saveRDS(mobsuite_gene_pres,"./data/ESBL_plasmids/amrfinder_mobsuite_beta_lactama
 ```
 
 # Get isolate's plasmid clusters with BLA and ESCrE genes
+
 ```{r} 
 plasmid_sum_info_blactam <- mobsuite_gene_pres %>% subset(BETA_LACTAM_contig ==T)
 plasmid_sum_info_ESCrE <- mobsuite_gene_pres %>% subset(ESCrE_contig ==T)

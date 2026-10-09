@@ -1,20 +1,26 @@
 ---
-title: "Plasmid curation via MOB-Suite"
+title: "Plasmid data curation via MOB-Suite"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
+Notes:
+
+1. This data is from short-read assemblies, so MOB-Suite data represent predictions of plasmid content
+
+2. We used primary cluster ID data to use a big-picture representation of circulating plasmid lineages
+
 ```{r setup, include=FALSE}
 require(knitr)
-opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
-opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+opts_knit$set(echo = F,warning = T, message = T,error=T,comment=T) 
+opts_chunk$set(echo = F,warning = T, message = T,error=T,comment=T)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
 # Environment
 
-```{r environment, echo=T, message=FALSE, include=T, results=T}
+```{r environment, echo=T, message=T, include=T, results=T}
 #Packages
 packages <- c("tidyverse") 
 
@@ -36,7 +42,7 @@ sessionInfo()
 df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(WGS_escre == TRUE & qc_pass == TRUE) 
 ```
 
-# Curate mobsuite data
+# Curate MOBSuite data
 
 ```{r}
 # Mobtyper Results
@@ -46,8 +52,11 @@ mobsuite_contigs$location <- ifelse(mobsuite_contigs$primary_cluster_id=="-", "c
 
 # Save reports
 saveRDS(mobtyper,file="./data/mobsuite/mobtyper.RDS")
-saveRDS(mobsuite_contigs,file="./data/mobsuite/mobsuite_contigs.RDS") 
+saveRDS(mobsuite_contigs,file="./data/mobsuite/mobsuite_contigs.RDS")
+```
 
+# Create MOBSuite plasmid matrices
+```{r}
 # Convert Mobtyper data into a binary plasmid presence/absence matrix on the primary cluster and mash nearest neighbor level
 ## We will preferentially use the cluster matrix for downstream analyses
 mash_nn_matrix <- get_mobtyper_mash_nn_matrix(df = df, mobtyper = mobtyper)  

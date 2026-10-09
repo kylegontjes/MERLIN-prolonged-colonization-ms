@@ -9,7 +9,7 @@ output: html_document
 require(knitr)
 opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
 opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/')
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
  
 NOTE: Run the following analysis scripts before doing this!
@@ -18,14 +18,18 @@ NOTE: Run the following analysis scripts before doing this!
 
 2. E. coli phylogroup analyses: ./scripts/ecoli_phylogroup
 
+
 # Environment
 
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
-#Packages
-packages <- c("tidyverse") 
+# Packages
+packages <- c("tidyverse",'kableExtra') 
 
-#Load Packages
+# Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Source functions
+source("./lib/common_functions.R")
 
 # Print environment
 set.seed(45) 
@@ -36,21 +40,35 @@ sessionInfo()
 # Load data
 
 ```{r}  
-df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") 
-cluster_25_SNPs <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distance/MERLIN_25_SNP_clusters.RDS")
-ecoli_phylogroup <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS") 
+df <- readRDS("./data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") 
+cluster_assignments <- readRDS("./data/SNP_distances/SNP_cluster_assignments/MERLIN_SNP_cluster_assignments_public_references.RDS")
+ecoli_phylogroup <- readRDS("./data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS") 
 ``` 
 
 # Merge clustering data 
-## Nothing needed to do here
-
+## Verify similarity across SNP thresholds from 18 to 31
 ```{r}
-df <- left_join(df,cluster_25_SNPs)
+thresholds <- 0:100
+SNP_clustering_across_relevant_thresholds <- cluster_assignments %>% select(paste0("Species_ST_cluster_",thresholds))
+
+lapply(thresholds,FUN=function(x){
+  cluster_summary_statistics(SNP_clustering_across_relevant_thresholds[[paste0("Species_ST_cluster_",x)]]) %>% mutate(threshold=x) %>% select(threshold,everything())
+}) %>% do.call(rbind,.) %>% kable() %>% kable_classic_2()
 ```
 
-# Merge ecoli phylogroup data
+
+## Cluster assignments use a 18 SNP threshold (single linkage); renamed to Species_ST_cluster for consistency with prior scripts
+
+```{r}
+df <- left_join(df, cluster_assignments %>% 
+                  select(genomic_id,Species_ST_cluster_18) %>%
+                  rename(Species_ST_cluster = Species_ST_cluster_18))
+```
+
+# Merge E. coli Phylogroup data
 ## For genomes with E. coli, they should provide an E. coli phylogroup
 ## If genome is not Escherichia, this would be clarified as "Not Escherichia"
+
 ```{r}
 # Function
 get_clermont_data <- function(genomic_id, clermont_data){
@@ -67,8 +85,9 @@ get_clermont_data <- function(genomic_id, clermont_data){
 df$ecoli_phylogroup <- sapply(df$genomic_id, get_clermont_data, clermont_data = ecoli_phylogroup)
 ```
  
-# Save dataset
+# Save the dataset!
+
 ```{r}
-saveRDS(df,"/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS")
-write_csv(df,"/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.csv")
+saveRDS(df,"./data/dataset/MERLIN_cohort_metadata_final.RDS")
+write_csv(df,"./data/dataset/MERLIN_cohort_metadata_final.csv")
 ```

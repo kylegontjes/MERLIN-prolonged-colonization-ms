@@ -13,7 +13,7 @@
 
 <meta name="date" content="2026-10-06" />
 
-<title>Data Cleaning Step 2 - Curate the sequencing [QCD] data</title>
+<title>Generate AMRFinder + MOB-Suite linked data on gene presence</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,27 +350,21 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Data Cleaning Step 2 - Curate the
-sequencing [QCD] data</h1>
+<h1 class="title toc-ignore">Generate AMRFinder + MOB-Suite linked data
+on gene presence</h1>
 <h4 class="author">Kyle Gontjes</h4>
 <h4 class="date">2026-10-06</h4>
 
 </div>
 
 
-<p>Notes:</p>
-<ol style="list-style-type: decimal">
-<li><p>Removed three isolates from consideration on 10/30/25. See
-section “Drop isolates” for details.</p></li>
-<li><p>See Sequence_data/illumina_fastq folder for QC data and
-decision-making</p></li>
-</ol>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
 <pre class="r"><code>#Packages
-packages &lt;- c(&quot;tidyverse&quot;)   
+packages &lt;- c(&quot;tidyverse&quot;,&quot;kableExtra&quot;) 
+
 #Load Packages
-invisible(lapply(packages,library,character.only=T,quietly=T))</code></pre>
+invisible(lapply(packages,library,character.only=T,quietly=T)) </code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ## ✔ dplyr     1.2.1     ✔ readr     2.2.0
 ## ✔ forcats   1.0.1     ✔ stringr   1.6.0
@@ -380,7 +374,14 @@ invisible(lapply(packages,library,character.only=T,quietly=T))</code></pre>
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+## 
+## Attaching package: &#39;kableExtra&#39;
+## 
+## 
+## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     group_rows</code></pre>
 <pre class="r"><code># Print environment
 set.seed(45) 
 Sys.info()</code></pre>
@@ -419,135 +420,212 @@ Sys.info()</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] lubridate_1.9.5 forcats_1.0.1   stringr_1.6.0   dplyr_1.2.1    
-##  [5] purrr_1.2.2     readr_2.2.0     tidyr_1.3.2     tibble_3.3.1   
-##  [9] ggplot2_4.0.3   tidyverse_2.0.0 knitr_1.51     
+##  [1] kableExtra_1.4.1 lubridate_1.9.5  forcats_1.0.1    stringr_1.6.0   
+##  [5] dplyr_1.2.1      purrr_1.2.2      readr_2.2.0      tidyr_1.3.2     
+##  [9] tibble_3.3.1     ggplot2_4.0.3    tidyverse_2.0.0  knitr_1.51      
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.6.1     tidyselect_1.2.1  
-##  [5] jquerylib_0.1.4    scales_1.4.0       yaml_2.3.12        fastmap_1.2.0     
-##  [9] R6_2.6.1           generics_0.1.4     bslib_0.12.0       pillar_1.11.1     
-## [13] RColorBrewer_1.1-3 tzdb_0.5.0         rlang_1.3.0        stringi_1.8.9     
-## [17] cachem_1.1.0       xfun_0.60          sass_0.4.10        S7_0.2.2          
-## [21] otel_0.2.0         timechange_0.4.0   cli_3.6.6          withr_3.0.3       
-## [25] magrittr_2.0.5     digest_0.6.39      grid_4.6.1         rstudioapi_0.19.0 
-## [29] hms_1.1.4          lifecycle_1.0.5    vctrs_0.7.3        evaluate_1.0.5    
-## [33] glue_1.8.1         farver_2.1.2       rmarkdown_2.32     tools_4.6.1       
-## [37] pkgconfig_2.0.3    htmltools_0.5.9</code></pre>
+##  [5] xml2_1.6.0         jquerylib_0.1.4    textshaping_1.0.5  systemfonts_1.3.2 
+##  [9] scales_1.4.0       yaml_2.3.12        fastmap_1.2.0      R6_2.6.1          
+## [13] generics_0.1.4     svglite_2.2.2      bslib_0.12.0       pillar_1.11.1     
+## [17] RColorBrewer_1.1-3 tzdb_0.5.0         rlang_1.3.0        stringi_1.8.9     
+## [21] cachem_1.1.0       xfun_0.60          sass_0.4.10        S7_0.2.2          
+## [25] otel_0.2.0         viridisLite_0.4.3  timechange_0.4.0   cli_3.6.6         
+## [29] withr_3.0.3        magrittr_2.0.5     digest_0.6.39      grid_4.6.1        
+## [33] rstudioapi_0.19.0  hms_1.1.4          lifecycle_1.0.5    vctrs_0.7.3       
+## [37] evaluate_1.0.5     glue_1.8.1         farver_2.1.2       rmarkdown_2.32    
+## [41] tools_4.6.1        pkgconfig_2.0.3    htmltools_0.5.9</code></pre>
 </div>
-<div id="load-sequencing-qc-data-qcd" class="section level1">
-<h1>Load sequencing QC data (QCD)</h1>
-<pre class="r"><code>master_qc = read.csv(&quot;../../Sequence_data/illumina_fastq/master_qc_summary.csv&quot;)
-colnames(master_qc) &lt;- colnames(master_qc) %&gt;% gsub(&quot;\\.|\\.\\.\\.&quot;,&quot;_&quot;,.)</code></pre>
-</div>
-<div id="rename-variables-to-ensure-consistency" class="section level1">
-<h1>Rename variables to ensure consistency</h1>
-<pre class="r"><code># Genomic ID
-master_qc$genomic_id &lt;- master_qc$Sample
-# Pass QC
-master_qc$qc_pass &lt;- ifelse(master_qc$QC_Check==&#39;PASS&#39;, TRUE, FALSE) 
-# Genus
-master_qc$Genus &lt;- str_split(master_qc$Species,&quot; &quot;,simplify=T) %&gt;% .[,1]
-# Sequence type (ST)
-master_qc$ST &lt;- ifelse(master_qc$ST ==&quot;-&quot;,&quot;Unknown&quot;,master_qc$ST) 
-# Species + ST
-master_qc$Species_ST &lt;- paste0(master_qc$Species,&quot; ST &quot;,master_qc$ST) %&gt;% trimws(.,&quot;both&quot;)</code></pre>
-</div>
-<div id="escre-species-calls-thanks-to-upenn" class="section level1">
-<h1>ESCrE species calls (thanks to UPENN!)</h1>
-<pre class="r"><code>escre_species_calls &lt;- read_csv(&quot;../data/INTEGRATE_MERLIN_WGS_Species_calls_030925_LLC.csv&quot;) </code></pre>
-<pre><code>## Rows: 75 Columns: 4
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (1): Species
-## dbl (2): MERLIN_count, INTEGRATE_count
-## lgl (1): Enterobacterales
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>escre_list &lt;- c(escre_species_calls %&gt;% subset(Enterobacterales ==T)%&gt;% .$Species,&quot;Kluyvera sichuanensis&quot;)
-escre_list</code></pre>
-<pre><code>##  [1] &quot;Citrobacter amalonaticus&quot;   &quot;Citrobacter europaeus&quot;     
-##  [3] &quot;Citrobacter farmeri&quot;        &quot;Citrobacter freundii&quot;      
-##  [5] &quot;Citrobacter koseri&quot;         &quot;Citrobacter portucalensis&quot; 
-##  [7] &quot;Citrobacter sp&quot;             &quot;Citrobacter youngae&quot;       
-##  [9] &quot;Enterobacter asburiae&quot;      &quot;Enterobacter cloacae&quot;      
-## [11] &quot;Enterobacter hormaechei&quot;    &quot;Enterobacter kobei&quot;        
-## [13] &quot;Enterobacter ludwigii&quot;      &quot;Enterobacter roggenkampii&quot; 
-## [15] &quot;Escherichia coli&quot;           &quot;Hafnia alvei&quot;              
-## [17] &quot;Hafnia paralvei&quot;            &quot;Klebsiella aerogenes&quot;      
-## [19] &quot;Klebsiella grimontii&quot;       &quot;Klebsiella michiganensis&quot;  
-## [21] &quot;Klebsiella pneumoniae&quot;      &quot;Klebsiella quasipneumoniae&quot;
-## [23] &quot;Klebsiella variicola&quot;       &quot;Leclercia adecarboxylata&quot;  
-## [25] &quot;Morganella morganii&quot;        &quot;Proteus mirabilis&quot;         
-## [27] &quot;Providencia stuartii&quot;       &quot;Raoultella ornithinolytica&quot;
-## [29] &quot;Serratia liquefaciens&quot;      &quot;Serratia marcescens&quot;       
-## [31] &quot;Serratia nematodiphila&quot;     &quot;Serratia nevei&quot;            
-## [33] &quot;Kluyvera sichuanensis&quot;</code></pre>
-<pre class="r"><code>master_qc$WGS_escre &lt;- ifelse(master_qc$Species %in% escre_list,T,F)</code></pre>
-</div>
-<div id="get-the-specimens-sequencing-run" class="section level1">
-<h1>Get the specimen’s sequencing run</h1>
-<pre class="r"><code>run_11270_ES &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_11270-ES/DemuxStats_11270-ES.csv&#39;) %&gt;% subset(grepl(&quot;MERLIN&quot;,Description))%&gt;% mutate(run = &#39;11270-ES&#39;)
-run_9200_LL &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_9200-LL/DemuxStats_9200-LL_updated.csv&#39;) %&gt;% mutate(run = &#39;9200-LL&#39;)
-run_9200_LL_PurePlex &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_9200-LL_PurePlex/DemuxStats_9200-LL.csv&#39;)%&gt;% mutate(run = &#39;9200-LL_PurePlex&#39;)
-run_9200_LL_PurePlex_test &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_9200-LL_PurePlex_test/DemuxStats_9200-LL.csv&#39;)%&gt;% mutate(run = &#39;9200_LL_PurePlex_test&#39;)
- 
-sequencing_run_records &lt;- rbind(run_11270_ES,run_9200_LL,run_9200_LL_PurePlex,run_9200_LL_PurePlex_test)
+<div id="load-data" class="section level1">
+<h1>Load data</h1>
+<pre class="r"><code># Dataframe
+df &lt;-  readRDS(&quot;./data/dataset/MERLIN_cohort_metadata_final.RDS&quot;)  %&gt;% subset(WGS_escre == TRUE &amp; qc_pass == TRUE) 
+isolates &lt;- df$genomic_id
 
-get_sequencing_run &lt;- function(isolate,sequencing_record){
-  isolate_hits &lt;- subset(sequencing_record,Description == isolate)
-  if(nrow(isolate_hits)&gt;1){
-    project = paste0(isolate_hits$run,collapse=&quot;;&quot;)
-  } else {
-     project = isolate_hits$run
-  }
-  return(project)
+# AMRFinder
+amrfinder &lt;- readRDS(&quot;./data/amrfinder/amrfinder_cleaned.RDS&quot;)  %&gt;% subset(genomic_id %in% isolates)
+amrfinder_mat &lt;- readRDS(&quot;./data/amrfinder/amrfinder_matrix.RDS&quot;) %&gt;% subset(rownames(.) %in% isolates)
+ESCrE_genotype_info &lt;- readRDS(&quot;./data/amrfinder/beta_lactamase_summary_MERLIN_cohort.RDS&quot;)
+ 
+# MOB-Suite
+mobsuite_contigs &lt;- readRDS(&quot;./data/mobsuite/mobsuite_contigs.RDS&quot;) %&gt;% subset(genomic_id%in% isolates)
+mobtyper &lt;- readRDS(&quot;./data/mobsuite/mobtyper.RDS&quot;)%&gt;% subset(genomic_id %in% isolates)</code></pre>
+</div>
+<div id="annotate-contigs-with-amrfinder-data" class="section level1">
+<h1>Annotate contigs with AMRFinder data</h1>
+<pre class="r"><code>genes &lt;- ESCrE_genotype_info$element_symbol_renamed %&gt;% unique %&gt;% sort
+
+annotate_contigs &lt;- function(gene,amrfinder_df,mobsuite_contig_df){
+  amrfinder_w_gene &lt;- amrfinder_df %&gt;% subset(element_symbol_renamed == gene)
+  contigs_w_gene &lt;- amrfinder_w_gene$contig_id %&gt;% sort %&gt;% unique
+  pres &lt;- ifelse(mobsuite_contig_df$contig_id %in% contigs_w_gene,1,0)
+  row &lt;- cbind.data.frame(pres) %&gt;% `colnames&lt;-`(c(gene)) 
+  return(row)
 }
 
-master_qc$sequencing_run &lt;- sapply(master_qc$Sample,get_sequencing_run,sequencing_run_records)</code></pre>
-</div>
-<div id="drop-isolates" class="section level1">
-<h1>Drop isolates</h1>
-<div id="as-of-103025-drop-merlin_285-merlin_246-and-merlin_231" class="section level2">
-<h2>As of 10/30/25: Drop MERLIN_285, MERLIN_246, and MERLIN_231</h2>
-<div id="merlin_285---s-221005-00370---transcription-error-which-could-not-be-resolved." class="section level3">
-<h3>1. MERLIN_285 - S-221005-00370 - Transcription error which could not
-be resolved.</h3>
-</div>
-<div id="merlin_246---s-221019-01336---based-on-plate-map-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_211.-removed-melrin_246-in-preference-of-merlin_211.-needed-to-change-the-merlin_remove_duplicates-file-to-reflect-this" class="section level3">
-<h3>2. MERLIN_246 - S-221019-01336 - Based on plate map review and
-sequencing results, this is a duplicate of genomic_id MERLIN_211.
-Removed MELRIN_246 in preference of MERLIN_211. Needed to change the
-MERLIN_remove_duplicates file to reflect this…</h3>
-</div>
-<div id="merlin_231---s-221221-00536---based-on-lv-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_250." class="section level3">
-<h3>3. MERLIN_231 - S-221221-00536 - Based on LV review and sequencing
-results, this is a duplicate of genomic_id MERLIN_250.</h3>
-<pre class="r"><code>paste0(&quot;Number of qc entries at this stage: &quot;,nrow(master_qc))</code></pre>
-<pre><code>## [1] &quot;Number of qc entries at this stage: 422&quot;</code></pre>
-<pre class="r"><code># Remove these three isolates
-isolates_to_drop &lt;- c(&quot;MERLIN_285&quot;,&quot;MERLIN_246&quot;,&quot;MERLIN_231&quot;)
-paste0(&quot;Dropping the following entries:&quot;)</code></pre>
-<pre><code>## [1] &quot;Dropping the following entries:&quot;</code></pre>
-<pre class="r"><code>master_qc$genomic_id[master_qc$genomic_id %in% isolates_to_drop]</code></pre>
-<pre><code>## [1] &quot;MERLIN_246&quot; &quot;MERLIN_231&quot; &quot;MERLIN_246&quot; &quot;MERLIN_285&quot; &quot;MERLIN_246&quot;</code></pre>
-<pre class="r"><code>master_qc &lt;- subset(master_qc,!genomic_id %in% isolates_to_drop)
+gene_pres &lt;- lapply(genes,FUN=annotate_contigs,amrfinder_df = amrfinder,mobsuite_contig_df = mobsuite_contigs) %&gt;% do.call(cbind,.) %&gt;% mutate(contig_id = mobsuite_contigs$contig_id)
 
-# Count after removal
-paste0(&quot;Number of qc entries at this stage: &quot;,nrow(master_qc))</code></pre>
-<pre><code>## [1] &quot;Number of qc entries at this stage: 417&quot;</code></pre>
+mobsuite_contigs &lt;- left_join(mobsuite_contigs,gene_pres)</code></pre>
+<pre><code>## Joining with `by = join_by(contig_id)`</code></pre>
 </div>
+<div id="binary-variable-indicating-chromosmoe-or-plasmid-as-chromosome-or-plasmid" class="section level1">
+<h1>Binary variable indicating chromosmoe or plasmid as chromosome or
+plasmid</h1>
+<pre class="r"><code>mobsuite_contigs$chromosome &lt;- ifelse(mobsuite_contigs$molecule_type == &quot;chromosome&quot;, T, F)
+mobsuite_contigs$plasmid &lt;- ifelse(mobsuite_contigs$molecule_type == &quot;plasmid&quot;, T, F) </code></pre>
 </div>
-</div>
-<div id="save-the-data" class="section level1">
-<h1>Save the data</h1>
-<pre class="r"><code># All
-saveRDS(master_qc,&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS&quot;)
+<div id="contig-data" class="section level1">
+<h1>Contig data</h1>
+<pre class="r"><code>count_chromosome &lt;- function(isolate,genes,isolate_contigs){
+  chromosome &lt;- subset(isolate_contigs, molecule_type == &quot;chromosome&quot;)
+  chromosome_sum &lt;- chromosome %&gt;% select(genes) %&gt;% summarise_all(sum)
+  chromosome_sum_row &lt;- cbind(genomic_id = isolate, type = &quot;chromosome&quot;, chromosome_sum)
+  return(chromosome_sum_row)
+}
 
-# QC passing and not negative controls
-master_qc_passing &lt;- subset(master_qc,qc_pass == T &amp; grepl(&quot;NEG_CTL&quot;,genomic_id) == F)
-saveRDS(master_qc_passing,&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_passing.RDS&quot;)</code></pre>
+count_plasmid &lt;- function(cluster,isolate,genes,isolate_contigs){
+  plasmid &lt;- subset(isolate_contigs, primary_cluster_id == cluster)
+  plasmid_sum &lt;- plasmid %&gt;% select(genes) %&gt;% summarise_all(sum)
+  plasmid_sum_row &lt;- cbind(genomic_id = isolate, type = cluster, plasmid_sum)
+  return(plasmid_sum_row)
+}
+
+count_genes_mobsuite &lt;- function(isolate,genes,mobsuite_contigs){
+  isolate_contigs &lt;- mobsuite_contigs %&gt;% subset(genomic_id == isolate)
+  # Chromsome
+  chromosome_info &lt;- count_chromosome(isolate,genes,isolate_contigs)
+  # Plasmids
+  plasmids &lt;- isolate_contigs$primary_cluster_id %&gt;% unique %&gt;% subset(. !=&quot;-&quot;) %&gt;% sort
+  plasmid_info &lt;- lapply(plasmids,FUN=count_plasmid,isolate=isolate,genes =genes,isolate_contigs=isolate_contigs) %&gt;% do.call(rbind,.)
+  # Overall info
+  data &lt;- rbind(chromosome_info,plasmid_info)
+  return(data)
+} 
+qc_genomes &lt;- amrfinder$genomic_id %&gt;% unique %&gt;% sort
+
+mobsuite_gene_pres &lt;- lapply(qc_genomes,FUN=count_genes_mobsuite,genes=genes,mobsuite_contigs=mobsuite_contigs) %&gt;% do.call(rbind,.)</code></pre>
+<pre><code>## Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
+## ℹ Please use `all_of()` or `any_of()` instead.
+##   # Was:
+##   data %&gt;% select(genes)
+## 
+##   # Now:
+##   data %&gt;% select(all_of(genes))
+## 
+## See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.
+## This warning is displayed once per session.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
+</div>
+<div id="annotate-w-amr-blactam-categories" class="section level1">
+<h1>Annotate w/ AMR + Blactam categories</h1>
+<pre class="r"><code>AMR_genes &lt;- amrfinder %&gt;% subset(type ==&quot;AMR&quot;) %&gt;% .$element_symbol_renamed %&gt;% unique %&gt;% sort 
+BLA_genes &lt;- ESCrE_genotype_info$element_symbol_renamed %&gt;% unique %&gt;% sort
+ESCrE_genes &lt;- ESCrE_genotype_info %&gt;% subset(ESCrE ==T) %&gt;% .$element_symbol_renamed %&gt;% unique %&gt;% sort
+
+mobsuite_gene_pres$AMR_contig &lt;- ifelse(mobsuite_gene_pres %&gt;% select(any_of(AMR_genes)) %&gt;% rowSums()&gt;0,T,F)
+mobsuite_gene_pres$BETA_LACTAM_contig &lt;- ifelse(mobsuite_gene_pres %&gt;% select(any_of(BLA_genes)) %&gt;% rowSums()&gt;0,T,F) 
+mobsuite_gene_pres$ESCrE_contig &lt;- ifelse(mobsuite_gene_pres %&gt;% select(any_of(ESCrE_genes)) %&gt;% rowSums()&gt;0,T,F) 
+
+# Save the mobsuite gene presence data
+saveRDS(mobsuite_gene_pres,&quot;./data/ESBL_plasmids/amrfinder_mobsuite_beta_lactamase_presence.RDS&quot;)</code></pre>
+</div>
+<div id="get-isolates-plasmid-clusters-with-bla-and-escre-genes" class="section level1">
+<h1>Get isolate’s plasmid clusters with BLA and ESCrE genes</h1>
+<pre class="r"><code>plasmid_sum_info_blactam &lt;- mobsuite_gene_pres %&gt;% subset(BETA_LACTAM_contig ==T)
+plasmid_sum_info_ESCrE &lt;- mobsuite_gene_pres %&gt;% subset(ESCrE_contig ==T)
+
+get_mobtyper_cluster_from_amrfinder &lt;- function (df, mobtyper) 
+{
+    plasmid_cluster &lt;- mobtyper$type %&gt;% unique
+    lapply(plasmid_cluster, FUN = function(x, df, mobtyper) {
+        isolates_with_plasmid &lt;- subset(mobtyper, type == 
+            x) %&gt;% select(genomic_id) %&gt;% unlist
+        row &lt;- assign(paste0(x), ifelse(df$genomic_id %in% isolates_with_plasmid, 
+            1, 0))
+        return(row)
+    }, df, mobtyper) %&gt;% do.call(bind_cols, .) %&gt;% as.data.frame %&gt;% 
+        `colnames&lt;-`(plasmid_cluster) %&gt;% `rownames&lt;-`(df$genomic_id)
+}
+
+# B-lactamase gene contig matrix
+## Implementation
+blactam_plasmid_contigs &lt;- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum_info_blactam)</code></pre>
+<pre><code>## New names:
+## • `` -&gt; `...1`
+## • `` -&gt; `...2`
+## • `` -&gt; `...3`
+## • `` -&gt; `...4`
+## • `` -&gt; `...5`
+## • `` -&gt; `...6`
+## • `` -&gt; `...7`
+## • `` -&gt; `...8`
+## • `` -&gt; `...9`
+## • `` -&gt; `...10`
+## • `` -&gt; `...11`
+## • `` -&gt; `...12`
+## • `` -&gt; `...13`
+## • `` -&gt; `...14`
+## • `` -&gt; `...15`
+## • `` -&gt; `...16`
+## • `` -&gt; `...17`
+## • `` -&gt; `...18`
+## • `` -&gt; `...19`
+## • `` -&gt; `...20`
+## • `` -&gt; `...21`
+## • `` -&gt; `...22`
+## • `` -&gt; `...23`
+## • `` -&gt; `...24`
+## • `` -&gt; `...25`
+## • `` -&gt; `...26`
+## • `` -&gt; `...27`
+## • `` -&gt; `...28`
+## • `` -&gt; `...29`
+## • `` -&gt; `...30`
+## • `` -&gt; `...31`
+## • `` -&gt; `...32`
+## • `` -&gt; `...33`
+## • `` -&gt; `...34`
+## • `` -&gt; `...35`
+## • `` -&gt; `...36`
+## • `` -&gt; `...37`</code></pre>
+<pre class="r"><code>## Save
+saveRDS(blactam_plasmid_contigs,&quot;./data/ESBL_plasmids/amrfinder_beta_lactam_contig_matrix.RDS&quot;)
+
+# ESCrE gene contig matrix
+## Implementation
+ESCrE_plasmid_contigs &lt;- get_mobtyper_cluster_from_amrfinder(df,plasmid_sum_info_ESCrE)</code></pre>
+<pre><code>## New names:
+## • `` -&gt; `...1`
+## • `` -&gt; `...2`
+## • `` -&gt; `...3`
+## • `` -&gt; `...4`
+## • `` -&gt; `...5`
+## • `` -&gt; `...6`
+## • `` -&gt; `...7`
+## • `` -&gt; `...8`
+## • `` -&gt; `...9`
+## • `` -&gt; `...10`
+## • `` -&gt; `...11`
+## • `` -&gt; `...12`
+## • `` -&gt; `...13`
+## • `` -&gt; `...14`
+## • `` -&gt; `...15`
+## • `` -&gt; `...16`
+## • `` -&gt; `...17`
+## • `` -&gt; `...18`
+## • `` -&gt; `...19`
+## • `` -&gt; `...20`
+## • `` -&gt; `...21`
+## • `` -&gt; `...22`
+## • `` -&gt; `...23`
+## • `` -&gt; `...24`
+## • `` -&gt; `...25`
+## • `` -&gt; `...26`
+## • `` -&gt; `...27`</code></pre>
+<pre class="r"><code>## Save
+saveRDS(ESCrE_plasmid_contigs,&quot;./data/ESBL_plasmids/amrfinder_ESCrE_contig_matrix.RDS&quot;)</code></pre>
 </div>
 
 

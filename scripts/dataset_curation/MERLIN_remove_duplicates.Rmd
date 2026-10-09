@@ -8,7 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 require(knitr)
 knitr::opts_chunk$set(echo = TRUE)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/')
 ```
 
 # Environment
@@ -16,6 +16,7 @@ opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
 packages <- c("tidyverse",'ape','kableExtra')   
+
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
 
@@ -45,6 +46,7 @@ get_escre_data <- function(passing_genomes){
   }
   cbind.data.frame(genomic_id_qc_pass_escre)
 }
+
 #Metadata entries with ESCrE passing isolates
 metadata$genomic_id_qc_pass_escre <- lapply(metadata$genomic_id_qc_pass,get_escre_data) %>% unlist
 metadata$genomic_id_qc_pass_escre_num <-  sapply(metadata$genomic_id_qc_pass_escre,FUN=function(x){
@@ -56,6 +58,7 @@ metadata$genomic_id <- metadata$genomic_id_qc_pass_escre
 
 # Identify and deal with the duplicates 
 ## Note: Some duplicate rows existed  
+
 ```{r}
 table(metadata$genomic_id_qc_pass_escre_num )
 metadata_duplicates <- subset(metadata,genomic_id_qc_pass_escre_num > 1)
@@ -63,10 +66,12 @@ paste0("Number of duplicates: ", nrow(metadata_duplicates))
 paste0("Number of unique QC passing duplicates duplicates: ", length(metadata_duplicates$genomic_id_qc_pass_escre %>% unique))
 ```
 
-# Distance data
+# Distance data was from an overall analysis using the concatenated reference genomes (good enough for this initial pass as we're comparing results from one isolate to another isolate)
 ## Assembly
+
 ```{r}
-setwd("~/Desktop/gl_merlin/Sequence_data/variant_calling/2025-03-13_SNPKIT_all/")
+setwd("~/Desktop/gl_nfs/Project_MERLIN/Sequence_data/variant_calling/2025-03-13_SNPKIT_all/")
+
 # C freundii
 cfreundii_fa <- read.dna("./cfreundii/2025_03_14_12_34_14_core_results/phylokit/results/gubbins_masked/cfreundii_all_gubbins_masked_var_sites.fa",
                 format = "fasta") 
@@ -93,7 +98,8 @@ kpneumoniae_fa <- read.dna("./kpneumoniae/2025_04_10_13_00_19_core_results/phylo
 sliquefaciens_fa <- read.dna("./sliquefaciens/2025_03_16_14_13_11_core_results/gubbins/2025_03_16_14_13_11_MERLIN_259_reference_genome_aln_w_alt_allele_unmapped.fa",format="fasta")
 ```
 
-## DNA Matrix
+## Curate a DNA Matrix
+
 ```{r}
 dna_matrix <- function(fa,reference){
 ape::dist.dna(x = fa, # DNAbin object as read in above
@@ -125,6 +131,7 @@ duplicates_qc <- lapply(duplicates,FUN=function(x){
 # 1. MERLIN_128;MERLIN_45
 ## Story: They are the same, 1 SNP difference
 ## Choice: Keep 128
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[1])
 MERLIN_128_MERLIN_45 <- duplicates_qc[["MERLIN_128;MERLIN_45"]]
@@ -135,7 +142,7 @@ paste0("They are the same: 1 SNP different")
 ecoli_mat[MERLIN_128_MERLIN_45$Sample,MERLIN_128_MERLIN_45$Sample]
 
 paste0("Keep MERLIN_128")
-MERLIN_128_MERLIN_45 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_128_MERLIN_45 %>% arrange(`Total_of_contigs`,-N50)  %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_45")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_128;MERLIN_45",gsub("MERLIN_45","",metadata$genomic_id) ,metadata$genomic_id) 
@@ -144,6 +151,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_128;MERLIN_45",gsub
 # 2. MERLIN_148 MERLIN_193
 ## Story: They are the same, 0 SNP difference
 ## Choice: Keep 193
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[2])
 MERLIN_148_MERLIN_193 <- duplicates_qc[["MERLIN_148;MERLIN_193"]]
@@ -154,7 +162,7 @@ paste0("They are the same: 0 SNP different")
 ecoli_mat[MERLIN_148_MERLIN_193$Sample,MERLIN_148_MERLIN_193$Sample]
 
 paste0("Keep MERLIN_193")
-MERLIN_148_MERLIN_193 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_148_MERLIN_193 %>% arrange(`Total_of_contigs`,-N50)   %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_148")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_148;MERLIN_193",gsub("MERLIN_148","",metadata$genomic_id) ,metadata$genomic_id) 
@@ -163,6 +171,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_148;MERLIN_193",gsu
 # 3. MERLIN_210 MERLIN_198
 ## Story: They are the same, 1 SNP difference
 ## Choice: Keep 210
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[3])
 MERLIN_210_MERLIN_198 <- duplicates_qc[["MERLIN_210;MERLIN_198"]]
@@ -173,7 +182,7 @@ paste0("They are the same: 1 SNP different")
 kpneumoniae_mat[MERLIN_210_MERLIN_198$Sample,MERLIN_210_MERLIN_198$Sample]
 
 paste0("Keep MERLIN_210")
-MERLIN_210_MERLIN_198 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_210_MERLIN_198 %>% arrange(`Total_of_contigs`,-N50)   %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_198")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_210;MERLIN_198",gsub("MERLIN_198","",metadata$genomic_id) ,metadata$genomic_id) 
@@ -182,6 +191,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_210;MERLIN_198",gsu
 # 4. MERLIN_265 MERLIN_181
 ## Story: They are the same, 0 SNP difference
 ## Choice: Keep 265
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[4])
 MERLIN_265_MERLIN_181 <- duplicates_qc[["MERLIN_265;MERLIN_181"]]
@@ -192,7 +202,7 @@ paste0("They are the same: 0 SNP different")
 ecoli_mat[MERLIN_265_MERLIN_181$Sample,MERLIN_265_MERLIN_181$Sample]
 
 paste0("Keep MERLIN_265")
-MERLIN_265_MERLIN_181 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_265_MERLIN_181 %>% arrange(`Total_of_contigs`,-N50)  %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_181")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_265;MERLIN_181",gsub("MERLIN_181","",metadata$genomic_id) ,metadata$genomic_id) 
@@ -201,6 +211,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_265;MERLIN_181",gsu
 # 5. MERLIN_23 MERLIN_34
 ## Story: They are the same, 0 SNP difference
 ## Choice: Keep 34
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[5])
 MERLIN_23_MERLIN_34 <- duplicates_qc[["MERLIN_23;MERLIN_34"]]
@@ -211,7 +222,7 @@ paste0("They are the same: 0 SNP different")
 cportucalensis_mat[MERLIN_23_MERLIN_34$Sample,MERLIN_23_MERLIN_34$Sample]
 
 paste0("Keep MERLIN_34")
-MERLIN_23_MERLIN_34 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_23_MERLIN_34 %>% arrange(`Total_of_contigs`,-N50) %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_23")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_23;MERLIN_34",gsub("MERLIN_23","",metadata$genomic_id) ,metadata$genomic_id)  
@@ -220,6 +231,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_23;MERLIN_34",gsub(
 # 6. MERLIN_105 MERLIN_273
 ## Story: They are virtually the same, 5 SNP difference
 ## Choice: Keep 105
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[6])
 MERLIN_105_MERLIN_273 <- duplicates_qc[["MERLIN_105;MERLIN_273"]]
@@ -230,7 +242,7 @@ paste0("They are the same: 5 SNP different")
 kpneumoniae_mat[MERLIN_105_MERLIN_273$Sample,MERLIN_105_MERLIN_273$Sample]
 
 paste0("Keep MERLIN_105")
-MERLIN_105_MERLIN_273 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_105_MERLIN_273 %>% arrange(`Total_of_contigs`,-N50) %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_273")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_105;MERLIN_273",gsub("MERLIN_273","",metadata$genomic_id) ,metadata$genomic_id) 
@@ -239,6 +251,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_105;MERLIN_273",gsu
 # 7. MERLIN_13 MERLIN_19 
 ## Story: They are different species 
 ## Choice: Dulicate rows and split up!
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[7])
 MERLIN_13_MERLIN_19 <- duplicates_qc[["MERLIN_13;MERLIN_19"]]
@@ -260,6 +273,7 @@ metadata$genomic_id <- ifelse(metadata$map_name == MERLIN_13_MERLIN_19_mapname &
 # 8. MERLIN_35 MERLIN_46
 ## Story: They are the same - 1 SNP difference
 ## Choice: Keep MERLIN_46
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[8])
 MERLIN_35_MERLIN_46 <- duplicates_qc[["MERLIN_35;MERLIN_46"]]
@@ -270,7 +284,7 @@ paste0("They are the same: 1 SNP different")
 eludwigii_mat[MERLIN_35_MERLIN_46$Sample,MERLIN_35_MERLIN_46$Sample]
 
 paste0("Keep MERLIN_46")
-MERLIN_35_MERLIN_46 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_35_MERLIN_46 %>% arrange(`Total_of_contigs`,-N50)  %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_35")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_35;MERLIN_46",gsub("MERLIN_35","",metadata$genomic_id) ,metadata$genomic_id) 
@@ -279,6 +293,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_35;MERLIN_46",gsub(
 # 9. MERLIN_RE_3 MERLIN_289
 ## Story: They are the same - 0 SNP difference
 ## Choice: Keep MERLIN_RE_3
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[9])
 MERLIN_RE_3_MERLIN_289 <- duplicates_qc[["MERLIN_RE_3;MERLIN_289"]]
@@ -289,7 +304,7 @@ paste0("They are the same: 0 SNP different")
 ecoli_mat[MERLIN_RE_3_MERLIN_289$Sample,MERLIN_RE_3_MERLIN_289$Sample]
 
 paste0("Keep MERLIN_RE_3")
-MERLIN_RE_3_MERLIN_289 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_RE_3_MERLIN_289 %>% arrange(`Total_of_contigs`,-N50) %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_289")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_RE_3;MERLIN_289",gsub("MERLIN_289","",metadata$genomic_id) ,metadata$genomic_id) 
@@ -298,6 +313,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_RE_3;MERLIN_289",gs
 # 10. MERLIN_234 MERLIN_233 
 ## Story: They are close enough for the purposes of this study (i.e., 25 SNP threshold for transmission clusters)!
 ## Choice: Keep 234
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[10])
 MERLIN_234_MERLIN_233 <- duplicates_qc[["MERLIN_234;MERLIN_233"]]
@@ -309,7 +325,7 @@ paste0("They are close enough: 25 SNP different")
 kpneumoniae_mat[MERLIN_234_MERLIN_233$Sample,MERLIN_234_MERLIN_233$Sample]
 
 paste0("Keep MERLIN_234")
-MERLIN_234_MERLIN_233 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_234_MERLIN_233 %>% arrange(`Total_of_contigs`,-N50) %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_233")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_234;MERLIN_233",gsub("MERLIN_233","",metadata$genomic_id) ,metadata$genomic_id) 
@@ -318,6 +334,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_234;MERLIN_233",gsu
 # 11. MERLIN_120 MERLIN_287 
 ## Story: They are very similar 1 SNP difference
 ## Choice: Keep 287
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[11])
 MERLIN_120_MERLIN_287 <- duplicates_qc[[duplicates[11]]]
@@ -328,7 +345,7 @@ paste0("They are the same: 1 SNP different")
 kpneumoniae_mat[MERLIN_120_MERLIN_287$Sample,MERLIN_120_MERLIN_287$Sample]
 
 paste0("Keep MERLIN_287")
-MERLIN_120_MERLIN_287 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_120_MERLIN_287 %>% arrange(`Total_of_contigs`,-N50) %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_120")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_120;MERLIN_287",gsub("MERLIN_120","",metadata$genomic_id) ,metadata$genomic_id) 
@@ -337,6 +354,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_120;MERLIN_287",gsu
 # 12. MERLIN_118 MERLIN_87 
 ## Story: They are very similar 1 SNP difference
 ## Choice: Keep 87
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[12])
 MERLIN_118_MERLIN_87 <- duplicates_qc[[duplicates[12]]]
@@ -347,7 +365,7 @@ paste0("They are the same: 1 SNP different")
 kpneumoniae_mat[MERLIN_118_MERLIN_87$Sample,MERLIN_118_MERLIN_87$Sample]
 
 paste0("Keep MERLIN_87")
-MERLIN_118_MERLIN_87 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_118_MERLIN_87 %>% arrange(`Total_of_contigs`,-N50) %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_118")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_118;MERLIN_87",gsub("MERLIN_118","",metadata$genomic_id) ,metadata$genomic_id) 
@@ -356,6 +374,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_118;MERLIN_87",gsub
 # 13. MERLIN_RE_8 MERLIN_294 MERLIN_61
 ## Story: They are very similar 1-2 SNP differences
 ## Choice: Keep 61
+
 ```{r}
 paste0("Duplicate of interest: ",duplicates[13])
 MERLIN_RE_8_MERLIN_294_MERLIN_61 <- duplicates_qc[[duplicates[13]]]
@@ -366,7 +385,7 @@ paste0("They are the same: 1-2 SNP different")
 cfreundii_mat[MERLIN_RE_8_MERLIN_294_MERLIN_61$Sample,MERLIN_RE_8_MERLIN_294_MERLIN_61$Sample]
 
 paste0("Keep MERLIN_61")
-MERLIN_RE_8_MERLIN_294_MERLIN_61 %>% arrange(`Total_of_contigs`,-N50)  %>% gontjesr::favorite_kable()
+MERLIN_RE_8_MERLIN_294_MERLIN_61 %>% arrange(`Total_of_contigs`,-N50) %>% kable %>% kableExtra::kable_classic_2()
 
 paste0("Drop MERLIN_294 & MERLIN_RE_8")
 metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_RE_8;MERLIN_294;MERLIN_61",gsub("MERLIN_294","",metadata$genomic_id)  %>% gsub("MERLIN_RE_8","",.),metadata$genomic_id)  
@@ -374,6 +393,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id == "MERLIN_RE_8;MERLIN_294;MER
 
 # Validate that the duplicates were dealt with
 ## Expectation: No TRUE values
+
 ```{r}
 remaining_duplicates <- names(duplicates_qc)[names(duplicates_qc) %in% metadata$genomic_id] 
 num_remaining_duplicates <- length(remaining_duplicates)
@@ -390,6 +410,7 @@ if (num_remaining_duplicates > 0) {
 
 # Curate the final genomic_id variable
 ## For non-ESCrE, the qc-passing IDs are provided. If no qc-passing IDs exist, the overall list of that sample's genome IDs are provided
+
 ```{r}
 # Trim whitespace
 metadata$genomic_id <- trimws(metadata$genomic_id,which = 'both',whitespace = ";")
@@ -399,7 +420,7 @@ metadata$genomic_id <- ifelse(metadata$genomic_id=='' & metadata$WGS_qc_pass_ids
 metadata$genomic_id <- ifelse(metadata$genomic_id=='' & metadata$WGS_qc_pass_ids_num == 0,metadata$Genome_ID,metadata$genomic_id)
 ```
 
-# Save de duplicated
+# Save the de-duplicated dataset
 ```{r}
 saveRDS(metadata,"./MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed.RDS")
 ```

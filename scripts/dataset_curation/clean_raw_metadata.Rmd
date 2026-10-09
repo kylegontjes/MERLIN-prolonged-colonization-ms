@@ -29,19 +29,22 @@ Notes:
 
 -   F. Removed notes in parentheses from isolate_id
 
+6. Updating genomics variant calling to use public reference genomes on 10/06/25
+
 ```{r setup, include=FALSE}
 require(knitr)
 opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
 opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/')
 ```
 
 # Environment
 
-```{r environment, echo=T, message=FALSE, include=T, results=T}
-#Packages
+```{r environment, echo=T, message=T, include=T, results=T}
+# Packages
 packages <- c("tidyverse")   
-#Load Packages
+
+# Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
 
 # Print environment
@@ -50,16 +53,16 @@ Sys.info()
 sessionInfo()
 ```
 
-# Load Data
+# Load the data
 
 ```{r}
 metadata <- readxl::read_xlsx('../data/Positive_ND_Isolates_Sent_to_MI_comb_sensi_etest_20251017.xlsx', trim_ws = T)  
 metadata <- as.data.frame(metadata) 
 ```
 
-# Clean Datasets
+# Clean the dataset
 
-## Isolate variable
+## Isolate variable recoding to ensure consistency
 
 ```{r}
 # Harmonize isolate ID information
@@ -70,7 +73,7 @@ metadata$isolate_id_recode <- gsub(pattern = "Petnape", replacement = "Pet Nape"
 metadata$isolate_id_recode <- gsub(pattern = "Petstool", replacement = "Pet Stool", metadata$isolate_id_recode)
 ```
 
-## Household id (correct lowercase)
+## Household ID (correct lowercase)
 
 ```{r}
 # Correct lowercase

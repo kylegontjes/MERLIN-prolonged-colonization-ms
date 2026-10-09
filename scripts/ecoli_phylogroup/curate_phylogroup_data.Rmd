@@ -1,5 +1,5 @@
 ---
-title: "Curate_phylogroup_data"
+title: "Curate E. coli phylogroup data"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -9,7 +9,7 @@ output: html_document
 require(knitr)
 opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
 opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
 # Environment
@@ -26,11 +26,12 @@ set.seed(45)
 Sys.info()
 sessionInfo()
 ```
+
 # Load and clean data
 
 ```{r}
 # Load data
-clermont_data <- read.delim("~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_phylogroups.txt",header = F) 
+clermont_data <- read.delim("./data/ecoli_phylogroup/ecoli_phylogroup_phylogroups.txt",header = F) 
 colnames(clermont_data) <-  c("file","PCR_detected_genes","quadruplex_genotype",'quadruplex_ambiguity','ecoli_phylogroup',"mash_file")
 clermont_data <- clermont_data %>% select(-mash_file)  
 
@@ -40,6 +41,7 @@ clermont_data <- clermont_data %>% select(-file)
 ```
 
 # Save Data
+
 ```{r}
-saveRDS(clermont_data,"~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS")
+saveRDS(clermont_data,"./data/ecoli_phylogroup/ecoli_phylogroup_curated.RDS")
 ```

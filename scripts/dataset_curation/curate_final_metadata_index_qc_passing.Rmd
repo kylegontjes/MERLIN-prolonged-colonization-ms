@@ -9,7 +9,7 @@ output: html_document
 require(knitr)
 opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
 opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/')
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/')
 ```
  
 # Environment
@@ -31,7 +31,8 @@ sessionInfo()
 
 ```{r}  
 # Overall dataset
-df <- readRDS("/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS")
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS")
+
 paste0("Number of metadata entries: ", nrow(df))
 ```
 
@@ -47,7 +48,8 @@ paste0("Number of index isolates: ",nrow(df_index))
 ```
 
 # Save
+
 ```{r}
-saveRDS(df_index,"/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")
-write_csv(df_index,"/Users/kgontjes/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_index_cases_metadata_final.csv")
+saveRDS(df_index,"./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")
+write_csv(df_index,"./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_index_cases_metadata_final.csv")
 ``` 

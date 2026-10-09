@@ -13,7 +13,7 @@
 
 <meta name="date" content="2026-10-06" />
 
-<title>Data Cleaning Step 2 - Curate the sequencing [QCD] data</title>
+<title>Persistent colonization across SNP thresholds using concatenated reference genomes</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,204 +350,148 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Data Cleaning Step 2 - Curate the
-sequencing [QCD] data</h1>
+<h1 class="title toc-ignore">Persistent colonization across SNP
+thresholds using concatenated reference genomes</h1>
 <h4 class="author">Kyle Gontjes</h4>
 <h4 class="date">2026-10-06</h4>
 
 </div>
 
 
-<p>Notes:</p>
-<ol style="list-style-type: decimal">
-<li><p>Removed three isolates from consideration on 10/30/25. See
-section “Drop isolates” for details.</p></li>
-<li><p>See Sequence_data/illumina_fastq folder for QC data and
-decision-making</p></li>
-</ol>
 <div id="environment" class="section level1">
 <h1>Environment</h1>
 <pre class="r"><code>#Packages
-packages &lt;- c(&quot;tidyverse&quot;)   
+packages &lt;- c(&quot;tidyverse&quot;,&#39;kableExtra&#39;) 
+
 #Load Packages
-invisible(lapply(packages,library,character.only=T,quietly=T))</code></pre>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.2.1     ✔ readr     2.2.0
-## ✔ forcats   1.0.1     ✔ stringr   1.6.0
-## ✔ ggplot2   4.0.3     ✔ tibble    3.3.1
-## ✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-## ✔ purrr     1.2.2     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code># Print environment
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Source functions
+source(&quot;./lib/common_functions.R&quot;)
+
+# Print environment
 set.seed(45) 
 Sys.info()</code></pre>
-<pre><code>##                                                                                                          sysname 
-##                                                                                                         &quot;Darwin&quot; 
-##                                                                                                          release 
-##                                                                                                         &quot;25.6.0&quot; 
-##                                                                                                          version 
-## &quot;Darwin Kernel Version 25.6.0: Tue Aug 18 17:51:47 PDT 2026; root:xnu-12377.161.15.700.19~2/RELEASE_ARM64_T6050&quot; 
-##                                                                                                         nodename 
-##                                                                              &quot;mac-k76xf3g5yq.wifi.med.umich.edu&quot; 
-##                                                                                                          machine 
-##                                                                                                          &quot;arm64&quot; 
-##                                                                                                            login 
-##                                                                                                           &quot;root&quot; 
-##                                                                                                             user 
-##                                                                                                       &quot;kgontjes&quot; 
-##                                                                                                   effective_user 
-##                                                                                                       &quot;kgontjes&quot;</code></pre>
+<pre><code>                                                                                                         sysname 
+                                                                                                        &quot;Darwin&quot; 
+                                                                                                         release 
+                                                                                                        &quot;25.6.0&quot; 
+                                                                                                         version 
+&quot;Darwin Kernel Version 25.6.0: Tue Aug 18 17:51:47 PDT 2026; root:xnu-12377.161.15.700.19~2/RELEASE_ARM64_T6050&quot; 
+                                                                                                        nodename 
+                                                                             &quot;mac-k76xf3g5yq.wifi.med.umich.edu&quot; 
+                                                                                                         machine 
+                                                                                                         &quot;arm64&quot; 
+                                                                                                           login 
+                                                                                                          &quot;root&quot; 
+                                                                                                            user 
+                                                                                                      &quot;kgontjes&quot; 
+                                                                                                  effective_user 
+                                                                                                      &quot;kgontjes&quot; </code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.6.1 (2026-06-24)
-## Platform: aarch64-apple-darwin23
-## Running under: macOS Tahoe 26.7
-## 
-## Matrix products: default
-## BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
-## LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
-## 
-## locale:
-## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
-## time zone: America/Detroit
-## tzcode source: internal
-## 
-## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
-## 
-## other attached packages:
-##  [1] lubridate_1.9.5 forcats_1.0.1   stringr_1.6.0   dplyr_1.2.1    
-##  [5] purrr_1.2.2     readr_2.2.0     tidyr_1.3.2     tibble_3.3.1   
-##  [9] ggplot2_4.0.3   tidyverse_2.0.0 knitr_1.51     
-## 
-## loaded via a namespace (and not attached):
-##  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.6.1     tidyselect_1.2.1  
-##  [5] jquerylib_0.1.4    scales_1.4.0       yaml_2.3.12        fastmap_1.2.0     
-##  [9] R6_2.6.1           generics_0.1.4     bslib_0.12.0       pillar_1.11.1     
-## [13] RColorBrewer_1.1-3 tzdb_0.5.0         rlang_1.3.0        stringi_1.8.9     
-## [17] cachem_1.1.0       xfun_0.60          sass_0.4.10        S7_0.2.2          
-## [21] otel_0.2.0         timechange_0.4.0   cli_3.6.6          withr_3.0.3       
-## [25] magrittr_2.0.5     digest_0.6.39      grid_4.6.1         rstudioapi_0.19.0 
-## [29] hms_1.1.4          lifecycle_1.0.5    vctrs_0.7.3        evaluate_1.0.5    
-## [33] glue_1.8.1         farver_2.1.2       rmarkdown_2.32     tools_4.6.1       
-## [37] pkgconfig_2.0.3    htmltools_0.5.9</code></pre>
+<pre><code>R version 4.6.1 (2026-06-24)
+Platform: aarch64-apple-darwin23
+Running under: macOS Tahoe 26.7
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Detroit
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] kableExtra_1.4.1 lubridate_1.9.5  forcats_1.0.1    stringr_1.6.0   
+ [5] dplyr_1.2.1      purrr_1.2.2      readr_2.2.0      tidyr_1.3.2     
+ [9] tibble_3.3.1     ggplot2_4.0.3    tidyverse_2.0.0  knitr_1.51      
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.6.1     tidyselect_1.2.1  
+ [5] xml2_1.6.0         jquerylib_0.1.4    textshaping_1.0.5  systemfonts_1.3.2 
+ [9] scales_1.4.0       yaml_2.3.12        fastmap_1.2.0      R6_2.6.1          
+[13] generics_0.1.4     svglite_2.2.2      bslib_0.12.0       pillar_1.11.1     
+[17] RColorBrewer_1.1-3 tzdb_0.5.0         rlang_1.3.0        stringi_1.8.9     
+[21] cachem_1.1.0       xfun_0.60          sass_0.4.10        S7_0.2.2          
+[25] otel_0.2.0         viridisLite_0.4.3  timechange_0.4.0   cli_3.6.6         
+[29] withr_3.0.3        magrittr_2.0.5     digest_0.6.39      grid_4.6.1        
+[33] rstudioapi_0.19.0  hms_1.1.4          lifecycle_1.0.5    vctrs_0.7.3       
+[37] evaluate_1.0.5     glue_1.8.1         farver_2.1.2       rmarkdown_2.32    
+[41] tools_4.6.1        pkgconfig_2.0.3    htmltools_0.5.9   </code></pre>
 </div>
-<div id="load-sequencing-qc-data-qcd" class="section level1">
-<h1>Load sequencing QC data (QCD)</h1>
-<pre class="r"><code>master_qc = read.csv(&quot;../../Sequence_data/illumina_fastq/master_qc_summary.csv&quot;)
-colnames(master_qc) &lt;- colnames(master_qc) %&gt;% gsub(&quot;\\.|\\.\\.\\.&quot;,&quot;_&quot;,.)</code></pre>
+<div id="load-data" class="section level1">
+<h1>Load data</h1>
+<pre class="r"><code>df_index &lt;- readRDS(&quot;./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS&quot;) 
+plasmid_data &lt;- readRDS(&quot;./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS&quot;) %&gt;% subset(genomic_id %in% df_index$genomic_id)
+df_index &lt;- left_join(df_index,plasmid_data)</code></pre>
 </div>
-<div id="rename-variables-to-ensure-consistency" class="section level1">
-<h1>Rename variables to ensure consistency</h1>
-<pre class="r"><code># Genomic ID
-master_qc$genomic_id &lt;- master_qc$Sample
-# Pass QC
-master_qc$qc_pass &lt;- ifelse(master_qc$QC_Check==&#39;PASS&#39;, TRUE, FALSE) 
-# Genus
-master_qc$Genus &lt;- str_split(master_qc$Species,&quot; &quot;,simplify=T) %&gt;% .[,1]
-# Sequence type (ST)
-master_qc$ST &lt;- ifelse(master_qc$ST ==&quot;-&quot;,&quot;Unknown&quot;,master_qc$ST) 
+<div id="replace-variable" class="section level1">
+<h1>Replace variable</h1>
+<pre class="r"><code>clustering_data &lt;- readRDS(&quot;./data/SNP_distances/deprecated/SNP_cluster_assignments/MERLIN_SNP_cluster_assignments_concatenated_references.RDS&quot;)
+df_index &lt;- left_join(df_index %&gt;% select(-Species_ST_cluster),clustering_data %&gt;% select(genomic_id,Species_ST_cluster_25) %&gt;% rename(&quot;Species_ST_cluster&quot;=&quot;Species_ST_cluster_25&quot;))</code></pre>
+</div>
+<div id="households-with-index-positive-data-i.e.-only-can-consider-those" class="section level1">
+<h1>Households with index positive data (i.e., only can consider
+those)</h1>
+<pre class="r"><code>ESCrE_index_positive_households &lt;- df_index %&gt;% subset(visit ==0 &amp; WGS_escre==T) %&gt;% .$household</code></pre>
+</div>
+<div id="taxonomical-prolonged-colonization" class="section level1">
+<h1>Taxonomical prolonged colonization</h1>
+<pre class="r"><code># Any ESCrE
+any_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;WGS_escre&#39;) %&gt;% do.call(rbind,.) 
+
+# Species
+species_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;Species&#39;) %&gt;% do.call(rbind,.)
+
 # Species + ST
-master_qc$Species_ST &lt;- paste0(master_qc$Species,&quot; ST &quot;,master_qc$ST) %&gt;% trimws(.,&quot;both&quot;)</code></pre>
+species_ST_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;Species_ST&#39;) %&gt;% do.call(rbind,.)
+
+# Species + ST + Cluster
+species_ST_cluster_prolonged &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization,df_index,variable=&#39;Species_ST_cluster&#39;) %&gt;% do.call(rbind,.)
+
+# Add to master dataset
+prolonged_df &lt;- left_join(any_prolonged,species_prolonged) %&gt;% left_join(.,species_ST_prolonged) %&gt;% left_join(.,species_ST_cluster_prolonged)</code></pre>
 </div>
-<div id="escre-species-calls-thanks-to-upenn" class="section level1">
-<h1>ESCrE species calls (thanks to UPENN!)</h1>
-<pre class="r"><code>escre_species_calls &lt;- read_csv(&quot;../data/INTEGRATE_MERLIN_WGS_Species_calls_030925_LLC.csv&quot;) </code></pre>
-<pre><code>## Rows: 75 Columns: 4
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (1): Species
-## dbl (2): MERLIN_count, INTEGRATE_count
-## lgl (1): Enterobacterales
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>escre_list &lt;- c(escre_species_calls %&gt;% subset(Enterobacterales ==T)%&gt;% .$Species,&quot;Kluyvera sichuanensis&quot;)
-escre_list</code></pre>
-<pre><code>##  [1] &quot;Citrobacter amalonaticus&quot;   &quot;Citrobacter europaeus&quot;     
-##  [3] &quot;Citrobacter farmeri&quot;        &quot;Citrobacter freundii&quot;      
-##  [5] &quot;Citrobacter koseri&quot;         &quot;Citrobacter portucalensis&quot; 
-##  [7] &quot;Citrobacter sp&quot;             &quot;Citrobacter youngae&quot;       
-##  [9] &quot;Enterobacter asburiae&quot;      &quot;Enterobacter cloacae&quot;      
-## [11] &quot;Enterobacter hormaechei&quot;    &quot;Enterobacter kobei&quot;        
-## [13] &quot;Enterobacter ludwigii&quot;      &quot;Enterobacter roggenkampii&quot; 
-## [15] &quot;Escherichia coli&quot;           &quot;Hafnia alvei&quot;              
-## [17] &quot;Hafnia paralvei&quot;            &quot;Klebsiella aerogenes&quot;      
-## [19] &quot;Klebsiella grimontii&quot;       &quot;Klebsiella michiganensis&quot;  
-## [21] &quot;Klebsiella pneumoniae&quot;      &quot;Klebsiella quasipneumoniae&quot;
-## [23] &quot;Klebsiella variicola&quot;       &quot;Leclercia adecarboxylata&quot;  
-## [25] &quot;Morganella morganii&quot;        &quot;Proteus mirabilis&quot;         
-## [27] &quot;Providencia stuartii&quot;       &quot;Raoultella ornithinolytica&quot;
-## [29] &quot;Serratia liquefaciens&quot;      &quot;Serratia marcescens&quot;       
-## [31] &quot;Serratia nematodiphila&quot;     &quot;Serratia nevei&quot;            
-## [33] &quot;Kluyvera sichuanensis&quot;</code></pre>
-<pre class="r"><code>master_qc$WGS_escre &lt;- ifelse(master_qc$Species %in% escre_list,T,F)</code></pre>
-</div>
-<div id="get-the-specimens-sequencing-run" class="section level1">
-<h1>Get the specimen’s sequencing run</h1>
-<pre class="r"><code>run_11270_ES &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_11270-ES/DemuxStats_11270-ES.csv&#39;) %&gt;% subset(grepl(&quot;MERLIN&quot;,Description))%&gt;% mutate(run = &#39;11270-ES&#39;)
-run_9200_LL &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_9200-LL/DemuxStats_9200-LL_updated.csv&#39;) %&gt;% mutate(run = &#39;9200-LL&#39;)
-run_9200_LL_PurePlex &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_9200-LL_PurePlex/DemuxStats_9200-LL.csv&#39;)%&gt;% mutate(run = &#39;9200-LL_PurePlex&#39;)
-run_9200_LL_PurePlex_test &lt;- read.csv(&#39;../../Sequence_data/illumina_fastq/2025-03-04_9200-LL_PurePlex_test/DemuxStats_9200-LL.csv&#39;)%&gt;% mutate(run = &#39;9200_LL_PurePlex_test&#39;)
+<div id="genotype-level-prolonged-colonization" class="section level1">
+<h1>Genotype level prolonged colonization</h1>
+<pre class="r"><code># MALDI classification from study laboratory
+maldi_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_genotype,df_index,variable=&#39;maldi&#39;,split=&quot;,&quot;) %&gt;% do.call(rbind,.)
+
+# ESCrE genes
+ESCrE_genes_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_genotype,df_index,variable=&#39;ESCrE_genes&#39;,split=&quot;;&quot;) %&gt;% do.call(rbind,.)
  
-sequencing_run_records &lt;- rbind(run_11270_ES,run_9200_LL,run_9200_LL_PurePlex,run_9200_LL_PurePlex_test)
+# ESCrE plasmid aware
+ESCrE_plasmid_aware_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_plasmid_aware,df_index,chromosome_variable=&#39;ESCrE_chromosome_genes&#39;,plasmid_variable = &quot;ESCrE_plasmid_genes&quot;,split=&quot;;&quot;,require_shared_plasmid=F,plasmid_cluster_variable=NULL,name=&#39;aware&#39;) %&gt;% do.call(rbind,.)
 
-get_sequencing_run &lt;- function(isolate,sequencing_record){
-  isolate_hits &lt;- subset(sequencing_record,Description == isolate)
-  if(nrow(isolate_hits)&gt;1){
-    project = paste0(isolate_hits$run,collapse=&quot;;&quot;)
-  } else {
-     project = isolate_hits$run
-  }
-  return(project)
-}
+ESCrE_plasmid_linked_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_plasmid_aware,df_index,chromosome_variable=&#39;ESCrE_chromosome_genes&#39;,plasmid_variable = &quot;ESCrE_plasmid_genes&quot;,split=&quot;;&quot;,require_shared_plasmid=T,plasmid_cluster_variable=&quot;plasmids&quot;,name=&#39;linked&#39;) %&gt;% do.call(rbind,.)
 
-master_qc$sequencing_run &lt;- sapply(master_qc$Sample,get_sequencing_run,sequencing_run_records)</code></pre>
-</div>
-<div id="drop-isolates" class="section level1">
-<h1>Drop isolates</h1>
-<div id="as-of-103025-drop-merlin_285-merlin_246-and-merlin_231" class="section level2">
-<h2>As of 10/30/25: Drop MERLIN_285, MERLIN_246, and MERLIN_231</h2>
-<div id="merlin_285---s-221005-00370---transcription-error-which-could-not-be-resolved." class="section level3">
-<h3>1. MERLIN_285 - S-221005-00370 - Transcription error which could not
-be resolved.</h3>
-</div>
-<div id="merlin_246---s-221019-01336---based-on-plate-map-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_211.-removed-melrin_246-in-preference-of-merlin_211.-needed-to-change-the-merlin_remove_duplicates-file-to-reflect-this" class="section level3">
-<h3>2. MERLIN_246 - S-221019-01336 - Based on plate map review and
-sequencing results, this is a duplicate of genomic_id MERLIN_211.
-Removed MELRIN_246 in preference of MERLIN_211. Needed to change the
-MERLIN_remove_duplicates file to reflect this…</h3>
-</div>
-<div id="merlin_231---s-221221-00536---based-on-lv-review-and-sequencing-results-this-is-a-duplicate-of-genomic_id-merlin_250." class="section level3">
-<h3>3. MERLIN_231 - S-221221-00536 - Based on LV review and sequencing
-results, this is a duplicate of genomic_id MERLIN_250.</h3>
-<pre class="r"><code>paste0(&quot;Number of qc entries at this stage: &quot;,nrow(master_qc))</code></pre>
-<pre><code>## [1] &quot;Number of qc entries at this stage: 422&quot;</code></pre>
-<pre class="r"><code># Remove these three isolates
-isolates_to_drop &lt;- c(&quot;MERLIN_285&quot;,&quot;MERLIN_246&quot;,&quot;MERLIN_231&quot;)
-paste0(&quot;Dropping the following entries:&quot;)</code></pre>
-<pre><code>## [1] &quot;Dropping the following entries:&quot;</code></pre>
-<pre class="r"><code>master_qc$genomic_id[master_qc$genomic_id %in% isolates_to_drop]</code></pre>
-<pre><code>## [1] &quot;MERLIN_246&quot; &quot;MERLIN_231&quot; &quot;MERLIN_246&quot; &quot;MERLIN_285&quot; &quot;MERLIN_246&quot;</code></pre>
-<pre class="r"><code>master_qc &lt;- subset(master_qc,!genomic_id %in% isolates_to_drop)
+ESCrE_plasmid_linked_specific_sharing &lt;- lapply(ESCrE_index_positive_households,get_prolonged_colonization_plasmid_aware,df_index,chromosome_variable=&#39;ESCrE_chromosome_genes&#39;,plasmid_variable = &quot;ESCrE_plasmid_genes&quot;,split=&quot;;&quot;,require_shared_plasmid=T,plasmid_cluster_variable=&quot;ESCrE_plasmids&quot;,name=&#39;shared&#39;) %&gt;% do.call(rbind,.)
 
-# Count after removal
-paste0(&quot;Number of qc entries at this stage: &quot;,nrow(master_qc))</code></pre>
-<pre><code>## [1] &quot;Number of qc entries at this stage: 417&quot;</code></pre>
+# Add to master dataset
+prolonged_df &lt;- left_join(prolonged_df,ESCrE_genes_sharing)  %&gt;% left_join(.,ESCrE_plasmid_aware_sharing) %&gt;% left_join(.,ESCrE_plasmid_linked_sharing) %&gt;% left_join(.,ESCrE_plasmid_linked_specific_sharing) </code></pre>
 </div>
-</div>
-</div>
-<div id="save-the-data" class="section level1">
-<h1>Save the data</h1>
-<pre class="r"><code># All
-saveRDS(master_qc,&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_all.RDS&quot;)
+<div id="generate-merged-datapoints" class="section level1">
+<h1>Generate merged datapoints</h1>
+<pre class="r"><code># Cluster + ESCrE genes
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes &lt;- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes ==1,1,0) 
 
-# QC passing and not negative controls
-master_qc_passing &lt;- subset(master_qc,qc_pass == T &amp; grepl(&quot;NEG_CTL&quot;,genomic_id) == F)
-saveRDS(master_qc_passing,&quot;./MERLIN-prolonged-colonization-ms/data/QCD/master_qc_passing.RDS&quot;)</code></pre>
+# Cluster + Plasmid-aware ESCrE genes
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_aware &lt;- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware ==1,1,0) 
+
+# Cluster + Plasmid-linked ESCrE  
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_linked &lt;- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_linked ==1,1,0) 
+
+# Cluster + Plasmid-linked ESCrE plasmids
+prolonged_df$index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_shared_ESCrE_plasmid  &lt;- ifelse(prolonged_df$index_at_1_and_or_2_Species_ST_cluster==1 | prolonged_df$index_at_1_and_or_2_ESCrE_genes_plasmid_shared ==1,1,0) </code></pre>
+</div>
+<div id="save-dataset" class="section level1">
+<h1>Save dataset</h1>
+<pre class="r"><code>saveRDS(prolonged_df,&#39;./data/persistent_colonization/deprecated/persistent_colonization_episodes/MERLIN_persistent_colonization_index_patients_concatenated_references.RDS&#39;)</code></pre>
 </div>
 
 
