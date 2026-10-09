@@ -1,0 +1,2 @@
+In the initial submission, we used concatenated references genomes. As this relied on short-read data, our variant calling may not have been perfect. 
+Therefore, we used public genomes for variant calling to improve reference genome accuracy and detection of differences between isolates.

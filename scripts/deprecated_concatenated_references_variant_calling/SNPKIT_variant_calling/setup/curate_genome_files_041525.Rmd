@@ -1,0 +1,27 @@
+---
+title: "curate_genome_files_for_final_analyses"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(echo = TRUE,warning = FALSE, message = FALSE) 
+rm(list = ls())
+knitr::opts_knit$set(root.dir='~/Desktop/gl_merlin/Sequence_data/illumina_fastq/clean_fastq_qc_pass_samples/') 
+```
+
+```{r}
+library(tidyverse) 
+```
+ 
+
+```{r}
+files = list.files()
+files_wo_suffix = gsub("_trim_paired","",files)
+
+file_copy_commapnds <- paste0("cp /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/illumina_fastq/clean_fastq_qc_pass_samples/",files, " /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Sequence_data/variant_calling/fastq/",files_wo_suffix, " &" )
+
+bin <- "#!/bin/sh"
+write_lines(x = c(bin,file_copy_commapnds),file = "../../variant_calling/2025-04-15_SNPKIT/setup/copy_files.sh")
+```

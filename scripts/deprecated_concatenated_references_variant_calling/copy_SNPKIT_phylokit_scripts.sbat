@@ -1,0 +1,65 @@
+#!/bin/bash
+
+#SBATCH --job-name=copy_SNPKIT_phylokit_scripts
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,FAIL,END,REQUEUE
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=kgontjes0
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=1 --mem=1g --time=1:00:00
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/deprecated_concatenated_references_variant_calling/SNPKIT_variant_calling/copy_SNPKIT_variant_calling_scripts.out
+
+BASE=/nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/variant_calling/2025-04-15_SNPKIT
+SCRIPTS=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/deprecated_concatenated_references_variant_calling/SNPKIT_variant_calling
+SLURM=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/deprecated_concatenated_references_variant_calling/SNPKIT_variant_calling
+PHYLOKIT=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/deprecated_concatenated_references_variant_calling/phylokit_scripts
+
+SPECIES=(cfreundii cportucalensis ecoli ehormaechei eludwigii kpneumoniae sliquefaciens setup)
+
+# ── SNPKIT ────────────────────────────────────────────────────────────────────
+mkdir -p "$SCRIPTS"
+cp "$BASE"/*.Rmd "$BASE"/*.html "$SCRIPTS/"
+
+for sp in "${SPECIES[@]}"; do
+    dir="$BASE/$sp"
+    echo "Processing SNPKIT: $sp"
+    mkdir -p "$SCRIPTS/$sp" "$SLURM/$sp"
+
+    mv "$dir"/slurm-*.out "$SLURM/$sp/"
+
+    for item in "$dir"/*; do
+        name=$(basename "$item")
+        [[ "$name" == "snpkit_rfmt_results" ]] && continue
+        [[ "$name" == "phylokit_scripts" ]]    && continue
+
+        if [ -d "$item" ]; then
+            cp -r "$item" "$SCRIPTS/$sp/"
+        else
+            cp "$item" "$SCRIPTS/$sp/"
+        fi
+    done
+
+    echo "  Done: $sp"
+done
+
+# ── PHYLOKIT ──────────────────────────────────────────────────────────────────
+echo "Processing phylokit shared files"
+mkdir -p "$PHYLOKIT/envs" "$PHYLOKIT/example_data" "$PHYLOKIT/wrapper_functions"
+
+# Copy shared files from cfreundii (all identical except config/)
+cp "$BASE/cfreundii/phylokit_scripts/README.md"   "$PHYLOKIT/"
+cp "$BASE/cfreundii/phylokit_scripts/phylokit.smk" "$PHYLOKIT/"
+cp -r "$BASE/cfreundii/phylokit_scripts/envs"             "$PHYLOKIT/"
+cp -r "$BASE/cfreundii/phylokit_scripts/example_data"     "$PHYLOKIT/"
+cp -r "$BASE/cfreundii/phylokit_scripts/wrapper_functions" "$PHYLOKIT/"
+
+# Copy species-specific config files
+for sp in cfreundii cportucalensis ecoli ehormaechei eludwigii kpneumoniae sliquefaciens; do
+    echo "Processing phylokit config: $sp"
+    mkdir -p "$PHYLOKIT/config/$sp"
+    cp "$BASE/$sp/phylokit_scripts/config/cluster.json" "$PHYLOKIT/config/$sp/"
+    cp "$BASE/$sp/phylokit_scripts/config/config.yaml"  "$PHYLOKIT/config/$sp/"
+    cp "$BASE/$sp/phylokit_scripts/phylokit.sbat"       "$PHYLOKIT/config/$sp/"
+done
+
+echo "All done."

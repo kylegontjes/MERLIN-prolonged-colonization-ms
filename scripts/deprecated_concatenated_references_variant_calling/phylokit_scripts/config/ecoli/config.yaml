@@ -1,0 +1,17 @@
+# General information 
+prefix: ecoli 
+ 
+# Gubbins
+alignment: /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2025-04-15_SNPKIT/ecoli/snpkit_rfmt_results/phylo_analysis/genome_alignment/2025_04_15_18_35_45_Ecoli_NCTC13441_chromosome_genome_aln_w_alt_allele_unmapped.fa
+threads: 18
+first_tree_algorithm: fasttree
+first_model: JC
+outgroup: MERLIN_92
+gubbins_dir: results/gubbins
+tree_args: " --threads 18"
+
+# IQtree parameters
+iqtree_model: MFP
+bootstrap_count: 5000
+num_unsuccessful_iterations: 200
+iqtree_dir: results/IQtree

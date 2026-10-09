@@ -1,0 +1,1 @@
+python3 /scratch/esnitkin_root/esnitkin1/dhatrib/snpkit-smk/snpkit_output_rfmt.py /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2025-04-15_SNPKIT/cfreundii/output_files

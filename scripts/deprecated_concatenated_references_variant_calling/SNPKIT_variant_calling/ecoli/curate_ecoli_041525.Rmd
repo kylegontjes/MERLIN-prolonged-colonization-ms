@@ -1,0 +1,22 @@
+---
+title: "curate_ecoli_041525"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = TRUE,warning = FALSE, message = FALSE) 
+rm(list = ls())
+opts_knit$set(root.dir='~/Desktop/gl_nfs/')
+```
+ 
+# Load Metadata
+```{r} 
+library(tidyverse)
+MERLIN_QCD <- readRDS("./Project_MERLIN/Analysis/Household_transmission/2025-04-08_final_metadata/results/MERLIN_metadata_041525.RDS")
+
+ecoli <-  MERLIN_QCD %>% subset(Species =="Escherichia coli") %>% .$Sample %>% sort %>% paste0(.,"_R1.fastq.gz")
+writeLines(ecoli,"./Project_MERLIN/Sequence_data/variant_calling/2025-04-15_SNPKIT/ecoli/ecoli_samples.txt")
+``` 

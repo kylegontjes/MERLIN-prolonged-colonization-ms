@@ -1,0 +1,177 @@
+---
+title: "find_outgroups_MERLIN_041025"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/')
+```
+
+# Environment
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse",'ape','kableExtra')   
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Final Dataset
+```{r}
+df <- readRDS("./2025-04-08_final_metadata/results/MERLIN_metadata_040825.RDS")
+```
+
+```{r}
+cfreundii<- subset(df,Species == "Citrobacter freundii")
+cportucalensis <- subset(df,Species == "Citrobacter portucalensis")
+ecoli <- subset(df,Species == "Escherichia coli")
+ehormaechei <- subset(df,Species == "Enterobacter hormaechei")
+eludwigii <- subset(df,Species == "Enterobacter ludwigii")
+kpneumoniae <- subset(df,Species == "Klebsiella pneumoniae")
+sliquefaciens <- subset(df,Species == "Serratia liquefaciens")
+```
+
+# Initial variant calling (w/ duplicates)
+
+## Assembly
+
+```{r}
+setwd("~/Desktop/scratch/Project_MERLIN/Sequence_data/variant_calling/2025-03-13_SNPKIT_all/")
+# C freundii
+cfreundii_fa <- read.dna("./cfreundii/output_files/2025_03_14_12_34_14_core_results/phylokit/results/gubbins_masked/cfreundii_all_gubbins_masked_var_sites.fa",
+                format = "fasta") 
+
+# Cporticula
+cportucalensis_fa <- read.dna("./cportucalensis/output_files/2025_03_14_12_35_12_core_results/phylokit/results/gubbins_masked/cportucalensis_all_gubbins_masked_var_sites.fa",
+                format = "fasta")
+
+# Ecoli
+ecoli_fa <- read.dna("./ecoli/output_files/2025_03_14_12_36_00_core_results/phylokit/results/gubbins_masked/ecoli_all_gubbins_masked_var_sites.fa",
+                format = "fasta")
+
+# Ehormachei
+ehormaechei_fa <- read.dna("./ehormaechei/output_files/2025_04_10_12_59_28_core_results/phylokit/results/gubbins_masked/ehormaechei_gubbins_masked_var_sites.fa",format = "fasta")
+
+# eludgiwii
+eludwigii_fa <- read.dna("./eludwigii/output_files/2025_03_14_12_37_52_core_results/phylokit/results/gubbins_masked/eludwigii_gubbins_masked_var_sites.fa", format = "fasta")
+
+# Kpn
+kpneumoniae_fa <- read.dna("./kpneumoniae/output_files/2025_04_10_13_00_19_core_results/phylokit/results/gubbins_masked/kpneumoniae_gubbins_masked_var_sites.fa",format='fasta')
+
+# Sliquefaciens
+sliquefaciens_fa <- read.dna("./sliquefaciens/output_files/2025_03_16_14_13_11_core_results/gubbins/2025_03_16_14_13_11_MERLIN_259_reference_genome_aln_w_alt_allele_unmapped.fa",format="fasta")
+```
+
+## DNA Matrix
+
+```{r}
+dna_matrix <- function(fa,reference){
+ape::dist.dna(x = fa, # DNAbin object as read in above
+                       as.matrix = TRUE, # return as matrix
+                       model = "N", # count pairwise distances
+                       pairwise.deletion = TRUE # delete sites with missing data in a pairwise way
+)%>%  as.data.frame %>% subset(rownames(.)!=paste0(reference)) %>% select(-all_of(reference))}
+ 
+cfreundii_mat <- dna_matrix(cfreundii_fa,"MERLIN_280_reference") %>% .[cfreundii$genomic_id,cfreundii$genomic_id]
+cportucalensis_mat <- dna_matrix(cportucalensis_fa,"MERLIN_34_reference")%>% .[cportucalensis$genomic_id,cportucalensis$genomic_id]
+ecoli_mat <- dna_matrix(ecoli_fa,"NZ_UFZF01000006.1")%>% .[ecoli$genomic_id,ecoli$genomic_id]
+ehormaechei_mat <- dna_matrix(ehormaechei_fa,"MERLIN_242_reference") %>% .[ehormaechei$genomic_id,ehormaechei$genomic_id]
+eludwigii_mat <- dna_matrix(eludwigii_fa,"MERLIN_46_reference")%>% .[eludwigii$genomic_id,eludwigii$genomic_id]
+kpneumoniae_mat <- dna_matrix(kpneumoniae_fa,"MERLIN_202_reference") %>% .[kpneumoniae$genomic_id,kpneumoniae$genomic_id]
+sliquefaciens_mat <- dna_matrix(sliquefaciens_fa,"MERLIN_259_reference")%>% .[sliquefaciens$genomic_id,sliquefaciens$genomic_id]
+```
+
+# Compare outgroups to ingroup
+```{r}
+get_isolate_distances <- function(isolate,ingroup,matrix){ 
+  mat <- matrix %>% subset(rownames(.) %in% ingroup)  %>% .[,isolate] %>% unlist
+  fivenum_sum <- fivenum(mat) %>% as.data.frame %>% t %>%   `colnames<-`(c("min","25%",'median','75%','max'))
+  cbind.data.frame(isolate = isolate,fivenum_sum)
+}
+```
+
+
+# Cfreundii
+## Choose MERLIN_6
+```{r}
+cfreundii %>% group_by(ST) %>% summarise (n=n()) %>% arrange(-n)
+
+cfreundii_out = subset(cfreundii,!ST %in% c('185','251')) %>% .$Sample
+cfreundi_ingroup = subset(cfreundii, ST %in% c("185",'251')) %>% .$Sample
+
+lapply(cfreundii_out,get_isolate_distances,cfreundi_ingroup,cfreundii_mat) %>% do.call(rbind,.) %>% arrange(-median,-max) 
+```
+# cportucalensis
+## Choose MERLIN_8
+```{r}
+cportucalensis %>% group_by(ST) %>% summarise (n=n()) %>% arrange(-n)
+
+cportucalensis_out = subset(cportucalensis,!ST %in% c('13')) %>% .$Sample
+cportucalensis_ingroup = subset(cportucalensis, ST %in% c("13")) %>% .$Sample
+
+lapply(cportucalensis_out,get_isolate_distances,cportucalensis_ingroup,cportucalensis_mat) %>% do.call(rbind,.) %>% arrange(-median,-max) 
+```
+
+# ecoli
+## Choose MERLIN_92
+```{r}
+ecoli %>% group_by(ST) %>% summarise (n=n()) %>% arrange(-n)
+
+ecoli_out = subset(ecoli,!ST %in% c('131')) %>% .$Sample 
+ecoli_ingroup = subset(ecoli, ST %in% c("131")) %>% .$Sample
+
+lapply(ecoli_out,get_isolate_distances,ecoli_ingroup,ecoli_mat) %>% do.call(rbind,.) %>% arrange(-median,-max) 
+```
+
+# eludwigii
+## Choose MERLIN_250
+```{r}
+eludwigii %>% group_by(ST) %>% summarise (n=n()) %>% arrange(-n)
+
+eludwigii_out = subset(eludwigii,!ST %in% c('1287')) %>% .$Sample %>% subset(. %in% df$Sample)
+eludwigii_ingroup = subset(eludwigii, ST %in% c("1287")) %>% .$Sample %>% subset(. %in% df$Sample)
+
+lapply(eludwigii_out,get_isolate_distances,eludwigii_ingroup,eludwigii_mat) %>% do.call(rbind,.) %>% arrange(-median,-max) 
+```
+
+# ehormaechei
+## Choose MERLIN_240
+```{r}
+ehormaechei %>% group_by(ST) %>% summarise (n=n()) %>% arrange(-n)
+
+ehormaechei_out = subset(ehormaechei,!ST %in% c('45')) %>% .$Sample
+ehormaechei_ingroup = subset(ehormaechei, ST %in% c("45")) %>% .$Sample
+
+lapply(ehormaechei_out,get_isolate_distances,ehormaechei_ingroup,ehormaechei_mat) %>% do.call(rbind,.) %>% arrange(-median,-max) 
+```
+
+# kpneumoniae
+## Choose MERLIN_119
+```{r}
+kpneumoniae %>% group_by(ST) %>% summarise (n=n()) %>% arrange(-n)
+
+kpneumoniae_out = subset(kpneumoniae,!ST %in% c('15')) %>% .$Sample
+kpneumoniae_ingroup = subset(kpneumoniae, ST %in% c("15")) %>% .$Sample
+
+lapply(kpneumoniae_out,get_isolate_distances,kpneumoniae_ingroup,kpneumoniae_mat) %>% do.call(rbind,.) %>% arrange(-median,-max) 
+```
+
+# sliquefaciens
+## Choose MERLIN_97
+```{r}
+sliquefaciens %>% group_by(ST) %>% summarise (n=n()) %>% arrange(-n)
+
+sliquefaciens_out = subset(sliquefaciens,Sample != 'MERLIN_259') %>% .$Sample 
+sliquefaciens_ingroup = 'MERLIN_259'
+
+lapply(sliquefaciens_out,get_isolate_distances,sliquefaciens_ingroup,sliquefaciens_mat) %>% do.call(rbind,.) %>% arrange(-median,-max) 
+``` 

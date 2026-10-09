@@ -1,0 +1,99 @@
+---
+title: "SNP Clustering Step 2: Generate pairs for SNP distance analyses"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+Notes:
+
+1. This is an old variant calling run
+
+2. Reference genome was a concatenated short read assembly. Although this worked well, it was better to use a closed genome as the reference
+
+3. For transparency, we include this old code, but used the new public genome reference-based variant calling approach in this updated manuscript.
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = T, message = T,error=T,comment=NA) 
+opts_chunk$set(echo = T,warning = T, message = T,error=T,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/')
+```
+
+# Environment
+
+```{r environment, echo=T, message=T, include=T, results=T}
+#Packages
+packages <- c("tidyverse",'ape','kableExtra','phytools','igraph','ggraph','tableone','kableExtra') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Source common functions 
+source("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/lib/common_functions.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load data
+
+```{r} 
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") %>% subset(WGS_escre==T & qc_pass==T)
+
+paste0("Number of considered isolates: ",nrow(df))
+``` 
+
+# Load distances matrices for species with more than one isolate
+
+```{r}
+dist_matrices <- readRDS('./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distances/deprecated/SNP_distance_matrices/MERLIN_SNP_distance_matrices_concatenated_references.RDS')
+```
+
+# Curate data
+
+```{r}
+SNP_distance_pair_dataset <- lapply(dist_matrices,get_cell_info) %>% do.call(rbind.data.frame,.) %>% mutate(matrix = "gubbins_masked_noncore")
+```
+
+# Curate the data
+
+```{r}
+# Make pairwise SNP distance numeric
+SNP_distance_pair_dataset$pairwise_dist <- as.numeric(SNP_distance_pair_dataset$pairwise_dist)
+
+# Create variables
+SNP_distance_pair_dataset$both_MERLIN <- grepl("MERLIN",SNP_distance_pair_dataset$isolate1) &  grepl("MERLIN",SNP_distance_pair_dataset$isolate2) 
+
+# Create linking variable
+SNP_distance_pair_dataset <- create_pair_linking_variable(SNP_distance_pair_dataset)
+
+# Subset to MERLIN isolates only
+SNP_distance_pair_dataset_MERLIN_only <- subset(SNP_distance_pair_dataset, both_MERLIN == T)
+```
+
+# Add metadata to pair dataset
+
+```{r}
+voi = c("household",'subject_id','ncbi_id',"visit","collect_date","Species","Species_ST","subject_category",'subject_category_simplified',"subject_type",'index')
+
+SNP_distance_pair_dataset_overall <- update_pair_types_w_info(pair_types_df = SNP_distance_pair_dataset_MERLIN_only, df = df, voi = voi)
+```
+
+# Create additional variables
+
+```{r}
+SNP_distance_pair_dataset_overall$matrix <- "gubbins_masked_noncore" 
+SNP_distance_pair_dataset_overall$analysis_group <- SNP_distance_pair_dataset_overall$Species1 %>% str_split(.," ",simplify=T) %>% as.data.frame  %>% mutate(V1 = tolower(V1) %>% substr(.,1,1)) %>% apply(.,1,FUN=paste0,collapse='')
+SNP_distance_pair_dataset_overall$species_abbreviated <- SNP_distance_pair_dataset_overall$analysis_group %>% str_split(.,"_",simplify=T) %>% .[,1] 
+SNP_distance_pair_dataset_overall$species_wide <- T
+```
+
+## Save the dataset
+
+```{r} 
+saveRDS(SNP_distance_pair_dataset_overall,'./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distances/deprecated/SNP_pairwise_datasets/MERLIN_SNP_distance_pair_dataset_concatenated_references.RDS') 
+write_csv(SNP_distance_pair_dataset_overall,'./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distances/deprecated/SNP_pairwise_datasets/MERLIN_SNP_distance_pair_dataset_concatenated_references.csv') 
+```
