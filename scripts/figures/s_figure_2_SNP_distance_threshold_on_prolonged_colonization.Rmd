@@ -1,0 +1,227 @@
+---
+title: "Supplementary Figure 2: SNP_distance_threshold_on_prolonged_colonization"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+ 
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+ 
+# Environment
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
+#Packages
+packages <- c("tidyverse",'ggplot2','gridExtra','cowplot','ggraph','tidygraph','igraph','ComplexHeatmap') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Scripts
+source("./lib/consistent_themes.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+``` 
+
+# Load data
+```{r}
+df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")
+overall_pair_types <- readRDS("./data/SNP_distances/SNP_pairwise_datasets/MERLIN_SNP_pairwise_datasets_public_references.RDS") %>% subset(index1==T & index2==T) 
+```
+
+# Persistent colonizaiton data
+```{r}
+persistent_colonization_by_threshold <- readRDS("./data/persistent_colonization/threshold_sensitivity_strain_level/MERLIN_persistent_colonization_threshold_sensitivity_strain_level_public_references.RDS")
+```
+
+# Clustering across thresholds
+```{r}
+clustering_across_thresholds_ST_preferred <- readRDS("./data/SNP_distances/SNP_cluster_assignments/MERLIN_SNP_cluster_assignments_public_references.RDS")
+```
+
+# A. Distance data
+
+```{r,fig.width=8.5}
+overall_pair_types_index <- overall_pair_types %>% subset(index1==T & index2==T & subject_id1==subject_id2) %>% subset(visit1==0 | visit2==0)
+overall_pair_types_index$non_index_visit <- ifelse(overall_pair_types_index$visit1==0,overall_pair_types_index$visit2,overall_pair_types_index$visit1)
+ 
+prologed_results <- persistent_colonization_by_threshold %>% subset(threshold==25)
+df_index <- left_join(df_index,prologed_results %>% mutate(prolonged_colonization = index_at_1_and_or_2))
+df_index$prolonged_colonization <- ifelse(is.na(df_index$prolonged_colonization),"No index specimen",
+                                          ifelse(df_index$prolonged_colonization==1,"Yes","No"))
+
+overall_pair_types_index <- overall_pair_types_index %>%
+  left_join(df_index %>% select(subject_id, prolonged_colonization) %>% distinct, 
+            by = c("subject_id1" = "subject_id"))
+
+household_order <- overall_pair_types_index %>%
+  subset(Species_ST1==Species_ST2) %>%
+  group_by(household1) %>%
+  summarise(
+    median_dist = median(gubbins_masked_noncore),
+    any_prolonged = any(prolonged_colonization == "Yes", na.rm = TRUE)
+  ) %>%
+  arrange(desc(any_prolonged), median_dist) %>%
+  pull(household1)
+
+overall_pair_types_index$household1 <- factor(overall_pair_types_index$household1, 
+                                               levels = household_order)
+
+ST_pairs <- overall_pair_types_index %>% subset(Species_ST1 == Species_ST2)
+A <- ggplot(data = ST_pairs ,
+            aes(x = as.factor(non_index_visit), y = gubbins_masked_noncore, group = subject_id1)) +
+  geom_hline(yintercept = 18, color = 'red', linetype = 2,linewidth = 0.5,alpha=0.5) +
+  geom_line(aes(color = prolonged_colonization), linewidth = 0.5) +
+  geom_point(aes(color = prolonged_colonization), size = 1) +
+  facet_wrap(~household1, ncol = 5)  +
+  theme_bw_me +
+  labs(y     = "SNP distance from index isolate",
+       x     = "Study visit",
+       color = "Persistent colonization") +
+  scale_x_discrete(labels = c("1" = "Baseline", "2" = "One\nmonth", "3" = "Two\nmonth")) + scale_color_manual(
+    breaks = c("Yes", "No", "No index specimen"),
+    values = c("Yes" = "darkred", "No" = "gray60", "No index specimen" = "gray85"),
+    name   = "Persistent colonization"
+  ) +
+  guides(color = guide_legend(ncol = 2))  +scale_y_continuous(
+    breaks = seq(0, ceiling(max(ST_pairs$gubbins_masked_noncore) / 25) * 25, by = 25),
+    limits = c(0, max(ST_pairs$gubbins_masked_noncore) * 1.175),
+  expand = expansion(add = c(5, 0.25))
+  ) + theme(axis.text = element_text(color='black')) + theme(
+    legend.margin   = margin(0, 0, 0, 0),
+    legend.spacing.y = unit(1, "mm"),
+    panel.spacing   = unit(1, "mm"),
+    plot.margin     = margin(2, 2, 2, 2, "mm")
+  ) + 
+  theme(axis.title.x = element_text(size=12,color='black'),
+        axis.title.y = element_text(size=12,color='black'),
+        axis.text.x = element_text(size=10,color='black'),
+        axis.text.y = element_text(size=10,color='black')) +  theme(
+    legend.position = c(0.6125, 0.0285),   
+    legend.justification = c(0, 0)
+  ) + geom_text(aes(label = gubbins_masked_noncore, color = prolonged_colonization),
+          size = 2.25, vjust = -0.8, show.legend = FALSE)
+
+A
+```
+# B. Persistent colonization by threshold
+```{r}
+household_w_index <- df_index %>% subset(visit==0) %>% .$household %>% sort
+
+prolonged_df <- persistent_colonization_by_threshold %>% group_by(threshold) %>% summarise(num_prolonged = sum(index_at_1_and_or_2))
+ 
+B <- ggplot(data=prolonged_df,aes(x=threshold,y=num_prolonged))  + geom_vline(xintercept = 18, color='red', linetype=2, alpha=0.5)   + geom_line(linewidth=1,colour = 'black') + theme_bw_me + labs(x="SNP distance threshold", y="Persistent colonization\nevents") + scale_x_continuous(breaks = scales::pretty_breaks(5))   + scale_y_continuous(breaks = scales::pretty_breaks(8),limits = c(0,18)) + 
+  theme(axis.title.x = element_text(size=12,color='black'),
+        axis.title.y = element_text(size=12,color='black'),
+        axis.text.x = element_text(size=10,color='black'),
+        axis.text.y = element_text(size=10,color='black'))
+
+B
+```
+
+# C. Dynamics over time
+```{r} 
+household_over_time_dynamics <- persistent_colonization_by_threshold %>%
+  select(household, threshold, index_at_1_and_or_2) %>%
+  pivot_wider(
+    names_from  = threshold,
+    values_from = index_at_1_and_or_2
+  )
+household_over_time_dynamics <- column_to_rownames(household_over_time_dynamics,'household')
+cols_to_show <- as.character(seq(0, 100, by = 20))
+col_labels <- ifelse(colnames(household_over_time_dynamics) %in% as.character(seq(0, 100, by = 20)),
+                     colnames(household_over_time_dynamics),
+                     "")
+
+C <- ComplexHeatmap::Heatmap(household_over_time_dynamics %>% subset(rowSums(.)>0),cluster_columns = F,name = 'Persistent\ncolonization',col=c("white",'black'),column_title = "SNP distance threshold",column_names_centered = T,column_names_rot = 0,
+  column_labels         = col_labels, 
+        heatmap_legend_param = list(
+          title = "Persistent\ncolonization",
+          at = c(1, 0),                  # The exact values/breaks on your data scale
+          labels = c("Yes", "No")  # Your custom key names for those breaks
+          ,
+  border = TRUE,
+  gap    = unit(3, "mm")
+        ),border = T,
+  column_title_side = 'bottom',
+  column_title_gp = gpar(fontsize=12, fontface = "plain"),
+  ht_opt(TITLE_PADDING = unit(1, "mm")),
+  column_names_gp = gpar(fontsize=10, fontface = "plain"),
+  row_names_gp = gpar(fontsize=10, fontface = "plain"))
+
+C
+```
+
+# D. Pairwise concordance
+```{r}
+similarity_dataset_index <- lapply(0:100, FUN = function(x) {
+    ref_col <- "Species_ST_cluster_18"
+    col_name <- paste0("Species_ST_cluster_", x)
+    
+    SNP_clustering <- clustering_across_thresholds_ST_preferred %>%
+        select(genomic_id, all_of(ref_col), all_of(col_name)) %>%
+        subset(genomic_id %in% df_index$genomic_id)
+    
+    ref_clusters <- SNP_clustering[[ref_col]]
+    threshold_clusters <- SNP_clustering[[col_name]]
+    
+    co_cluster_ref <- outer(ref_clusters, ref_clusters, "==")
+    co_cluster_threshold <- outer(threshold_clusters, threshold_clusters, "==")
+    pair_concordance <- mean((co_cluster_ref == co_cluster_threshold)[lower.tri(co_cluster_ref)])
+    
+    data.frame(
+        threshold            = x,
+        ARI                  = mclust::adjustedRandIndex(ref_clusters, threshold_clusters),
+        pairwise_concordance = pair_concordance,
+        isolates             = nrow(SNP_clustering)
+    )
+}) %>%
+    bind_rows()
+
+D <- ggplot(data=similarity_dataset_index,aes(x=threshold,y=pairwise_concordance)) + geom_vline(xintercept = 18,color='red',linetype=2,alpha=0.5) + geom_hline(yintercept = 1,alpha=0.125)  + geom_line(linewidth=1,colour = 'black') + theme_bw_me + labs(x="SNP distance threshold", y="Pairwise concordance\n(≤18 SNP reference)") + scale_x_continuous(breaks = scales::pretty_breaks(5)) + scale_y_continuous(breaks = scales::pretty_breaks(8)) + 
+    theme(axis.title.x = element_text(size=12,color='black'),
+          axis.title.y = element_text(size=12,color='black'),
+          axis.text.x = element_text(size=10,color='black'),
+          axis.text.y = element_text(size=10,color='black'))
+D
+```
+
+# Final figure
+
+```{r,fig.height=10.625,fig.width=8.5}
+# Align B and D on left axis
+aligned <- cowplot::align_plots(B, D, align = "v", axis = "l")
+B_aligned <- aligned[[1]]
+D_aligned <- aligned[[2]]
+
+# Build figure components
+C_fig <- grid::grid.grabExpr(draw(C))
+B_fig <- cowplot::plot_grid(B_aligned, NULL, ncol=1, rel_heights = c(1, 0.00001))
+BC_figure <- cowplot::plot_grid(B_fig, C_fig, ncol=2, labels = c("B","C"), rel_widths = c(0.8, 1))
+D_fig <- cowplot::plot_grid(D_aligned, NULL, ncol=2, rel_widths = c(0.8, 1))
+
+# Assemble full figure
+s_figure_2 <- cowplot::plot_grid(
+    A,
+    BC_figure,
+    D_fig,
+    ncol=1,
+    rel_heights = c(1, 0.475, 0.475),
+    labels = c("A","","D")
+)
+
+s_figure_2
+``` 
+
+# Save
+
+```{r}
+ggsave(plot = s_figure_2,filename = './figures/s_figure_2_SNP_distance_threshold_impact.png', dpi = 900, width = 8.5, height = 10.625, bg='white')
+```

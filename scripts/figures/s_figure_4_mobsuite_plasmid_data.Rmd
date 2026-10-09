@@ -1,5 +1,5 @@
 ---
-title: "Supplemental Figure 2: MobSuite plasmid clusters"
+title: "Supplementary Figure 4: MOB-Suite plasmid cluster data"
 author: "Kyle Gontjes"
 date: "`r Sys.Date()`"
 output: html_document
@@ -7,14 +7,14 @@ output: html_document
 
 ```{r setup, include=FALSE}
 require(knitr)
-opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
-opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+opts_knit$set(echo = T,warning = T, message = T, error=F, comment=NA) 
+opts_chunk$set(echo = T,warning = T, message = T, error=F, comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
 # Environment
 
-```{r environment, echo=T, message=FALSE, include=T, results=T}
+```{r environment, echo=T, message=T, include=T, results=T}
 #Packages
 packages <- c("tidyverse",'kableExtra','ComplexHeatmap') 
 
@@ -31,6 +31,7 @@ sessionInfo()
 ```
 
 # Load data
+
 ```{r cars} 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
 plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
@@ -39,6 +40,7 @@ df_index <- left_join(df_index,plasmid_data)
 ```
 
 # Mobsuite data
+
 ```{r}
 mobtyper <- readRDS("./data/mobsuite/mobtyper.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
 mobsuite_contigs <- readRDS("./data/mobsuite/mobsuite_contigs.RDS")  %>% subset(genomic_id %in% df_index$genomic_id)
@@ -48,8 +50,8 @@ amrfinder <- readRDS("./data/amrfinder/amrfinder_cleaned.RDS") %>% subset(genomi
 amrfinder_escre <- subset(amrfinder,element_symbol_renamed %in% c(ESCrE_gene_data_info %>% subset(ESCrE==T) %>% .$element_symbol_renamed))
 ```
 
-
 ## GET ESCrE gene data
+
 ```{r}
 # Contig data
 amrfinder_escre_info <- amrfinder_escre %>% select(genomic_id,contig_id,element_symbol_renamed) %>% group_by(genomic_id,contig_id) %>% summarise(ESCrE_gene = paste0(sort(element_symbol_renamed),collapse = " & ")) 
@@ -72,8 +74,8 @@ mobsuite_contigs$primary_cluster_id <- factor(mobsuite_contigs$primary_cluster_i
 
 # A. Overall data
 ```{r} 
-plasmid_scale <-  scale_fill_manual(breaks = c(1,0),values=c("red","gray"),labels = c("Present","Absent"),name = "ESCrE gene",guide = guide_legend(nrow=2, title.position = "top", label.position = "right"))
-KPC_contig_bool <-  scale_fill_manual(breaks = c(T,F),values=c("red","gray"),labels = c("Present","Absent"),name = "ESCrE gene",guide = guide_legend(nrow=2, title.position = "top", label.position = "right"))
+plasmid_scale <-  scale_fill_manual(breaks = c(1,0),values=c("red","gray"),labels = c("Present","Absent"),name = "ESCrE gene presence",guide = guide_legend(nrow=2, title.position = "top", label.position = "right"))
+KPC_contig_bool <-  scale_fill_manual(breaks = c(T,F),values=c("red","gray"),labels = c("Present","Absent"),name = "ESCrE gene presence",guide = guide_legend(nrow=2, title.position = "top", label.position = "right"))
  
 
 ESCrE_plasmids <- mobsuite_contigs %>% subset(molecule_type !='chromosome' & ESCrE_gene_present==T) %>% .$primary_cluster_id %>% unique  
@@ -242,7 +244,7 @@ K <- ComplexHeatmap::Heatmap(orit_type_matrix,col=c('white','red'),name = 'Count
   if(orit_type_matrix[i, j]>0){
     grid.text(sprintf("%.3s", orit_type_matrix[i, j]), x, y, gp = gpar(fontsize = 11))
   }
-},show_heatmap_legend = F,cluster_rows = F,column_title = "oriT type",height = unit(8, "cm"),width = ncol(orit_type_matrix)*unit(0.6, "cm"),show_column_dend = T, column_names_max_height = unit(5, "cm"))
+}, show_heatmap_legend = F,cluster_rows = F,column_title = "oriT type",height = unit(8, "cm"),width = ncol(orit_type_matrix)*unit(0.6, "cm"),show_column_dend = T, column_names_max_height = unit(5, "cm"))
 
 K 
 ```
@@ -267,5 +269,5 @@ figure
 ```
 
 ```{r}
-ggsave("./figures/s_figure_2_mobtyper_plasmid_overview.png",plot=figure, units='in',height=16,width=12.8,dpi=900,bg='white')
+ggsave("./figures/s_figure_4_mobtyper_plasmid_overview.png",plot=figure, units='in',height=16,width=12.8,dpi=900,bg='white')
 ```

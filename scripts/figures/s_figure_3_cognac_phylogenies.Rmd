@@ -1,0 +1,174 @@
+---
+title: "Supplementary Figure 3: Cognac phylogenies"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+ 
+# Environment
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
+#Packages
+packages <- c("tidyverse",'ggplot2','gridExtra','cowplot','ggtree','ape','phytools','ggtext') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Scripts
+source("./lib/consistent_themes.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+``` 
+
+# Load data
+```{r}
+df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
+
+# Prolonged colonization case
+prologed_results <- readRDS("./data/persistent_colonization/persistent_colonization_episodes/MERLIN_persistent_colonization_index_patients_public_references.RDS")
+df_index <- left_join(df_index,prologed_results %>% mutate(prolonged_colonization = index_at_1_and_or_2_Species_ST_cluster))
+df_index$prolonged_colonization <- ifelse(is.na(df_index$prolonged_colonization),"No index specimen",
+                                          ifelse(df_index$prolonged_colonization==1,"Yes","No"))
+```
+
+# Load trees
+```{r}
+directories <- list.dirs("./data/cognac",recursive = F) %>% basename() %>% subset(!. %in% c("citrobacter","klebsiella"))
+
+for(i in directories){
+  filename <- paste0("./data/cognac/",i,"/MERLIN_",i,"_index_cases.treefile",collapse='')
+  if(file.exists(filename)){
+  tree <- read.tree(filename) %>% midpoint.root()
+  assign(paste0(i,"_tree",collapse=""),
+         tree)
+  }
+}
+```
+
+# Create phylogenies
+
+## Function
+```{r} 
+household <- sort(unique(df_index$household))
+household_colors <- hues::iwanthue(length(household))
+
+# Household scale
+household_scale <- scale_fill_manual(breaks = household,values = household_colors,guide = guide_legend(ncol=7),name = '1. Index participant') 
+
+# Visit scale
+visit_scale <- scale_fill_manual(values = c("black","red","blue","purple"),breaks = c(0,1,2,3),labels = c("Clinical","Baseline","One month","Two month"),name = '2. Visit',guide = guide_legend(nrow=5))
+
+# Prolonged scale
+prolonged_colonization_scale <- scale_fill_manual(breaks = c("Yes","No","No index specimen"), values = c("darkred","white","gray"),name = '3. Persistent colonization',guide = guide_legend(nrow=5))
+
+# Function
+get_figure <- function(tree, species_df, offset_x, title, offset_y,
+                       ylim_decision = NULL, title_margin = -2){
+  tree_obj <- ggtree(tree)
+  max_y <- max(tree_obj$data$y, na.rm = TRUE)
+  if(is.null(ylim_decision)) ylim_decision <- max_y + 1
+  
+  rownames(species_df) <- species_df$genomic_id
+  p0 <- gheatmap(tree_obj, species_df %>% select(household), width=0.1, colnames=F) + household_scale + ggnewscale::new_scale_fill()  
+  p1 <- gheatmap(p0, species_df %>% select(visit) %>% mutate_all(as.factor), width=0.1, offset=offset_x, colnames=F) + visit_scale + ggnewscale::new_scale_fill()  
+  p2 <- gheatmap(p1, species_df %>% select(prolonged_colonization) %>% mutate_all(as.factor), width=0.1, offset=offset_x*2, colnames=F) + prolonged_colonization_scale  
+  p2 + ggtitle(title) + 
+    theme(plot.title = element_markdown()) + 
+    geom_treescale(x=0, y=0, offset=offset_y) + 
+    theme(legend.position='none') + 
+    ylim(NA, ylim_decision) + 
+    theme(plot.title = element_markdown(margin = margin(b = title_margin, unit = "pt"))) 
+}
+```
+
+## Implement the phylogeny
+```{r}
+## ST131 and nonST131 datasets
+ecoliST131_df <- df_index %>% subset(Species_ST == "Escherichia coli ST 131")
+ecolinonST131_df <- df_index %>% subset(Species == "Escherichia coli" & Species_ST != "Escherichia coli ST 131")
+
+# Calls
+Kpn <- get_figure(kpneumoniae_tree, df_index %>% subset(Species == "Klebsiella pneumoniae"), offset_x=0.00325, title='D. <i>Klebsiella pneumoniae</i>', offset_y=0.1)
+Ecoli <- get_figure(ecoli_tree, df_index %>% subset(Species == "Escherichia coli"), offset_x=0.0225, title='A. <i>Escherichia coli</i>', offset_y=0.45)
+Ecoli_ST131 <- get_figure(ecoli_tree %>% keep.tip(ecoliST131_df$genomic_id), ecoliST131_df, offset_x=0.0014, title='B. <i>Escherichia coli</i> ST131', offset_y=0.75)
+Ecoli_nonST131 <- get_figure(ecoli_tree %>% keep.tip(ecolinonST131_df$genomic_id), ecolinonST131_df, offset_x=0.021, title='C. <i>Escherichia coli</i> Non-ST131', offset_y=0.7)
+Ehorm <- get_figure(ehormaechei_tree, df_index %>% subset(Species == "Enterobacter hormaechei"), offset_x=0.0115, title='E. <i>Enterobacter hormaechei</i>', offset_y=0.11)
+cfreundii <- get_figure(cfreundii_tree, df_index %>% subset(Species == "Citrobacter freundii"), offset_x=0.015, title='F. <i>Citrobacter freundii</i>', offset_y=0.115)
+```
+
+
+```{r}
+# Left column: E. coli
+ecoli_col <- cowplot::plot_grid(
+    Ecoli, Ecoli_ST131, Ecoli_nonST131,
+    ncol = 1, 
+    rel_heights = c(69, 38, 31)  
+)
+
+# Right column: Others
+other_col <- cowplot::plot_grid(
+    Kpn, Ehorm, cfreundii,
+    ncol = 1, 
+    rel_heights = c(13, 8, 3)  
+)
+ 
+fullfigure <- cowplot::plot_grid(
+    ecoli_col, other_col,
+    ncol = 2,
+    rel_widths = c(1, 1)
+)
+```
+
+## Create the legend's figure 
+```{r}
+# Consistent theme
+phylo_theme <- theme(legend.key.size = unit(0.2, 'in'))
+
+# Scales legend
+## Household
+household_figure <- ggplot(data = df_index,aes(x=household,fill=household)) + geom_histogram(stat='count') + household_scale + phylo_theme
+household_figure_legend <- cowplot::get_legend(household_figure  + theme(plot.margin = margin(l=0,r=0)))  
+
+## Vist 
+visit_legend <-  ggplot(data = df_index,aes(x=visit,fill=as.factor(visit))) + geom_histogram(stat='count') + visit_scale + phylo_theme
+visit_figure_legend <- cowplot::get_legend(visit_legend  + theme(plot.margin = margin(l=0,r=0))) 
+
+## Prolonged
+prolonged_legend <-  ggplot(data = df_index,aes(x=prolonged_colonization,fill=as.factor(prolonged_colonization))) + geom_histogram(stat='count') + prolonged_colonization_scale + phylo_theme
+prolonged_colonization_figure_legend <- cowplot::get_legend(prolonged_legend  + theme(plot.margin = margin(l=0,r=0)))
+
+# Figure
+prolonged_colonization_figure_legend
+```
+
+# Curate the figure
+
+```{r,fig.width=8,fig.height=10} 
+legends <- cowplot::plot_grid(
+  household_figure_legend,
+  visit_figure_legend, 
+  prolonged_colonization_figure_legend,
+  ncol = 3,
+  rel_widths = c(1, 0.175,0.35),align = 'h',vjust=1
+) 
+
+figure <- cowplot::plot_grid(fullfigure,legends + theme(plot.margin = margin(l=-35,r=0)),nrow=2,rel_heights = c(1,0.175),align = 'h')
+
+figure
+```
+
+# Save
+
+```{r}
+ggsave(plot = figure, filename = './figures/s_figure_3_cognac_phylogenies.png', dpi = 900, width = 8, height = 10, bg='white')
+```
