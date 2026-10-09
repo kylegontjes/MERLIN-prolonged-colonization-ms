@@ -1,0 +1,4 @@
+Criteria,True positives,False positives,True negatives,False negatives,Sensitivity,Specificity,Positive predictive value (PPV),Negative predictive value (NPV),False persistence rate (1-PPV),Overall disagreement (1-accuracy)
+Same sequence type,17,3,11,0,100,78.60000000000001,85,100,15,9.7
+Same strain,16,4,11,0,100,73.3,80,100,20,12.9
+Same strain + plasmid-linked ESCrE gene,17,3,11,0,100,78.60000000000001,85,100,15,9.7
