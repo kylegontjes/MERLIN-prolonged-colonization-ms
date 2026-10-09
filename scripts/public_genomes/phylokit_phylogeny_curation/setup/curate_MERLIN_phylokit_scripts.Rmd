@@ -1,0 +1,67 @@
+---
+title: "curate_MERLIN_phylokit_scripts"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/') 
+```
+
+# Environment
+
+```{r} 
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Reference genome list
+```{r}
+reference_genomes <- readRDS("./data/public_genomes/reference_genome_detection/best_MERLIN_NCBI_reference_genome_choices.RDS") 
+df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(qc_pass==T & WGS_escre==T)
+```
+
+# Phylokit sbat script
+```{r}
+phylokit_sbat_model <- readLines("./scripts/public_genomes/phylokit_phylogeny_curation/phylokit_model_scripts/phylokit_MERLIN_model.sbat")
+
+for (i in seq_len(nrow(reference_genomes))){
+  analysis_group <- reference_genomes$analysis_group[[i]] 
+  new_script <- phylokit_sbat_model
+  new_script <- gsub("analysis_group",analysis_group,new_script)  
+  writeLines(text = new_script,con = paste0("./scripts/public_genomes/phylokit_phylogeny_curation/phylokit_sbat_files/phylokit_MERLIN_",analysis_group,".sbat"))
+}
+```
+
+# Phylokit config file
+```{r}
+phylokit_config_model <- readLines("./scripts/public_genomes/phylokit_phylogeny_curation/phylokit_model_scripts/config_MERLIN_model.yaml")
+
+for (i in seq_len(nrow(reference_genomes))){
+  analysis_group <- reference_genomes$analysis_group[[i]] 
+  
+  # Change analysis group
+  new_script <- phylokit_config_model
+  new_script <- gsub("analysis_group",analysis_group,new_script) 
+  
+  # Identify file name of whole-genome alignment
+  snpkit_wga <- list.files(path = paste0('../../../Sequence_data/variant_calling/2026-08-26_SNPKIT_MERLIN_',analysis_group,"/snpkit_rfmt_results/phylo_analysis/genome_alignment/"),pattern = '.fa')
+  new_script <- gsub("alignment_name",snpkit_wga,new_script)
+  
+  # Save the config file
+  writeLines(text = new_script,con = paste0("./scripts/public_genomes/phylokit_phylogeny_curation/phylokit_configs/config_Project_MERLIN_",analysis_group,".yaml"))
+}
+```
+

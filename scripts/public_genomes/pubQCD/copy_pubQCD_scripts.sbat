@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#SBATCH --job-name=copy_pubQCD_scripts
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,FAIL,END,REQUEUE
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=kgontjes0
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=1 --mem=10g --time=2:00:00
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/pubQCD/copy/copy_pubQCD_scripts.sbat
+
+
+# Copy scripts
+cd /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/pubQCD
+cp -R /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/workflow  .
+cp -R /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/config  .
+cp  /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/MERLIN*sbat  .
+cp  /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/README*  .  .
+cp /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/setup*  .
+cp -R /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/profile  .
+cp -R /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/busco_downloads .
+
+# Log files 
+cd /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/pubQCD
+cp -R /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/benchmarks .
+cp  /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/slurm_out/* job_slurm_out
+cp  /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/slurm-*.out pipeline_out
+cp /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/busco_*.log busco

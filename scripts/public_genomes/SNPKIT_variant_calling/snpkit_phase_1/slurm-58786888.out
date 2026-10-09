@@ -1,0 +1,41 @@
+- START: Pipeline
+- Checking Dependencies...
+- Getting Reference Genome name from config file: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP124490//CP124490.fasta
+- Index file already exists.
+- Samtools fai Index file already exists.
+- The reference seq dict file required for GATK and PICARD exists.
+- Java Availability Check Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+- Downsampling Coverage Depth to: 100
+- Running Mash Sketch
+- Using Genome Size: 5000000
+- Running seqtk to extract Fastq statistics
+- Average Read Length: 139.09
+- Total number of bases in fastq: 600293036
+- Raw Coverage Depth: 120 x
+- Downsampling reads with seqtk
+seqtk sample /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/fastq/MERLIN_190_R1.fastq.gz 0.8333333333333334 | pigz --fast -c -p 9 > /tmp/MERLIN_190_R1.fastq.gz
+- Downsampling completed in 0:00:45.966808
+- Cleaning reads with Trimmomatic
+- Completed cleaning reads in 0:03:49.056111
+- Mapping Reads using BWA
+- Completed read mapping in 0:00:53.862562
+- Processing and sorting alignments for variant calling
+- Completed processing, sorting and cleaning alignments in  0:07:11.716093
+gatk DepthOfCoverage -R /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP124490//CP124490.fasta -O /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_depth_of_coverage -I /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_aln_sort.bam --summary-coverage-threshold 1 --summary-coverage-threshold 5 --summary-coverage-threshold 9 --summary-coverage-threshold 10 --summary-coverage-threshold 15 --summary-coverage-threshold 20 --summary-coverage-threshold 25 --ignore-deletion-sites --intervals /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP124490//CP124490.bed
+- Completed generating Depth Statistics in  0:01:52.795968
+- SNP Calling using Samtools and Indel Calling using GATK4.
+samtools mpileup -ug -f /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP124490//CP124490.fasta /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_aln_sort.bam | bcftools call -O v -v -c -o /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_aln_mpileup_raw.vcf
+- START: Variant Filteration
+b'74.76\n'
+- The Average Depth per reference genome base is: 74.76
+- Using variant filter parameters from config section: snpkit
+- END: Variant Filteration
+- Time taken to complete the method - filter: 0:01:10.032350
+snpEff -csvStats /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_aln_mpileup_raw.vcf_ANN.csv -dataDir /nfs/turbo/umms-esnitkin/conda/snpkit/bin/data/ -d -no-downstream -no-upstream -c /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files////Logs/variant_calling/snpEff.config CP124490 /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_aln_mpileup_raw.vcf > /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_aln_mpileup_raw.vcf_ANN.vcf
+snpEff -csvStats /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_filter2_final.vcf_no_proximate_snp.vcf_ANN.csv -dataDir /nfs/turbo/umms-esnitkin/conda/snpkit/bin/data/ -d -no-downstream -no-upstream -c /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files////Logs/variant_calling/snpEff.config CP124490 /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_filter2_final.vcf_no_proximate_snp.vcf > /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_filter2_final.vcf_no_proximate_snp.vcf_ANN.vcf
+snpEff -csvStats /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_filter2_indel_final.vcf_ANN.csv -dataDir /nfs/turbo/umms-esnitkin/conda/snpkit/bin/data/ -d -no-downstream -no-upstream -c /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files////Logs/variant_calling/snpEff.config CP124490 /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_filter2_indel_final.vcf > /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//MERLIN_190//MERLIN_190_filter2_indel_final.vcf_ANN.vcf
+- Completed annotating variants in 0:00:36.808644
+- Completed generating Alignment and variant statistics in 0:01:19.299548
+- Removing Intermediate Temporary files
+- End: Pipeline
+- Total Time taken for the pipeline: 1:05:48.298341

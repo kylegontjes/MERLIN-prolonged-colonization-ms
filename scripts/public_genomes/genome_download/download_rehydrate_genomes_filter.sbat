@@ -1,0 +1,78 @@
+#!/bin/sh
+# Job name
+#SBATCH --job-name=unzip_NCBI_MERLIN_genomes
+# User info
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,END
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/genome_download/download_rehydrate_GenBank_genomes_072126.out
+#SBATCH --nodes=1  --ntasks=1 --cpus-per-task=5 --mem=50g --time=5:00:00
+
+# Directory
+cd /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/raw_assemblies/
+
+#!/bin/bash
+
+TURBO="/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes"
+
+SCRATCH="/scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/raw_assemblies"
+
+# ── Species loop ──────────────────────────────────────────────────────────────
+species_list=$(ls $TURBO | sort)
+ 
+for species in $species_list; do
+ 
+  # Directories of interest
+  zip="${TURBO}/${species}/${species}_dehydrated.zip"
+  out="${SCRATCH}/${species}/dehydrated/"
+  genomes="${SCRATCH}/${species}/genomes/"
+  accessions="${TURBO}/${species}/NCBI_Genbank_${species}_isolates_w_spatiotemporal_data_072126.txt"
+ 
+  # Create output and genome directory
+  mkdir -p $out $genomes
+ 
+  if [ ! -f "$zip" ]; then
+    echo "$(date): Missing $zip — skipping"
+    continue
+  fi
+ 
+  # Step 1: Unzip dehydrated package from turbo to scratch
+  echo "$(date): Unzipping $zip → $out"
+  unzip -o $zip -d $out \
+    && echo "$(date): Unzip complete" \
+    || { echo "$(date): Unzip FAILED — skipping $species"; continue; }
+ 
+  # Step 2: Filter fetch.txt to spatiotemporal accessions only
+  echo "$(date): Filtering fetch.txt"
+  grep -F -f $accessions ${out}/ncbi_dataset/fetch.txt > ${out}/ncbi_dataset/fetch_filtered.txt
+  n_filtered=$(wc -l < ${out}/ncbi_dataset/fetch_filtered.txt)
+  echo "$(date): ${n_filtered} files to rehydrate for $species"
+  mv ${out}/ncbi_dataset/fetch_filtered.txt ${out}/ncbi_dataset/fetch.txt
+ 
+  # Step 3: Rehydrate filtered accessions only
+  # --max-workers 30 = max allowed concurrent connections
+  # network bound — does not need to match cpus-per-task
+  echo "$(date): Rehydrating $species"
+  datasets rehydrate \
+    --directory $out \
+    --max-workers 30 \
+    && echo "$(date): Rehydration complete" \
+    || { echo "$(date): Rehydration FAILED — skipping $species"; continue; }
+ 
+  # Step 4: Move genomes to flat directory
+  # cp glob faster than find -exec mv for large file counts
+  echo "$(date): Moving genomes to $genomes"
+  cp ${out}/ncbi_dataset/data/*/*.fna ${genomes}/
+  echo "$(date): Done — $(ls $genomes | wc -l) genomes in $genomes"
+ 
+  # Step 5: Clean up dehydrated directory
+  echo "$(date): Cleaning up $out"
+  rm -rf $out
+  echo "$(date): $species complete"
+  echo "────────────────────────────────────────────────"
+ 
+done
+ 
+echo "$(date): All species complete"

@@ -1,0 +1,22 @@
+# Run Step 1
+## Activate 
+conda activate /nfs/turbo/umms-esnitkin/conda/snpkit/
+
+## Copy files
+cd setup
+bash copy_MERLIN_fastq_files_to_scratch.sh
+cd ../
+
+## Run scripts
+cd submission_scripts
+sbatch submit_SNPKIT_MERLIN_phase_1.sbatch
+cd ../
+
+# Run Step 2
+## Activate 
+srun --account=esnitkin1 --nodes=1 --ntasks-per-node=1 --mem-per-cpu=5GB --cpus-per-task=1 --time=8:00:00 --pty /bin/bash
+conda activate /nfs/turbo/umms-esnitkin/conda/snpkit/
+
+## Run scripts
+cd submission_scripts
+sbatch submit_SNPKIT_MERLIN_phase_2.sbatch

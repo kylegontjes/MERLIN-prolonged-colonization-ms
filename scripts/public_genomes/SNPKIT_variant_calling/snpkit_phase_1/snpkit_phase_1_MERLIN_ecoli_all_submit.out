@@ -1,0 +1,14 @@
+ bash snpkit_phase_1_MERLIN_ecoli_all.sh
+- SNPKIT: Microbial Variant Calling v2.0
+- Getting Reference Genome name from config file.
+- Using Reference Genome: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP124490//CP124490.fasta
+- Index file already exists.
+- Samtools fai Index file already exists.
+- Reference Genome Sequence Dictionary required for GATK and PICARD already exists.
+- Preparing snpEff database requirements.
+snpEff build -genbank -v CP124490 -c /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files/Logs/variant_calling/snpEff.config -dataDir /nfs/turbo/umms-esnitkin/conda/snpkit/bin/data
+- Running Jobs in cluster mode
+- Generating Jobs in /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//temp_jobs
+- Logs were recorded in file with extension log.txt in /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files/Logs/variant_calling
+- Total Time taken: 0:00:28.556626
+

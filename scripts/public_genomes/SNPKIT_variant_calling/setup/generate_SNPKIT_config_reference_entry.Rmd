@@ -1,0 +1,47 @@
+---
+title: "generate_config_reference_entry"
+output: html_document
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+---
+
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/') 
+```
+
+# Environment
+
+```{r} 
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load file names
+```{r}
+reference_genomes <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genome_detection/best_MERLIN_NCBI_reference_genome_choices.RDS")
+
+accessions <- reference_genomes$Ref_name %>% unique %>% sort
+Ref_file <- paste0(accessions,".fasta")
+Ref_Path <- paste0('/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/',accessions,"/")
+
+config_blocks <- paste0(
+    "[", accessions, "]\n",
+    "Ref_Name: ", Ref_file, "\n",
+    "Ref_Path: ", Ref_Path, "\n"
+  ) %>%
+  paste(collapse = "\n")
+
+writeLines(config_blocks,"./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/SNPKIT_variant_calling/reference_genome_config_block.txt") 
+```

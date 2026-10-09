@@ -1,0 +1,80 @@
+# Removed the following samples due to busco issues
+## Samples: sample_assembly_MERLIN_NCBI_GenBank_kpneumoniae.csv
+
+## Step 1. Remove
+CSV="/scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/config/sample_assembly_MERLIN_NCBI_GenBank_kpneumoniae.csv"
+
+BAD_SAMPLES=(
+    "GCA_022605285.1_ASM2260528v1_genomic"
+    "GCA_022605185.1_ASM2260518v1_genomic"
+    "GCA_022605225.1_ASM2260522v1_genomic"
+    "GCA_022605265.1_ASM2260526v1_genomic"
+)
+
+# Backup original
+cp ${CSV} ${CSV}.bak
+
+# Remove the four accessions
+for SAMPLE in "${BAD_SAMPLES[@]}"; do
+    grep -v "${SAMPLE}" ${CSV} > ${CSV}.tmp && mv ${CSV}.tmp ${CSV}
+done
+
+# Confirm
+echo "Lines removed:"
+grep -c -f <(printf '%s\n' "${BAD_SAMPLES[@]}") ${CSV}.bak
+echo "Still present in updated CSV:"
+grep -c -f <(printf '%s\n' "${BAD_SAMPLES[@]}") ${CSV} || echo "0 — all removed successfully"
+
+# Step 2. Remove from passed qc file csv (i.e., row with that)
+QC_FILE="/scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/results/2026-07-27_Project_MERLIN_NCBI_GenBank_kpneumoniae_pubQCD/qc_passed_list.csv" 
+
+BAD_SAMPLES=(
+    "GCA_022605285.1_ASM2260528v1_genomic"
+    "GCA_022605185.1_ASM2260518v1_genomic"
+    "GCA_022605225.1_ASM2260522v1_genomic"
+    "GCA_022605265.1_ASM2260526v1_genomic"
+)
+
+# Backup original
+cp ${QC_FILE} ${QC_FILE}.bak
+
+# Remove the four accessions (preserving header)
+for SAMPLE in "${BAD_SAMPLES[@]}"; do
+    grep -v "${SAMPLE}" ${QC_FILE} > ${QC_FILE}.tmp && mv ${QC_FILE}.tmp ${QC_FILE}
+done
+
+# Confirm
+echo "Still present in updated QC file:"
+grep -c -f <(printf '%s\n' "${BAD_SAMPLES[@]}") ${QC_FILE} || echo "0 — all removed successfully"
+
+# Step 3. Remove the files and their directories from the public dataset folder
+RESULTS="/scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/results/2026-07-27_Project_MERLIN_NCBI_GenBank_kpneumoniae_pubQCD"
+
+BAD_SAMPLES=(
+    "GCA_022605285.1_ASM2260528v1_genomic"
+    "GCA_022605185.1_ASM2260518v1_genomic"
+    "GCA_022605225.1_ASM2260522v1_genomic"
+    "GCA_022605265.1_ASM2260526v1_genomic"
+)
+
+# Preview first
+for SAMPLE in "${BAD_SAMPLES[@]}"; do
+    echo "=== ${SAMPLE} ==="
+    for DIR in prokka skani spades busco quast mlst; do
+        echo "  ${RESULTS}/${DIR}/${SAMPLE}"
+    done
+done
+
+# Remove once satisfied with preview
+for SAMPLE in "${BAD_SAMPLES[@]}"; do
+    echo "Removing outputs for ${SAMPLE}..."
+    for DIR in prokka skani spades busco quast mlst; do
+        TARGET="${RESULTS}/${DIR}/${SAMPLE}"
+        if [ -d "${TARGET}" ]; then
+            rm -rf "${TARGET}"
+            echo "  Deleted: ${TARGET}"
+        else
+            echo "  Not found: ${TARGET}"
+        fi
+    done
+done 

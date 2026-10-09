@@ -1,0 +1,155 @@
+- Parsing VCF files generated with SNPKIT
+- Path to config file: /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/variant_calling/snpkit/config
+- Note: Outgroup Sample Name not provided. Ignoring Outgroup steps.
+- Extracting Functional Class filter regions such as Phage (Phaster), Repeat (MUMmer), Custom Mask to Functional_class_filter_positions.txt
+- Number of Functional Class filter positions: 128165
+- Gathering Filtered SNP positions information.
+- Sorting unique variant positions.
+- The number of unique variant positions:310582
+- The number of unique indel positions:8022
+Processing /tmp/snpkit_temp/MERLIN_12_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_111_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_107_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_114_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_10_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_125_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_124_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_130_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_108_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_115_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_14_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_131_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_145_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_146_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_147_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_138_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_156_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_157_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_158_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_159_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_16_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_161_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_162_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_164_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_139_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_17_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_167_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_175_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_182_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_121_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_128_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_1_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_185_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_117_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_188_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_129_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_192_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_150_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_151_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_194_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_193_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_170_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_200_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_195_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_21_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_183_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_213_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_197_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_201_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_24_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_25_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_225_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_187_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_257_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_190_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_258_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_189_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_265_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_26_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_191_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_239_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_196_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_227_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_40_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_37_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_50_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_51_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_266_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_53_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_267_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_268_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_64_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_272_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_288_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_66_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_7_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_69_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_68_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_70_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_72_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_73_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_74_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_75_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_82_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_84_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_86_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_88_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_38_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_9_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_90_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_91_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_RE_3_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_54_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_80_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_39_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_44_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_77_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_79_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_78_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_92_filter2_final.vcf_no_proximate_snp.vcf
+Processing /tmp/snpkit_temp/MERLIN_RE_7_filter2_final.vcf_no_proximate_snp.vcf
+- Time taken to complete the Core Step 1 method: 0:05:49.709516
+/nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/variant_calling/snpkit/modules/variant_diagnostics/core_pipeline.py:766: DtypeWarning: Columns (3,6,12,15,20,21,22,25,26,27,34,36,37,51,54,59,60,75,76,82,93,94,95,100) have mixed types. Specify dtype option on import or set low_memory=False.
+  All_label_final_sorted_header = pd.read_csv("%s/All_label_final_sorted_header.txt" % args.filter2_only_snp_vcf_dir, sep='\t', header=0)
+- Parsing VCF files generated with SNPKIT
+- /tmp/snpkit_temp already exists and is non-empty.
+- Path to config file: /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/variant_calling/snpkit/config
+- Note: Outgroup Sample Name not provided. Ignoring Outgroup steps.
+- Extracting Functional Class filter regions such as Phage (Phaster), Repeat (MUMmer), Custom Mask to Functional_class_filter_positions.txt
+- Number of Functional Class filter positions: 128165
+- Generating data matrices.
+- Time taken to parse Indel VCFs: 0:00:07.058132
+- No. of core SNPs: 222118
+- Time taken to parse Single Variant VCFs: 0:03:43.610119
+- Adding snpEff annotations to SNP/Indel Matrix.
+- Extracting Locus Tag information from Genbank.
+- Reading annotations from Reference genome genbank file: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP124490/CP124490.gbf
+- Merging Final Annotated VCF files into Final_vcf_no_proximate_snp.vcf using bcftools
+- Time taken to complete GATK combine variants method: 0:00:56.107006
+- Time taken to complete GATK combine variants method: 0:00:05.202309
+- Loading /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//core_temp_dir//All_label_final_ordered_sorted.txt
+- Loading /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//core_temp_dir//All_indel_label_final_ordered_sorted.txt
+Length of mask_fq_mq_positions:21066
+Length of mask_fq_mq_positions specific to outgroup:0
+- Time taken to complete the Generate SNP matrix method: 0:40:37.846790
+- Time taken to complete the Generate Indel matrix method: 0:00:34.123917
+- Generating Fasta from Variant Alleles.
+- Time taken to parse and generate variant matrices: 1:03:43.990440
+rm: cannot remove '/tmp/snpkit_temp/*': No such file or directory
+- Parsing VCF files generated with SNPKIT
+- /tmp/snpkit_temp already exists and is non-empty.
+- Path to config file: /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/variant_calling/snpkit/config
+- Note: Outgroup Sample Name not provided. Ignoring Outgroup steps.
+- Extracting Functional Class filter regions such as Phage (Phaster), Repeat (MUMmer), Custom Mask to Functional_class_filter_positions.txt
+- Number of Functional Class filter positions: 128165
+- Note: Outgroup Sample Name not provided. Ignoring Outgroup steps.
+- Moving files to Results folder: /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//2026_08_26_19_45_12_core_results/
+- Generating Gubbins MFA files
+- Submit Gubbins job: /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//2026_08_26_19_45_12_core_results//gubbins/2026_08_26_19_45_12_CP124490_genome_aln_w_alt_allele_unmapped.sbat
+rm: cannot remove '/tmp/snpkit_temp/*': No such file or directory
+- Parsing VCF files generated with SNPKIT
+- /tmp/snpkit_temp already exists and is non-empty.
+- Path to config file: /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/variant_calling/snpkit/config
+- Note: Outgroup Sample Name not provided. Ignoring Outgroup steps.
+- Extracting Functional Class filter regions such as Phage (Phaster), Repeat (MUMmer), Custom Mask to Functional_class_filter_positions.txt
+- Number of Functional Class filter positions: 128165

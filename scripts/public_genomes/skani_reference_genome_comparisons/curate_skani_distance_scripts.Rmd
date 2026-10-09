@@ -1,0 +1,40 @@
+---
+title: "Curate skani distance scripts"
+output: html_document
+date: "2026-08-12"
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+ 
+# Environment
+
+```{r, environment}
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Edit model script with specific info
+
+```{r load, echo=FALSE}
+model_sbat <- readLines("scripts/public_genomes/skani_reference_genome_comparisons/skani_dist_compare_species_genomes_model.sbat")
+species_names <- c("cfreundii","cportucalensis","ecoli","ehormaechei","eludwigii","kpneumoniae"  ,'sliquefaciens') %>% sort
+
+for(i in species_names){
+  species_sbat <- model_sbat
+  species_sbat <-  species_sbat %>% gsub("taxa_name",i,.)
+  writeLines(species_sbat,paste0("./scripts/public_genomes/skani_reference_genome_comparisons/skani_dist_compare_MERLIN_public_genomes_",i,".sbat"))
+}
+```

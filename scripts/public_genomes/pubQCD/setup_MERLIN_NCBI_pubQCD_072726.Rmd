@@ -1,0 +1,135 @@
+---
+title: "Setup optimized pubQCD"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/scratch/')
+```
+
+# Environment
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Species
+```{r}
+species <- list.dirs("./Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/raw_assemblies",recursive = F) %>% str_split("\\/",simplify = T) %>% .[,9] %>% subset(.!='')    
+```
+
+# Edit config file
+```{r}
+pubqcd_config_file <- readLines("./Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/config/config_assembly.yaml")
+
+species_taxa <- tribble(
+  ~species,         ~taxon, ~time,
+  "ecoli",          "Escherichia coli",  "72:00:00",
+  "kpneumoniae",            "Klebsiella pneumoniae",  "72:00:00",
+  "ehormaechei",    "Enterobacter hormaechei", "24:00:00",
+  "cfreundii",      "Citrobacter freundii","24:00:00",
+  "eludwigii",      "Enterobacter ludwigii","24:00:00",
+  "sliquefaciens",  "Serratia liquefaciens","24:00:00",
+  "cportucalensis", "Citrobacter portucalensis","24:00:00"
+)
+assembly_size <- read_csv("./Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/config/species_freq.csv")
+ 
+for(i in species){
+  temp_file <- pubqcd_config_file
+  # Replace samples
+  temp_file <- gsub("sample_assembly.csv",
+                    paste0("sample_assembly_MERLIN_NCBI_GenBank_",i,".csv"),
+                    temp_file)
+  # Update asesembly path
+  temp_file <- gsub("/nfs/turbo/umms-esnitkin/Project_MRSA_CM/Public_datasets/2025-04-18_all-MRSA-USA300_NCBI/illumina/2025-04-18_MRSA-USA300-assemblies_NCBI/assembly_downloads",
+                    paste0("/scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/raw_assemblies/",i,"/genomes"),temp_file) 
+  # Prefix
+  temp_file <- gsub("2025-05-29_Project_MRSA_USA_300_assembly_pubQCD",
+                    paste0("2026-07-27_Project_MERLIN_NCBI_GenBank_",i,"_pubQCD"),
+                    temp_file)
+  # Genome size
+  taxon <- subset(species_taxa,species==i) %>% .$taxon
+  genome_size <- assembly_size %>% subset(Species==taxon) %>% .$Assembly_Length
+  temp_file <- gsub("genome_size: 3000000",
+                    paste0("genome_size: ",genome_size),
+                    temp_file)
+  # Minimum contig size
+  temp_file <- gsub("min_contigs: 10",
+                    "min_contigs: 1",
+                    temp_file)
+  
+  # Minimum contig size
+  temp_file <- gsub("max_contigs: 500",
+                    "max_contigs: 20",
+                    temp_file)
+  
+  
+  writeLines(temp_file,paste0("./Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/config/MERLIN_NCBI_GenBank_",i,"_pubQCD.yaml"))
+}
+```
+
+# Create the sample_Id list for pubQCD
+```{r}
+header <- "sample_id"
+
+for(i in species){
+  genome_path <- paste0("./Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/raw_assemblies/",i,"/genomes/")
+  list_files <- list.files(genome_path,recursive = T)
+  list_files <- gsub(".fna","",list_files)
+  lines <- c(header,list_files)
+  writeLines(lines,paste0("./Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/config/sample_assembly_MERLIN_NCBI_GenBank_",i,".csv"))
+}
+```
+
+# Create pubqcd script
+```{r}
+script_file <- "./Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/bash_script_to_run_assembly_pubQCD_profile.sbat"
+
+pubqcd_sbatch_file <- readLines(script_file)
+
+for(i in species){
+  temp_file <- pubqcd_sbatch_file
+  # Replace name
+  temp_file <- gsub("run_pubQCD",
+                    paste0("run_pubQCD_MERLIN_GenBank_",i),temp_file)
+  # Replace mail user
+  temp_file <- gsub("dhatrib@umich.edu",
+                    "kgontjes@umich.edu",temp_file) 
+  # Replace config user
+  temp_file <- gsub("config_assembly.yaml",
+                    paste0("MERLIN_NCBI_GenBank_",i,"_pubQCD.yaml"),
+                    temp_file) 
+  # Increase time
+  time <- subset(species_taxa,species==i) %>% .$time 
+  
+  temp_file <- gsub("--time=48:00:00",
+                    paste0("--time=",time),
+                    temp_file)  
+  
+  # Update cpus for controller
+  temp_file <- gsub("--cpus-per-task=3",
+                    "--cpus-per-task=1",
+                    temp_file) 
+                    
+  # Reduce memory
+  temp_file <- gsub("--mem=10gb",
+                    "--mem=5gb",
+                    temp_file)  
+   
+  writeLines(temp_file,paste0("./Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/pubQCD/MERLIN_NCBI_GenBank_",i,"_pubQCD_072726.sbat"))
+}
+``` 

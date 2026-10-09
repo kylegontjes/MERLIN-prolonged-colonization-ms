@@ -1,0 +1,4 @@
+MERLIN_208_R1.fastq.gz
+MERLIN_211_R1.fastq.gz
+MERLIN_247_R1.fastq.gz
+MERLIN_RE_1_R1.fastq.gz

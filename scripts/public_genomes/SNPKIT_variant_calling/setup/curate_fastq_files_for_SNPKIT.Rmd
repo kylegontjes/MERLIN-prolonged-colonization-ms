@@ -1,0 +1,49 @@
+---
+title: "curate_fastq_files_for_SNPKIT"
+output: html_document
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/') 
+```
+
+# Environment
+
+```{r} 
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Reference genome list
+```{r} 
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(qc_pass==T & WGS_escre==T)
+QC_passing_WGS_ESCRE_genomes <- df$genomic_id
+```
+
+# Create copy script
+
+```{r}
+files = c(paste0(QC_passing_WGS_ESCRE_genomes,"_R1_trim_paired.fastq.gz"),
+          paste0(QC_passing_WGS_ESCRE_genomes,"_R2_trim_paired.fastq.gz"))
+
+files_wo_suffix = gsub("_trim_paired","",files)
+
+file_copy_commapnds <- paste0("cp /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/illumina_fastq/clean_fastq_qc_pass_samples/",files, " /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/fastq/",files_wo_suffix, " &" )
+
+bin <- "#!/bin/sh"
+
+write_lines(x = c(bin,file_copy_commapnds),file = "./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/SNPKIT_variant_calling/setup/copy_MERLIN_fastq_files_to_scratch.sh")
+```

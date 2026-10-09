@@ -1,0 +1,193 @@
+---
+title: "curate_ncbi_Genbank_genome_metadata"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+# Environment
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse","countrycode",'data.table') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Genome list
+
+```{r}
+species <- list.dirs("./data/public_genomes",recursive = T) %>% str_split("\\/",simplify = T) %>% .[,4] %>% subset(.!='')    
+datasets <- pbmcapply::pbmclapply(species,FUN=function(x){
+  fread(paste0("./data/public_genomes/",x,"/NCBI_Genbank_",x,"_metadata_072126.tsv"))
+},mc.cores=7)
+names(datasets) <- species
+```
+
+
+# Create genome label
+```{r}
+get_chromosome_or_complete <- function(dataset){
+  dataset[,'chromosome_or_complete'] <- dataset$`Assembly Level` %in% c("Complete Genome","Chromosome")
+   return(dataset) 
+}
+
+datasets <- lapply(datasets,get_chromosome_or_complete)
+ 
+lapply(datasets,FUN=function(x){
+paste0("Number of genomes: ",sum(x$chromosome_or_complete ))
+})
+```
+
+# Handle duplicates
+```{r}
+handle_duplicates <- function(dataset){
+  dataset$Assembly <- dataset$`Assembly Accession`
+  dataset$BioSample <- dataset$`Assembly BioSample Accession`
+  dataset$N50 <- dataset$`Assembly Stats Contig N50` 
+  duplicates <- dataset$BioSample[duplicated(dataset$BioSample)]
+  dataset$is_duplicate <- duplicated(dataset$BioSample)
+  # Best genome choice
+  best_genome_choice <- dataset %>%
+  group_by(BioSample) %>%
+  arrange(desc(N50), .by_group = TRUE) %>%
+  slice(1) %>%
+  ungroup() %>%
+  select(sample = BioSample, best_assembly = Assembly)
+ 
+  dataset$BioSample_best_genome <- dataset$Assembly %in% best_genome_choice$best_assembly
+ return(dataset) 
+}
+
+datasets <- pbmcapply::pbmclapply(datasets,handle_duplicates,mc.cores=7)
+ 
+lapply(datasets,FUN=function(x){
+  
+paste0("Number of genomes: ",sum(x$BioSample_best_genome ))
+})
+
+lapply(datasets,FUN=function(x){
+  
+paste0("Number of non-best genomes: ",sum(!x$BioSample_best_genome ))
+})
+```
+
+
+# Date data
+```{r}
+get_date_fast <- function(x){ 
+  x <- as.character(x)
+
+  bad <- (x == "") | grepl("/", x, fixed = TRUE)
+  x[bad] <- NA
+
+  parsed <- lubridate::parse_date_time(
+    x,
+    orders = c("y", "ym", "ymd", "ymd_HMS"),
+    truncated = 3,
+    quiet = TRUE
+  )
+
+  lubridate::as_date(parsed)
+} 
+
+get_date_data <- function(dataset){
+  dataset$collection_date <- get_date_fast(dataset$`Assembly BioSample Collection date`)
+  dataset$collection_year <-  lubridate::year(dataset$collection_date) 
+  dataset$has_date <- !is.na(dataset$collection_date)
+  return(dataset)
+}
+ 
+datasets <- pbmcapply::pbmclapply(datasets,get_date_data,mc.cores=7) 
+```
+
+# Location
+```{r}
+recode_country <- function(x){
+   split <- str_split(x,":",simplify = T)
+   country <- trimws(split[,1],which='both')
+   country <- ifelse(country %in% c("not available",'not collected','not determined','not provided',"missing", "-","","restricted access","Restricted access"),NA,country)
+   country <- recode(country,
+                     "Berlgium" = "Belgium",
+                     "Cambodge" = "Cambodia",
+                     "KSA" = "Kingdom of Saudi Arabia",
+                     "UAE" = "United Arab Emirates",
+                     "United Kingdom (England, Wales & N. Ireland)" = "United Kingdom",
+                     "USA" = "United States")
+   return(country)
+}
+
+recode_location_data <- function(dataset){
+  dataset$Location <- dataset$`Assembly BioSample Geographic location`
+  dataset$country <-  recode_country(dataset$Location)
+  dataset$continent <- countrycode(dataset$country, origin = 'country.name', destination = 'continent')
+  dataset$has_location <- is.na(dataset$country) ==F 
+  return(dataset)
+}
+
+datasets <- pbmcapply::pbmclapply(datasets,recode_location_data,mc.cores=7) 
+```
+
+# Save full metadata
+
+```{r}
+lapply(names(datasets),FUN=function(x){ 
+  dataset <- datasets[[x]] 
+  info <- paste0("Number of complete/chromosome isolates in the ",x, " collection: ",nrow(dataset),"\n") 
+  cat(info)
+  path <- paste0("./data/public_genomes/",x,"/NCBI_Genbank_",x,"_metadata_curated_072126.RDS")
+  saveRDS(dataset,path)
+})
+```
+
+# Save genomes with location and time data and use their best BioSample genome
+```{r} 
+lapply(names(datasets),FUN=function(x){ 
+  dataset <- datasets[[x]]
+  
+  dataset_w_spatiotemporal_data <- subset(dataset,
+  has_location == TRUE &
+  has_date     == TRUE &
+  chromosome_or_complete == TRUE &
+  BioSample_best_genome  == TRUE) 
+  
+  cat(paste0("Number of isolates with complete or chromosomal assemblies with spatiotemporal data in the ",x, " collection: ",nrow(dataset_w_spatiotemporal_data),'\n'))
+  path <- paste0("./data/public_genomes/",x,"/NCBI_Genbank_",x,"_isolates_w_spatiotemporal_data_072126.txt")
+  writeLines(dataset_w_spatiotemporal_data$Assembly,path) 
+})
+```
+
+```{r}
+# Quick overview of all species after filtering
+map_dfr(names(datasets), function(x) {
+  dataset <- datasets[[x]]
+  dataset_final <-subset(dataset,
+  has_location == TRUE &
+  has_date     == TRUE &
+  chromosome_or_complete == TRUE &
+  BioSample_best_genome  == TRUE) 
+  tibble(
+    species             = x,
+    total               = nrow(dataset),
+    complete_chromosome = sum(dataset$chromosome_or_complete),
+    best_biosample      = sum(dataset$BioSample_best_genome),
+    has_date            = sum(dataset$has_date),
+    has_location        = sum(dataset$has_location),
+    spatiotemporal_pass =nrow(dataset_final)
+    )
+}) %>% 
+  knitr::kable() %>% kableExtra::kable_classic_2()
+```

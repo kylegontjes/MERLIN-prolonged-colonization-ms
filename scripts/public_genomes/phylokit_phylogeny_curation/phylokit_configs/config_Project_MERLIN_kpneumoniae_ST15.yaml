@@ -1,0 +1,41 @@
+# Do not make changes to variables unless explicitly asked to 
+# unless you are comfortable making changes to the flags for Gubbins and IQtree
+
+# Define the prefix of the files 
+prefix: MERLIN_kpneumoniae_ST15
+
+# Define the name of the run
+# Rename this to your preferred naming convention with this format:year-month-day_Project_Name_phylokit
+run_name: 2026-08-26_Project_MERLIN_kpneumoniae_ST15_phylokit
+
+# Input
+alignment: /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_SNPKIT_MERLIN_kpneumoniae_ST15/snpkit_rfmt_results/phylo_analysis/genome_alignment/2026_08_26_15_05_47_CP176990_genome_aln_w_alt_allele_unmapped.fa # Set path to alignment file
+
+# Shared
+threads: 8
+outgroup: # Specify outgroup in your multiple sequence alignment, if you want to use one. Leave blank if no outgroup is desired.
+
+# Gubbins
+first_tree_algorithm: fasttree
+first_model: JC
+tree_builder: iqtree  # To be consistent with --best-model
+filter_percentage: 25.0
+mem_mb_gubbins: 20000
+runtime_gubbins: 2000
+tree_args: "-T AUTO"
+
+# Mask gubbins runtime
+mem_mb_gubbins_mask: 10000
+runtime_gubbins_mask: 20
+
+# IQtree parameters
+iqtree_model: MFP+ASC
+bnni: false
+bootstrap_count: 1000
+num_unsuccessful_iterations: 200
+mem_mb_iqtree: 20000
+runtime_iqtree: 2000
+
+# SNP distance matrix curation
+mem_mb_snp_distance_matrix: 8000
+runtime_snp_distance_matrix: 20

@@ -1,0 +1,77 @@
+---
+title: "SNP Clustering Step 3: Generate SNP distance clustering across thresholds when using public reference genomes"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = T, message = T, error=T,comment=NA) 
+opts_chunk$set(echo = T,warning = T, message = T, error=T,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/')
+```
+ 
+# Environment
+
+```{r environment, echo=T, message=T, include=T, results=T}
+#Packages
+packages <- c("tidyverse",'ggraph','igraph','kableExtra') 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+#Source functions (this has the clustering functions)
+source("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/lib/common_functions.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load data
+
+```{r}  
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") %>% subset(WGS_escre==T & qc_pass==T)
+
+SNP_distance_pair_dataset <- readRDS('./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distances/SNP_pairwise_datasets/MERLIN_SNP_pairwise_datasets_public_references.RDS') 
+``` 
+
+# Generate clustering data 
+
+```{r}
+thresholds_of_interest <- c(0:100) 
+ST_list <- df$Species_ST %>% unique %>% sort
+
+SNP_clustering <- pbmcapply::pbmclapply(thresholds_of_interest,FUN=function(x){
+  # Get SNP threshold clustering using single linkage
+  threshold_data <- SNP_threshold_based_single_linkage_clustering(dataframe = df,pair_types =  SNP_distance_pair_dataset, threshold = x, distance_variable = 'gubbins_masked_noncore') 
+  # Sequence type clustering
+  ## Add taxonomic annotations to enable clustering
+  threshold_data_w_annotations <- left_join(threshold_data,df %>% select(genomic_id,Species,Species_ST,ST))
+  ## Through each ST, get clustering data
+  ST_df <- lapply(ST_list,recode_clustering_calls_using_ST_data,threshold_data_w_annotations) %>% do.call(rbind,.)  %>%
+  rename(
+    !!paste0("cluster_", x) := cluster,
+    !!paste0("Species_ST_cluster_", x) := Species_ST_cluster
+  )
+  ST_df
+}, mc.cores = 10)  
+```
+ 
+# Save cluster calls across thresholds
+
+```{r}
+cluster_calls_across_thresholds <-  lapply(SNP_clustering,FUN=function(x){x %>% select(-clustering_distance_variable)}) %>%
+  reduce(left_join, by=c("genomic_id", "Species", "Species_ST", "ST")) %>%
+  select(genomic_id, Species, ST, Species_ST, 
+         sort(starts_with("cluster_")), 
+         sort(starts_with("Species_ST_cluster_")))
+
+# Save
+## RDS
+saveRDS(cluster_calls_across_thresholds,'./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distances/SNP_cluster_assignments/MERLIN_SNP_cluster_assignments_public_references.RDS')
+## CSV
+write_csv(cluster_calls_across_thresholds,'./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distances/SNP_cluster_assignments/MERLIN_SNP_cluster_assignments_public_references.csv') 
+```

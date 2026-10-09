@@ -1,0 +1,16 @@
+#!/bin/sh
+# Job name
+#SBATCH --job-name=download_MERLIN_NCBI_species_genomes
+# User info
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,END,FAILED
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/genome_download/download_NCBI_species_genomes_slurm_out_072126.out
+#SBATCH --nodes=1  --ntasks=1 --cpus-per-task=1 --mem=40g --time=2:00:00
+
+# conda activate ncbi_datasets_v_18_33_1
+datasets --version
+datasets download genome accession --inputfile /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/species/NCBI_Genbank_species_isolates_w_spatiotemporal_data_072126.txt --include genome --filename /scratch/esnitkin_root/esnitkin1/kgontjes/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/raw_assemblies/species/NCBI_Genbank_species_072126.zip 
+

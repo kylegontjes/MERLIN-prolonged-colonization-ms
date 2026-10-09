@@ -1,0 +1,84 @@
+#!/bin/bash
+#SBATCH --job-name=skani_triangle_ehormaechei
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,END,FAILED
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1 
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/skani_reference_genome_comparisons/skani_dist_compare_MERLIN_public_genomes_ehormaechei_%j.log
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=20gb --time=3:00:00
+
+# ── Parameters ────────────────────────────────────────────────────────────────
+SPECIES="ehormaechei"
+
+# NCBI reference pool — extracted chromosomes
+NCBI_CHROM_DIR="/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/${SPECIES}/chromosomes/"
+
+# MERLIN study isolates — pre-built path list per species
+STUDY_LIST="/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/${SPECIES}/MERLIN_isolates_${SPECIES}.txt"
+
+# Output directory
+OUT_DIR="/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/${SPECIES}/skani_distance/"
+# ──────────────────────────────────────────────────────────────────────────────
+
+module load Bioinformatics
+module load skani/0.3.1
+ 
+skani --version
+ 
+mkdir -p ${OUT_DIR}
+ 
+echo "$(date): Running skani dist for ${SPECIES}"
+echo "$(date): NCBI chromosomes: ${NCBI_CHROM_DIR}"
+echo "$(date): Study isolates:   ${STUDY_LIST}"
+echo "$(date): Output:           ${OUT_DIR}"
+echo "────────────────────────────────────────────────"
+ 
+# Check inputs exist
+if [ ! -f "${STUDY_LIST}" ]; then
+  echo "ERROR: Study isolate list not found: ${STUDY_LIST}"
+  exit 1
+fi
+ 
+if [ ! -d "${NCBI_CHROM_DIR}" ]; then
+  echo "ERROR: NCBI chromosome directory not found: ${NCBI_CHROM_DIR}"
+  exit 1
+fi
+ 
+# Step 1: Build NCBI chromosome file list
+echo "$(date): Building NCBI chromosome file list"
+ 
+find ${NCBI_CHROM_DIR} \
+  -name "*_chromosome.fna" \
+  > ${OUT_DIR}/${SPECIES}_ncbi_chromosomes.txt
+ 
+n_ncbi=$(wc -l  < ${OUT_DIR}/${SPECIES}_ncbi_chromosomes.txt)
+n_study=$(wc -l < ${STUDY_LIST})
+ 
+echo "$(date): NCBI chromosomes: ${n_ncbi}"
+echo "$(date): Study isolates:   ${n_study}"
+echo "$(date): Total comparisons: $((n_ncbi * n_study))"
+echo "────────────────────────────────────────────────"
+ 
+# Step 2: Run skani dist
+# --ql = query list  (MERLIN isolates)
+# --rl = reference list (NCBI chromosomes)
+# Ref is always NCBI, Query always MERLIN
+echo "$(date): Running skani dist"
+ 
+skani dist \
+  --ql ${STUDY_LIST} \
+  --rl ${OUT_DIR}/${SPECIES}_ncbi_chromosomes.txt \
+  -t 8 \
+  -o ${OUT_DIR}/${SPECIES}_skani_dist.tsv \
+  --detailed \
+  && echo "$(date): skani dist succeeded" \
+  || { echo "ERROR: skani dist failed"; exit 1; }
+ 
+echo "$(date): skani dist complete"
+echo "$(date): Rows: $(wc -l < ${OUT_DIR}/${SPECIES}_skani_dist.tsv)"
+echo "────────────────────────────────────────────────"
+echo "$(date): All complete for ${SPECIES}"
+echo "  skani output: ${OUT_DIR}/${SPECIES}_skani_dist.tsv"
+echo "  NCBI ids:     ${OUT_DIR}/${SPECIES}_ncbi_chromosomes.txt"
+echo "  Study ids:    ${STUDY_LIST}"

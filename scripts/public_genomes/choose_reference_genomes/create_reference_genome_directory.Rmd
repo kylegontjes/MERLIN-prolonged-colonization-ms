@@ -1,0 +1,64 @@
+---
+title: "create_reference_genome_directory"
+output: html_document
+date: "2026-08-13"
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+# Environment
+
+```{r environment}
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load reference
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+reference_choices <- readRDS("./data/public_genomes/reference_genome_detection/best_MERLIN_NCBI_reference_genome_choices.RDS") %>% ungroup %>% select(Ref_name,Ref_file_name,Ref_file,Sample) %>% distinct
+```
+
+# Move files
+
+```{r}
+NFS_PREFIX  <- '/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms'
+LOCAL_ROOT  <- path.expand('~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms')
+
+src_base <- sub(NFS_PREFIX, LOCAL_ROOT, reference_choices$Ref_file, fixed = TRUE)
+
+dst_dirs <- file.path(LOCAL_ROOT, "data/public_genomes/reference_genomes",
+                      reference_choices$Ref_name)
+
+dir.create(file.path(LOCAL_ROOT, "data/public_genomes/reference_genomes"),
+           showWarnings = FALSE)
+invisible(lapply(dst_dirs, dir.create, showWarnings = FALSE))
+
+# Vectorized — no loop needed, works correctly in knitr
+file.copy(src_base,
+          file.path(dst_dirs, paste0(reference_choices$Ref_name, ".fasta")),
+          overwrite = FALSE)
+
+file.copy(gsub("\\.fna$",".gbf",src_base),
+          file.path(dst_dirs, paste0(reference_choices$Ref_name, ".gbf")),
+          overwrite = FALSE)
+
+file.copy(sub("\\.fna$", ".gff", src_base),
+          file.path(dst_dirs, paste0(reference_choices$Ref_name, ".gff")),
+          overwrite = FALSE)
+```

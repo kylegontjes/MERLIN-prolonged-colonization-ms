@@ -1,0 +1,14 @@
+#!/bin/sh
+# Job name
+#SBATCH --job-name=reference_genome_choice_MERLIN
+# User info
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,END
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/choose_reference_genomes/choose_reference_genome_script.out
+#SBATCH --nodes=1  --ntasks=1 --cpus-per-task=1 --mem=16g --time=2:00:00
+ 
+module load  Rtidyverse/4.6.0
+Rscript -e 'rmarkdown::render("/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/choose_reference_genomes/choose_best_reference_genomes_MERLIN_species_ST_level.Rmd")'

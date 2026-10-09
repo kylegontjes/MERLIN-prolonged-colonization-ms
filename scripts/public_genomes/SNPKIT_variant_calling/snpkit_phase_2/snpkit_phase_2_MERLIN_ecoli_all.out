@@ -1,0 +1,16 @@
+(/nfs/turbo/umms-esnitkin/conda/snpkit) [kgontjes@gl3109 snpkit_phase_2]$ python /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/variant_calling/snpkit/snpkit.py -type PE -readsdir /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/fastq -outdir  /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files -analysis 2026-08-26_snpkit_MERLIN_ecoli_all_2 -index CP124490 -steps parse -cluster cluster -scheduler SLURM -gubbins yes -mask -filenames /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/SNPKIT_variant_calling/isolate_lists/MERLIN_ecoli_all_files.txt
+- Generating custom vcf file list for analysis.
+- Number of final variant call vcf files: 101
+- Logs will be recorded in /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files/Logs/core_prep
+- Parsing Functional class filters
+- Extracting Phage region information from /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP124490/summary.txt
+- Number of phage Positions: 128015
+- The Phage region positions in this file /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//core_temp_dir//phage_region_positions.txt will be filtered out
+- Finding repeat region in reference genome: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP124490//CP124490.fasta
+- No. of Tandem repeat matches positions: 150
+- Repeat positions in this file /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//core_temp_dir//repeat_region_positions.txt will be filtered out
+- Core Step Logs will be recorded in file with extension log.txt in /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files/Logs/core
+- Report Step Logs will be recorded in file with extension log.txt in /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files/Logs/report
+- Tree Step Logs will be recorded in file with extension log.txt in /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files/Logs/tree
+- Submit Job: /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_all/output_files//core_temp_dir//2026_08_26_19_45_12_2026-08-26_snpkit_MERLIN_ecoli_all_2_core_All.sbat
+

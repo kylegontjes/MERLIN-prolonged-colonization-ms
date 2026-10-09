@@ -1,0 +1,62 @@
+#!/bin/bash
+#SBATCH --job-name=phastest
+#SBATCH --array=1-26
+#SBATCH --cpus-per-task=10
+#SBATCH --mem=16G
+#SBATCH --time=02:00:00
+#SBATCH --account=esnitkin1
+#SBATCH --output=/nfs/turbo/umms-kgontjes/containers/phastest/logs/phastest_%A_%a.out
+#SBATCH --error=/nfs/turbo/umms-kgontjes/containers/phastest/logs/phastest_%A_%a.err
+
+module load singularity 
+
+PHASTEST=/nfs/turbo/umms-kgontjes/containers/phastest
+SIF=/nfs/turbo/umms-kgontjes/containers/images/phastest.sif
+REFERENCE_DIR=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes
+GENOME_LIST=$PHASTEST/reference_genome_list.txt
+OUTPUT_DIR=$PHASTEST/phastest-results
+
+# Create directories
+mkdir -p $PHASTEST/logs
+mkdir -p $PHASTEST/phastest_inputs
+mkdir -p $OUTPUT_DIR
+
+# Generate genome list on first task only
+if [[ $SLURM_ARRAY_TASK_ID -eq 1 ]]; then
+    ls $REFERENCE_DIR/*/*.fasta > $GENOME_LIST
+    echo "Genome list created: $(wc -l < $GENOME_LIST) genomes"
+fi
+
+# Wait for task 1 to finish writing the genome list
+sleep 10
+
+# Get this array task's genome
+FASTA=$(sed -n "${SLURM_ARRAY_TASK_ID}p" $GENOME_LIST)
+BASENAME=$(basename $FASTA .fasta)
+
+echo "Processing: $BASENAME"
+echo "FASTA: $FASTA"
+
+# Link input into phastest_inputs
+ln -sf $FASTA $PHASTEST/phastest_inputs/$BASENAME.fasta
+
+# Run PHASTEST
+singularity run \
+  --hostname slurmctld \
+  --bind $PHASTEST/phastest-app-docker/sub_programs/ncbi-blast-2.3.0+:/BLAST+ \
+  --bind $PHASTEST/phastest-app-docker/sub_programs/ncbi-blast-2.3.0+:/root/BLAST+ \
+  --bind $PHASTEST/phastest-app-docker:/phastest-app \
+  --bind $PHASTEST/phastest-app-docker:/root/phastest-app \
+  --bind $PHASTEST/phastest_inputs:/phastest_inputs \
+  --writable-tmpfs \
+  $SIF \
+  phastest -i fasta -m deep -s $BASENAME.fasta --yes
+
+# Move results to output directory
+rm -rf $OUTPUT_DIR/$BASENAME
+mv $PHASTEST/phastest-app-docker/JOBS/$BASENAME $OUTPUT_DIR/$BASENAME
+
+# Clean up symlink
+rm -f $PHASTEST/phastest_inputs/$BASENAME.fasta
+
+echo "Done: $BASENAME → $OUTPUT_DIR/$BASENAME"

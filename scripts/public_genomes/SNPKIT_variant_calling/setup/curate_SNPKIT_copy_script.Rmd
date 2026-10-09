@@ -1,0 +1,54 @@
+---
+title: "curate_SNPKIT_copy_script"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/') 
+```
+
+# Environment
+
+```{r} 
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Reference genome list
+```{r}
+reference_genomes <- readRDS("./data/public_genomes/reference_genome_detection/best_MERLIN_NCBI_reference_genome_choices.RDS") 
+df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(qc_pass==T & WGS_escre==T)
+```
+ 
+# Create file lists
+```{r}
+rfmt_script <- readLines("./scripts/public_genomes/SNPKIT_variant_calling/snpkit_model_scripts/copy_snpkit_directories_model.sh")
+
+for (i in seq_len(nrow(reference_genomes))){
+  analysis_group <- reference_genomes$analysis_group[[i]]
+  results_dir <- paste0("../../../Sequence_data/variant_calling/2026-08-26_SNPKIT_MERLIN_",analysis_group)
+  
+  # Make directory
+  if (!dir.exists(results_dir)) {
+  dir.create(results_dir, recursive = TRUE)
+  }
+  
+  # Create new script
+  new_script <- rfmt_script
+  new_script <- gsub("analysis_group",analysis_group,new_script)
+  writeLines(text = new_script,con = paste0("./scripts/public_genomes/SNPKIT_variant_calling/copy_snpkit_directories/copy_snpkit_directories_MERLIN_",analysis_group,".sh"))
+}
+```

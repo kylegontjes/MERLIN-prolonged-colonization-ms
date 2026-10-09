@@ -1,0 +1,1 @@
+for i in $(ls /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/phylokit_phylogeny_curation/phylokit_sbat_files/*sbat); do echo $i; sbatch $i; done

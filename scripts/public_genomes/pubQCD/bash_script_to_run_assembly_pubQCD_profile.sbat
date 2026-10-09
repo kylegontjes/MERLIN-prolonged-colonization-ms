@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#SBATCH --job-name=run_pubQCD
+#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --mail-user=dhatrib@umich.edu
+#SBATCH --cpus-per-task=3
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem=10gb
+#SBATCH --time=48:00:00
+#SBATCH --account=esnitkin1
+#SBATCH --partition=standard
+
+# Load necessary modules
+module load Bioinformatics
+module load snakemake singularity mamba
+
+# Run main pipeline
+snakemake -s workflow/pubQCD_assembly_updated.smk --profile profile --configfile config/config_assembly.yaml  

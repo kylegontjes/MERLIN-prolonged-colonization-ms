@@ -1,0 +1,11 @@
+python /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/variant_calling/snpkit/snpkit.py \
+-type PE \
+-readsdir /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/fastq \
+-outdir  /scratch/kgontjes_root/kgontjes0/kgontjes/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_ecoli_ST6321/output_files \
+-analysis 2026-08-26_snpkit_MERLIN_ecoli_ST6321_1 \
+-index CP151026 \
+-steps call \
+-cluster cluster \
+-scheduler SLURM \
+-clean \
+-filenames /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/SNPKIT_variant_calling/isolate_lists/MERLIN_ecoli_ST6321_files.txt

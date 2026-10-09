@@ -1,0 +1,65 @@
+---
+title: "download_genbank_metadata"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+--- 
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+# Environment
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Taxa group
+
+```{r}
+species_taxa <- tribble(
+  ~species,         ~taxon,
+  "ecoli",          "Escherichia coli",
+  "kpneumoniae",            "Klebsiella pneumoniae",
+  "ehormaechei",    "Enterobacter hormaechei",
+  "cfreundii",      "Citrobacter freundii",
+  "eludwigii",      "Enterobacter ludwigii",
+  "sliquefaciens",  "Serratia liquefaciens",
+  "cportucalensis", "Citrobacter portucalensis"
+)
+```
+
+# Template script
+
+```{bash}
+cd scripts/public_genomes/metadata_setup
+echo '#!/bin/sh
+#conda activate ncbi_datasets_v_18_33_1
+## datasets version: 18.33.1
+cd /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/species
+
+datasets download genome taxon "full_name" --assembly-source genbank --assembly-level complete,chromosome --dehydrated --filename species_dehydrated.zip --no-progressbar
+dataformat tsv genome   --package species_dehydrated.zip --fields accession,assminfo-level,assminfo-biosample-accession,assminfo-biosample-bioproject-accession,assminfo-biosample-collection-date,assminfo-biosample-geo-loc-name,assminfo-biosample-isolation-source,assminfo-biosample-host,assminfo-sequencing-tech,assminfo-assembly-method,assmstats-number-of-contigs,assmstats-contig-n50,assmstats-total-sequence-len > NCBI_Genbank_species_metadata_072126.tsv
+' > model_GenBank_download_script.sh
+```
+
+```{r} 
+lapply(species_taxa$species,FUN=function(x){
+  species_name <- species_taxa %>% subset(species==x) %>% .$taxon
+  lines <- readLines("./scripts/public_genomes/metadata_setup/model_GenBank_download_script.sh")
+  lines <- gsub("species",x,lines) %>% gsub("full_name",species_name,.)
+  writeLines(lines,paste0("./scripts/public_genomes/metadata_setup/NCBI_GenBank_",x,"_genome_metadata_download_072126.sh"))
+}) 
+```

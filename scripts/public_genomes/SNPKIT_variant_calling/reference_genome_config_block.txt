@@ -1,0 +1,104 @@
+[AP026940]
+Ref_Name: AP026940.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/AP026940/
+
+[CM129776]
+Ref_Name: CM129776.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CM129776/
+
+[CM136160]
+Ref_Name: CM136160.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CM136160/
+
+[CM136920]
+Ref_Name: CM136920.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CM136920/
+
+[CM144247]
+Ref_Name: CM144247.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CM144247/
+
+[CM149573]
+Ref_Name: CM149573.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CM149573/
+
+[CM169497]
+Ref_Name: CM169497.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CM169497/
+
+[CP048784]
+Ref_Name: CP048784.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP048784/
+
+[CP056794]
+Ref_Name: CP056794.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP056794/
+
+[CP058897]
+Ref_Name: CP058897.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP058897/
+
+[CP098214]
+Ref_Name: CP098214.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP098214/
+
+[CP099008]
+Ref_Name: CP099008.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP099008/
+
+[CP099670]
+Ref_Name: CP099670.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP099670/
+
+[CP103605]
+Ref_Name: CP103605.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP103605/
+
+[CP104284]
+Ref_Name: CP104284.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP104284/
+
+[CP109601]
+Ref_Name: CP109601.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP109601/
+
+[CP118195]
+Ref_Name: CP118195.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP118195/
+
+[CP124490]
+Ref_Name: CP124490.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP124490/
+
+[CP136474]
+Ref_Name: CP136474.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP136474/
+
+[CP151026]
+Ref_Name: CP151026.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP151026/
+
+[CP159639]
+Ref_Name: CP159639.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP159639/
+
+[CP159686]
+Ref_Name: CP159686.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP159686/
+
+[CP162039]
+Ref_Name: CP162039.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP162039/
+
+[CP176990]
+Ref_Name: CP176990.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP176990/
+
+[CP181524]
+Ref_Name: CP181524.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/CP181524/
+
+[LR890230]
+Ref_Name: LR890230.fasta
+Ref_Path: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes/LR890230/
+

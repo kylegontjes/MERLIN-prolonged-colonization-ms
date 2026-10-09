@@ -1,0 +1,18 @@
+#!/bin/sh
+# Job name
+#SBATCH --job-name=download_GenBank_metadata
+# User info
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,END,FAILED
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/metadata_setup/download_GenBank_metadata.out
+#SBATCH --nodes=1  --ntasks=1 --cpus-per-task=1 --mem=40g --time=0:30:00
+
+cd /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/metadata_setup
+for i in $(ls *_genome_metadata_download_072126.sh); do
+    echo "Running $i"
+    sh $i
+    sleep 10 
+done

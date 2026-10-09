@@ -1,0 +1,1 @@
+for i in $(ls *sbat); do echo $i; sbatch $i; done

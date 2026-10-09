@@ -1,0 +1,92 @@
+---
+title: "generate_SNPKIT_scripts"
+output: html_document
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+---
+
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/') 
+```
+
+# Environment
+
+```{r} 
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Reference genome list
+```{r}
+reference_genomes <- readRDS("./data/public_genomes/reference_genome_detection/best_MERLIN_NCBI_reference_genome_choices.RDS") 
+df <- readRDS("./data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(qc_pass==T & WGS_escre==T)
+```
+
+# Create file lists
+```{r}
+for (i in seq_len(nrow(reference_genomes))){
+  group_type <- ifelse(reference_genomes$group[[i]]=='species','species','not_species')
+  species_key <- reference_genomes$species_key[[i]] 
+  species <- recode(species_key,
+  "cfreundii"="Citrobacter freundii",
+  "cportucalensis"="Citrobacter portucalensis",
+  "ecoli"="Escherichia coli",
+  "ehormaechei"="Enterobacter hormaechei",
+  "eludwigii"="Enterobacter ludwigii",
+  "kpneumoniae"="Klebsiella pneumoniae",
+  "sliquefaciens"="Serratia liquefaciens")
+  
+  if(group_type=='species'){
+    isolates <- df %>% subset(Species == species) %>% .$genomic_id
+  } else {
+    isolates <- df %>% subset(Species_ST == reference_genomes$group[[i]]) %>% .$genomic_id
+  } 
+  entries <- paste0(isolates,"_R1.fastq.gz") %>% sort
+  writeLines(text = entries,con = paste0("./scripts/public_genomes/SNPKIT_variant_calling/isolate_lists/MERLIN_",reference_genomes$analysis_group[[i]],"_files.txt"))
+}
+```
+
+# Create scratch directories
+```{r}
+for (i in seq_len(nrow(reference_genomes))){
+  analysis_group <- reference_genomes$analysis_group[[i]]
+  directory_path <- paste0("~/Desktop/gl_scratch_kg/Project_MERLIN/Sequence_data/variant_calling/2026-08-26_snpkit_MERLIN_",analysis_group)
+  dir.create(directory_path)
+}
+```
+
+# Edit phase 1
+```{r}
+snpkit_phase_1_model <- readLines("./scripts/public_genomes/SNPKIT_variant_calling/snpkit_model_scripts/snpkit_phase_1_model.sh")
+for (i in seq_len(nrow(reference_genomes))){
+  analysis_group <- reference_genomes$analysis_group[[i]]
+  accession <- reference_genomes$Ref_name[[i]]
+  new_script <- snpkit_phase_1_model
+  new_script <- gsub("analysis_group",analysis_group,new_script) %>% gsub("accession",accession,.)
+  writeLines(text = new_script,con = paste0("./scripts/public_genomes/SNPKIT_variant_calling/snpkit_phase_1/snpkit_phase_1_MERLIN_",analysis_group,".sh"))
+}
+```
+
+# Edit phase 2
+```{r}
+snpkit_phase_2_model <- readLines("./scripts/public_genomes/SNPKIT_variant_calling/snpkit_model_scripts/snpkit_phase_2_model.sh")
+for (i in seq_len(nrow(reference_genomes))){
+  analysis_group <- reference_genomes$analysis_group[[i]]
+  accession <- reference_genomes$Ref_name[[i]]
+  new_script <- snpkit_phase_2_model
+  new_script <- gsub("analysis_group",analysis_group,new_script) %>% gsub("accession",accession,.)
+  writeLines(text = new_script,con = paste0("./scripts/public_genomes/SNPKIT_variant_calling/snpkit_phase_2/snpkit_phase_2_MERLIN_",analysis_group,".sh"))
+}
+``` 

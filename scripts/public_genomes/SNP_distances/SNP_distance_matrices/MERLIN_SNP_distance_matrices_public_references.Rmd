@@ -1,0 +1,82 @@
+---
+title: "SNP Clustering Step 1: Generate SNP Distance Matrices From Public Genome Reference Variant Calling Runs"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+Notes:
+
+1. This data was generated using SNPKIT variant calling and public reference genomes
+
+2. For more information about reference genome selection, please see scripts in  ./scripts/public_genomes/choose_reference_genomes 
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = T, message = T,error=T,comment=NA) 
+opts_chunk$set(echo = T,warning = T, message = T,error=T,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/')
+```
+ 
+# Environment
+
+```{r environment, echo=T, message=FALSE, include=T, results=T}
+# Packages
+packages <- c("tidyverse",'pbmcapply')
+
+# Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Source functions (this has the clustering functions)
+source("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/lib/common_functions.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load dataset
+
+```{r} 
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") %>% subset(WGS_escre==T & qc_pass==T)
+
+paste0("Number of considered isolates: ",nrow(df))
+``` 
+
+# Load reference genome dataset
+
+```{r}
+reference_genomes <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genome_detection/best_MERLIN_NCBI_reference_genome_choices.RDS")
+analysis_groups <- reference_genomes$analysis_group
+references <- reference_genomes$Ref_name %>% unique
+```
+
+# Load and curate pairwise SNP matrix
+
+```{r}
+# Create distance matrices
+SNP_distance_matrices <- pbmcapply::pbmclapply(analysis_groups,FUN=function(x){  
+  
+  # Get path of dataset
+  path <- paste0(
+    "./Sequence_data/variant_calling/phylokit/results/2026-08-26_Project_MERLIN_", x,
+    "_phylokit/snp_distance_matrices/MERLIN_", x, "_gubbins_masked_noncore_snp_matrix.csv"
+  )
+  
+  # Load the matrix
+  SNP_matrix <- load_phylokit_snp_matrix(path)
+  
+  # Remove references
+  SNP_matrix <- SNP_matrix %>% subset(!rownames(.) %in% references) %>% select(!any_of(references))
+  
+  return(SNP_matrix)
+},mc.cores=10) %>% `names<-`(analysis_groups)
+```
+
+# Save the file
+
+```{r} 
+saveRDS(SNP_distance_matrices,
+'./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distances/SNP_distance_matrices/MERLIN_SNP_distance_matrices_public_references.RDS')
+```

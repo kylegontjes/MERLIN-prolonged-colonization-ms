@@ -1,0 +1,20 @@
+#!/bin/bash
+#SBATCH --job-name=copy_MERLIN_SNPKIT_output
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,END
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=1 --mem=40g --time=0:30:00
+#SBATCH --array=0-29
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/SNPKIT/copy_snpkit_directories/copy_snpkit_directories_%a.out
+
+cd /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/SNPKIT/copy_snpkit_directories
+
+scripts=(/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/SNPKIT_variant_calling/copy_snpkit_directories/*.sh)
+
+script="${scripts[$SLURM_ARRAY_TASK_ID]}"
+
+echo "Running: $(basename "$script")"
+
+bash "$script"

@@ -1,0 +1,2 @@
+MERLIN_19_R1.fastq.gz
+MERLIN_22_R1.fastq.gz

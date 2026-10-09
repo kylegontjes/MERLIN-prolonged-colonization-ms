@@ -1,0 +1,135 @@
+#!/bin/bash
+#SBATCH --job-name=extract_largest_contig_cportucalensis
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,END,FAILED
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=kgontjes0
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/extract_chromosome/extract_largest_contig_cportucalensis_%j.log
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=1 --mem=5g --time=03:00:00
+
+# ── Parameters ────────────────────────────────────────────────────────────────
+SPECIES="cportucalensis"
+PROKKA_DIR="/nfs/turbo/umms-esnitkin/Project_MERLIN/Public_datasets/2026-07-27_${SPECIES}_NCBI/assembly/illumina/prokka"
+OUT_DIR="/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/${SPECIES}/chromosomes"
+# ──────────────────────────────────────────────────────────────────────────────
+
+mkdir -p ${OUT_DIR}
+
+echo "$(date): Extracting largest contig for ${SPECIES}"
+echo "$(date): Input:  ${PROKKA_DIR}"
+echo "$(date): Output: ${OUT_DIR}"
+echo "────────────────────────────────────────────────"
+
+n_success=0
+n_failed=0
+
+for sample_dir in ${PROKKA_DIR}/*/; do
+
+  sample=$(basename ${sample_dir})
+  fna="${sample_dir}/${sample}.fna"
+  gbk="${sample_dir}/${sample}.gbk"
+  gff="${sample_dir}/${sample}.gff"
+
+  # Check input files exist
+  if [ ! -f "${fna}" ]; then
+    echo "WARNING: No .fna found for ${sample} — skipping"
+    n_failed=$((n_failed + 1))
+    continue
+  fi
+
+  if [ ! -f "${gbk}" ]; then
+    echo "WARNING: No .gbk found for ${sample} — skipping"
+    n_failed=$((n_failed + 1))
+    continue
+  fi
+
+  if [ ! -f "${gff}" ]; then
+    echo "WARNING: No .gff found for ${sample} — skipping"
+    n_failed=$((n_failed + 1))
+    continue
+  fi
+
+  # ── Extract largest contig from .fna ──────────────────
+  awk '
+    /^>/ {
+      if (seq != "") {
+        if (length(seq) > max_len) {
+          max_len  = length(seq)
+          max_seq  = seq
+          max_head = header
+        }
+      }
+      header = $0
+      seq    = ""
+      next
+    }
+    { seq = seq $0 }
+    END {
+      if (length(seq) > max_len) {
+        max_len  = length(seq)
+        max_seq  = seq
+        max_head = header
+      }
+      print max_head
+      print max_seq
+    }
+  ' ${fna} > ${OUT_DIR}/${sample}_chromosome.fna
+
+  # Get largest contig ID from extracted .fna
+  largest_id=$(grep "^>" ${OUT_DIR}/${sample}_chromosome.fna | \
+               sed 's/^>//' | \
+               awk '{print $1}')
+
+  # ── Extract matching record from .gbk → .gbf ──────────
+  awk -v id="${largest_id}" '
+    /^LOCUS/ {
+      in_record = ($2 == id)
+      record    = ""
+    }
+    in_record {
+      record = record $0 "\n"
+    }
+    /^\/\// && in_record {
+      printf "%s", record
+      in_record = 0
+    }
+  ' ${gbk} > ${OUT_DIR}/${sample}_chromosome.gbf
+
+  # ── Extract matching record from .gff ─────────────────
+  # Keep gff-version header, sequence-region for this contig,
+  # all feature lines where col 1 == largest_id (stop before ##FASTA)
+  awk -v id="${largest_id}" '
+    /^##gff-version/     { print; next }
+    /^##sequence-region/ { if ($2 == id) print; next }
+    /^##FASTA/           { exit }
+    /^#/                 { next }
+    $1 == id             { print }
+  ' ${gff} > ${OUT_DIR}/${sample}_chromosome.gff
+
+  # ── Strip .1 suffix from contig ID in all outputs ─────
+  clean_id="${largest_id%.1}"
+
+  if [ "${clean_id}" != "${largest_id}" ]; then
+    sed -i "s/${largest_id}/${clean_id}/g" ${OUT_DIR}/${sample}_chromosome.fna
+    sed -i "s/${largest_id}/${clean_id}/g" ${OUT_DIR}/${sample}_chromosome.gbf
+    sed -i "s/${largest_id}/${clean_id}/g" ${OUT_DIR}/${sample}_chromosome.gff
+  fi
+
+  # Verify all three outputs exist and are non-empty
+  if [ -s "${OUT_DIR}/${sample}_chromosome.fna" ] && \
+     [ -s "${OUT_DIR}/${sample}_chromosome.gbf" ] && \
+     [ -s "${OUT_DIR}/${sample}_chromosome.gff" ]; then
+    n_success=$((n_success + 1))
+  else
+    echo "ERROR: Empty output for ${sample} — check input files"
+    n_failed=$((n_failed + 1))
+  fi
+
+done
+
+echo "────────────────────────────────────────────────"
+echo "$(date): Complete"
+echo "  Extracted: ${n_success}"
+echo "  Failed:    ${n_failed}"
+echo "  Output:    ${OUT_DIR}"

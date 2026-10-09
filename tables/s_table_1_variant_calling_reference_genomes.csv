@@ -1,0 +1,31 @@
+Analysis group,Study genomes,Reference accession,Reference ST,Reference length (bp),Minimum ANI,Median ANI,Median alignment fraction (reference)
+Citrobacter freundii ST 185,2,CP162039,185,4972593,99.97,99.97,96.22
+Citrobacter freundii ST 251,2,AP026940,499,4907659,99.14,99.14,90.88
+Citrobacter freundii,6,CP162039,185,4972593,98.52,98.94,89.07
+Citrobacter portucalensis ST Unknown,2,CM149573,1138,4801058,98.65,98.69,91.69
+Citrobacter portucalensis,3,CM149573,1138,4801058,97.55,98.65,91.47
+Escherichia coli ST 1193,9,CP058897,1193,4935580,99.99,99.99,97.66
+Escherichia coli ST 131,57,CM169497,131,4914536,99.32,99.95,97.61
+Escherichia coli ST 372,2,CP098214,372,5063976,99.99,99.99,98.07
+Escherichia coli ST 38,7,CP159686,38,4869328,99.63,99.79,95.25
+Escherichia coli ST 4118,4,CP099008,2002,4819084,98.86,98.9,93.64
+Escherichia coli ST 607,4,CP056794,607,5002359,99.77,99.83,93.15
+Escherichia coli ST 6321,2,CP151026,6321,4868045,99.94,99.94,96.91
+Escherichia coli ST 648,2,CP159639,648,4986387,99.93,99.93,97.89
+Escherichia coli ST 69,2,CM144247,69,5040535,99.82,99.87,95.97
+Escherichia coli ST 744,3,CP109601,744,4774561,99.94,99.98,94.67
+Escherichia coli,101,CP124490,131,4830942,96.61,99.58,95.6
+Enterobacter hormaechei ST 114,4,CP118195,114,4744370,99.94,99.97,96.46
+Enterobacter hormaechei ST 144,4,CM136160,144,4733921,99.86,99.87,94.1
+Enterobacter hormaechei ST 45,7,CM129776,45,4635494,99.64,100,98.94
+Enterobacter hormaechei ST 78,4,CP181524,78,4644159,99.97,99.99,98.07
+Enterobacter hormaechei,24,CP104284,2490,4553867,95.74,97.42,90.83
+Enterobacter ludwigii ST 1287,2,CM136920,1934,4867369,99.62,99.63,94.1
+Enterobacter ludwigii,3,CM136920,1934,4867369,98.9,99.62,94.02
+Klebsiella pneumoniae ST 15,7,CP176990,15,5206641,99.95,99.97,98.57
+Klebsiella pneumoniae ST 29,4,CP103605,29,5229078,99.99,99.99,98.08
+Klebsiella pneumoniae ST 323,3,LR890230,323,5226186,99.86,99.88,98
+Klebsiella pneumoniae ST 45,4,CP099670,45,5248804,99.97,99.97,97.11
+Klebsiella pneumoniae,24,CP136474,723,5156979,99.09,99.18,92.1
+Serratia liquefaciens ST Unknown,3,CP048784,-,5317713,98.97,98.97,92.8
+Serratia liquefaciens,3,CP048784,-,5317713,98.97,98.97,92.8

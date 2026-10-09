@@ -1,0 +1,130 @@
+---
+title: "SNP Clustering Step 2: Generate pairs for SNP distance matrices"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = T, message = T,error=T,comment=NA) 
+opts_chunk$set(echo = T,warning = T, message = T,error=T,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/')
+```
+
+# Environment
+
+```{r environment, echo=T, message=T, include=T, results=T}
+#Packages
+packages <- c("tidyverse")
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Source common functions (this has the clustering functions)
+source("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/lib/common_functions.R")
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+``` 
+
+# Load the dataset
+
+```{r}
+df <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/metadata_w_genomic_id_w_duplicate_ESCrE_addressed_w_qcd_w_sra_metadata.RDS") %>% subset(WGS_escre==T & qc_pass==T)
+```
+
+# Load reference genome dataset
+
+```{r}
+reference_genomes <- readRDS("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genome_detection/best_MERLIN_NCBI_reference_genome_choices.RDS")
+analysis_groups <- reference_genomes$analysis_group
+references <- reference_genomes$Ref_name %>% unique
+```
+
+# Load public genome data 
+
+```{r} 
+# Create pairtypes matrix for merlin 
+create_pair_types_matrix_phylokit_MERLIN <- function(x, matrix_type) {
+  path <- paste0(
+    "./Sequence_data/variant_calling/phylokit/results/2026-08-26_Project_MERLIN_", x,
+    "_phylokit/snp_distance_matrices/MERLIN_", x, "_", matrix_type, "_snp_matrix.csv"
+  )
+  create_pair_types_matrix_phylokit(path) %>%
+    mutate(analysis_group = x, matrix = matrix_type) 
+}
+
+# Matrix types
+matrix_types <- c(
+  "gubbins_masked_core",
+  "gubbins_masked_noncore",
+  "pre_gubbins_core",
+  "pre_gubbins_noncore"
+)
+
+# Full script to generate pairwise distance data
+SNP_distance_pair_dataset <- pbmcapply::pbmclapply(analysis_groups,FUN=function(x){
+  # Get matrices for each type of SNP data (see matrix types above)
+  results <- lapply(matrix_types,FUN=function(y){
+    create_pair_types_matrix_phylokit_MERLIN(x,y)
+  })
+  # Merge dataset
+  results_df <- do.call(rbind,results)
+  return(results_df)
+},mc.cores = 10) %>% do.call(rbind, .)
+```
+
+# Curate the data
+
+```{r} 
+# Make pairwise SNP distance numeric
+SNP_distance_pair_dataset$pairwise_dist <- as.numeric(SNP_distance_pair_dataset$pairwise_dist)
+
+# Create variables
+SNP_distance_pair_dataset$species_abbreviated <- SNP_distance_pair_dataset$analysis_group %>% str_split(.,"_",simplify=T) %>% .[,1] 
+SNP_distance_pair_dataset$species_wide <- grepl("_all", SNP_distance_pair_dataset$analysis_group)
+SNP_distance_pair_dataset$both_MERLIN <- grepl("MERLIN",SNP_distance_pair_dataset$isolate1) &  grepl("MERLIN",SNP_distance_pair_dataset$isolate2) 
+
+# Create linking variable
+SNP_distance_pair_dataset <- create_pair_linking_variable(SNP_distance_pair_dataset)
+
+# Subset pair data to MERLIN isolates only
+SNP_distance_pair_dataset_MERLIN_only <- subset(SNP_distance_pair_dataset, both_MERLIN == T)
+```
+
+# Pivot the dataset wide
+
+```{r}
+SNP_distance_pair_dataset_wide <- pivot_wider(SNP_distance_pair_dataset_MERLIN_only,id_cols = c(isolate1,isolate2,key,analysis_group,species_wide,species_abbreviated,both_MERLIN),values_from = pairwise_dist,names_from = matrix)
+```
+
+# Add metadata to pair dataset
+
+```{r}
+voi = c("household",'subject_id','ncbi_id',"visit","collect_date","Species","Species_ST","subject_category",'subject_category_simplified',"subject_type",'index')
+
+SNP_distance_pair_dataset_overall <- update_pair_types_w_info(pair_types_df = SNP_distance_pair_dataset_wide, df = df, voi = voi)
+```
+
+# Create a sequence type-preferred variant calling dataset
+
+1. We preferred using the sequence type-specific data. 
+
+2. For isolates with >1 isolate, we selected the ST value  
+
+```{r}
+# ST preferred 
+SNP_distance_pair_ST_preferred <- SNP_distance_pair_dataset_overall %>% 
+    group_by(isolate1, isolate2) %>% 
+    filter(species_wide == min(species_wide)) %>% 
+    slice(1) 
+
+# Save
+## RDS
+saveRDS(SNP_distance_pair_ST_preferred,"./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distances/SNP_pairwise_datasets/MERLIN_SNP_pairwise_datasets_public_references.RDS")
+## CSV
+write_csv(SNP_distance_pair_ST_preferred,"./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/SNP_distances/SNP_pairwise_datasets/MERLIN_SNP_pairwise_datasets_public_references.csv") 
+```

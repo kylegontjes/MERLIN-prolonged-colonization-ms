@@ -1,0 +1,55 @@
+---
+title: "MERLIN_species_list_curation_072726"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+# Environment
+```{r}
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Load data
+```{r}
+df <- readRDS("~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/dataset/MERLIN_cohort_metadata_final.RDS") %>% subset(qc_pass==TRUE & WGS_escre==T)
+```
+
+# Extract species with >1 entry
+```{r}
+species_table <- table(df$Species)
+over_one <- subset(species_table,species_table>1) %>% names 
+```
+
+# Write list of genomes to consider
+```{r}
+sapply(over_one,FUN=function(x){
+  # Get species name
+  split_string <- str_split(x," ",simplify=T)
+  split_string[,1] <- split_string[,1] %>% tolower() %>% substr(.,1,1)
+  abbreviated_name <- paste0(split_string[,1],split_string[,2],collapse = "")
+  
+  # Species
+  species <- x
+  species_list <- subset(df,Species == species) %>% .$genomic_id
+  paths <- paste0("/nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/assembly/illumina/prokka/",species_list,"/",species_list,".fna")
+  writeLines(text = paths,con = paste0("~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/",abbreviated_name,"/MERLIN_isolates_",abbreviated_name,".txt"))
+})
+```

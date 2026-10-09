@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH --job-name=phylokit_MERLIN_ecoli_ST131
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,FAIL,END,REQUEUE
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=kgontjes0
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=1 --mem=10g --time=40:00:00
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/phylokit_phylogenetic_curation/phylokit_submission/phylokit_submission_Project_MERLIN_ecoli_ST131.out
+
+## Note: Chang the mail-user, account, and SBATCH mem/time requirements as you see fit
+
+# Load modules
+module load snakemake singularity mamba
+
+# Navigate to phylokit directory
+cd /nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/variant_calling/phylokit
+
+# Run snakemake
+snakemake --profile profile/ --configfile /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/phylokit_phylogeny_curation/phylokit_configs/config_Project_MERLIN_ecoli_ST131.yaml

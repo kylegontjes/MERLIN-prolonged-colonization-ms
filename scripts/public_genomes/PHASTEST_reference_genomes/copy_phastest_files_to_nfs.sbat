@@ -1,0 +1,24 @@
+#!/bin/bash
+#SBATCH --job-name=phastest_copy_files 
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=10G
+#SBATCH --time=00:15:00
+#SBATCH --account=esnitkin1
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/PHASTEST_reference_genomes/copy_PHASTEST_files.out 
+
+# Move logs
+mv /nfs/turbo/umms-kgontjes/containers/phastest/logs/* \
+  /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/slurm_out/public_genomes/PHASTEST_reference_genomes/
+
+# Move files
+RESULTS=/nfs/turbo/umms-kgontjes/containers/phastest/phastest-results
+REFDIR=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genomes
+
+for accession in $(ls $RESULTS); do
+    if [[ -d $REFDIR/$accession ]]; then
+        cp $RESULTS/$accession/* $REFDIR/$accession
+        echo "Moved $accession"
+    else
+        echo "WARNING: $REFDIR/$accession does not exist, skipping $accession"
+    fi
+done

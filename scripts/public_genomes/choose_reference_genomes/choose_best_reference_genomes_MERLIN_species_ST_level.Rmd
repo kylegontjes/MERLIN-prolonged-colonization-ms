@@ -1,0 +1,91 @@
+---
+title: "curate_reference_genome_information"
+output: html_document
+date: "2026-08-12"
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='/nfs/turbo/umms-esnitkin/Project_MERLIN/')
+```
+
+# Environment
+
+```{r}
+#Packages
+packages <- c("tidyverse")
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+#Functions
+source("./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/public_genomes/choose_reference_genomes/get_reference_genome_choices.R")
+
+#Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Run analysis
+
+```{r}
+# Species map
+species_taxa <- tribble(
+  ~species_abbreviation, ~species,
+  "cfreundii",           "Citrobacter freundii",
+  "cportucalensis",      "Citrobacter portucalensis",
+  "ecoli",               "Escherichia coli",
+  "ehormaechei",         "Enterobacter hormaechei",
+  "eludwigii",           "Enterobacter ludwigii",
+  "kpneumoniae",         "Klebsiella pneumoniae",
+  "sliquefaciens",       "Serratia liquefaciens"
+)
+
+# Run for each species
+references <- pmap(
+  species_taxa,
+  function(species_abbreviation, species) {
+    get_reference_genome_choices(
+      species_abbreviation = species_abbreviation,
+      species              = species,
+      path                 = '/nfs/turbo/umms-esnitkin/Project_MERLIN/',
+      ANI_threshold        = 0.95
+    )
+  }
+)
+
+names(references) <- species_taxa$species_abbreviation
+ 
+# Best choice data frame
+all_overall_results <- map_dfr(
+  references,
+  ~ .x$overall_results,
+  .id = "species_key"
+) %>%
+  relocate(species_key)
+
+
+all_best_choices <- map_dfr(
+  references,
+  ~ .x$best_choice,
+  .id = "species_key"
+)
+
+all_best_choices$group_ST <- all_best_choices$group %>% str_split(.," ",simplify=T) %>% .[,4] %>% {ifelse(.=="","",paste0("ST",.))} %>% gsub("STUnknown","ST_Unknown",.)
+all_best_choices$analysis_group <- ifelse(all_best_choices$group == "species",
+                                                 paste0(all_best_choices$species_key,"_all"),
+                                                 paste0(all_best_choices$species_key,"_",all_best_choices$group_ST))
+
+# Save
+saveRDS(all_overall_results,
+        "./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genome_detection/all_MERLIN_NCBI_reference_genome_comparisons.RDS")
+
+saveRDS(all_best_choices,
+        "./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genome_detection/best_MERLIN_NCBI_reference_genome_choices.RDS")
+
+write_tsv(all_best_choices,
+          "./Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/reference_genome_detection/best_MERLIN_NCBI_reference_genome_choices.tsv") 
+```

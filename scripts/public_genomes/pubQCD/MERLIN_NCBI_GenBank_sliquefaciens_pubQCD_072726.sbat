@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#SBATCH --job-name=run_pubQCD_MERLIN_GenBank_sliquefaciens
+#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem=5gb
+#SBATCH --time=24:00:00
+#SBATCH --account=esnitkin1
+#SBATCH --partition=standard
+
+# Load necessary modules
+module load Bioinformatics
+module load snakemake singularity mamba
+
+# Run main pipeline
+snakemake -s workflow/pubQCD_assembly_updated.smk --profile profile --configfile config/MERLIN_NCBI_GenBank_sliquefaciens_pubQCD.yaml  

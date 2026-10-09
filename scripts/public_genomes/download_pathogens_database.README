@@ -1,0 +1,3 @@
+The pathogen metadata information was downloaded from NCBI Pathogens on July 20th around 5pm EST.
+
+For genomes without the NCBI Pathogens entries, these were downloaded using the scripts in this setup file download_metadata*.sh

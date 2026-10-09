@@ -1,0 +1,9 @@
+MERLIN_115_R1.fastq.gz
+MERLIN_131_R1.fastq.gz
+MERLIN_138_R1.fastq.gz
+MERLIN_139_R1.fastq.gz
+MERLIN_192_R1.fastq.gz
+MERLIN_193_R1.fastq.gz
+MERLIN_195_R1.fastq.gz
+MERLIN_201_R1.fastq.gz
+MERLIN_225_R1.fastq.gz
