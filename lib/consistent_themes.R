@@ -8,19 +8,6 @@ theme_bw_me <- theme(panel.background = element_rect(fill = "white",colour = NA)
                      panel.grid.minor = element_blank(),
                      axis.line = element_line(colour = "black"),
                      legend.position = "bottom") 
-# Figure 1
-prolonged_colonization_scale <- scale_fill_manual(breaks = c(1,0),values = c("#00274C","#FFCB05"),labels = c("Yes","No"),name="Prolonged Colonization") 
-
-figure_1_format <- theme(legend.position = "bottom",
-                           axis.text =   element_text(size=18, color="black"),
-                           axis.title = element_text(size = 22, color="black"),
-                           legend.text =   element_text(size=20, color="black"),
-                           legend.title = element_text(size = 22, color="black"),
-                           plot.title = element_text(size = 24, color="black"),
-                           axis.text.x = element_text(size=15, angle=45,hjust=1),
-                           legend.margin=margin(c(-20,0,0,0))
-                         )
-
 
 # Supplemental Figure 1
 pairtype_fill <- scale_fill_manual(breaks=c(T,F),values = c('#00274C','#FFCB05'),labels = c("Intra-subject",'Inter-subject'), name="Type", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
