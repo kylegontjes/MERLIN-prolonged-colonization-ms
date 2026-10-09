@@ -9,14 +9,14 @@ output: html_document
 require(knitr)
 opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
 opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
 # Environment
 
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'gontjesr','kableExtra') 
+packages <- c("tidyverse",'kableExtra') 
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
@@ -33,8 +33,8 @@ sessionInfo()
 # Load data
 ```{r } 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
-prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS")
-clinical_prolonged_colonization <- read_csv("./data/prolonged_colonization/merlin_prolonged_colonization.csv")
+prolonged_colonization_df <- readRDS("./data/persistent_colonization/persistent_colonization_episodes/MERLIN_persistent_colonization_index_patients_public_references.RDS")
+clinical_prolonged_colonization <- read_csv("./data/persistent_colonization/deprecated/old/merlin_prolonged_colonization.csv")
 ```
  
 # Get number of positive households with index specimen sequenced

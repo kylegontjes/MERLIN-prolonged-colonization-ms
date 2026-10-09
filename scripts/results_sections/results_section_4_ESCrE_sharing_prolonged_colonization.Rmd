@@ -9,20 +9,21 @@ output: html_document
 require(knitr)
 opts_knit$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA) 
 opts_chunk$set(echo = F,warning = FALSE, message = FALSE,error=F,comment=NA)
-opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
 ```
 
 # Environment
 
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'kableExtra','tableone','gontjesr')
+packages <- c("tidyverse",'kableExtra','tableone')
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
 
 # Source library
 source("./lib/consistent_themes.R")
+source("./lib/common_functions.R")
 
 # Print environment
 set.seed(45) 
@@ -33,7 +34,7 @@ sessionInfo()
 # Load data
 ```{r } 
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
-prolonged_colonization_df <- readRDS("./data/prolonged_colonization/MERLIN_prolonged_colonization_index_patients.RDS")
+prolonged_colonization_df <- readRDS("./data/persistent_colonization/persistent_colonization_episodes/MERLIN_persistent_colonization_index_patients_public_references.RDS")
 plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS")
 
 df_index <- left_join(df_index,plasmid_data)
@@ -59,6 +60,7 @@ convert_tableone_into_df(dataset=prolonged_colonization_df,vars = "index_at_1_an
 ```
 
 # How many were linked by plasmid?
+
 ```{r}
 paste0("Strain vs. Plasmid-linked ESCrE genes")
 table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware,dnn=c("Strain","Plasmid-linked ESCrE"))  
@@ -68,32 +70,35 @@ table(prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,prolonged_coloni
 ```
 
 ## Nine linked to plasmid
+
 ```{r,results='asis'}
 plasmid_linked_ESCrE_ <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_aware==1) %>% .$household
 
 lapply(plasmid_linked_ESCrE_,FUN=function(x){
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
-}) %>% lapply(.,gontjesr::favorite_kable)
+}) %>% lapply(.,favorite_kable)
 ```
 
 ## Ten ESCrE sharing, but not linked to plasmid
+
 ```{r,results='asis'}
 not_plasmid_linked_ESCrE_ <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_aware==0) %>% .$household
 
 lapply(not_plasmid_linked_ESCrE_,FUN=function(x){
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
-}) %>% lapply(.,gontjesr::favorite_kable)
+}) %>% lapply(.,favorite_kable)
 ```
 
 # Summary: Four cases where prolonged colonization at species-level found, but not strain-level
 
 ## One case was different sequence type but no shared ESCrE gene (i.e., likely acquisition)
+
 ```{r,results='asis'}
 same_ESCrE_species_not_same_strain_no_ESBL_sharing <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_genes==0 &index_at_1_and_or_2_Species==1) %>% .$household
 
 lapply(same_ESCrE_species_not_same_strain_no_ESBL_sharing,FUN=function(x){
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
-}) %>% lapply(.,gontjesr::favorite_kable)
+}) %>% lapply(.,favorite_kable)
 ```
 
 # Cases explained by ESCrE persistence but not strain
@@ -110,7 +115,7 @@ same_ESCrE_not_same_strain <- prolonged_colonization_df %>% subset(index_at_1_an
 
 lapply(same_ESCrE_not_same_strain,FUN=function(x){
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
-}) %>% lapply(.,gontjesr::favorite_kable)
+}) %>% lapply(.,favorite_kable)
 ```
 
 ## Restriction to plasmid linked helped distinguish between probable cases of plasmid sharing... 
@@ -119,5 +124,5 @@ same_ESCrE_plasmid_linked <-  prolonged_colonization_df %>% subset(index_at_1_an
 
 lapply(same_ESCrE_plasmid_linked,FUN=function(x){
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
-}) %>% lapply(.,gontjesr::favorite_kable)
+}) %>% lapply(.,favorite_kable)
 ```
