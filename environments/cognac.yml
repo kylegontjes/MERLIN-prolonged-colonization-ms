@@ -1,0 +1,11 @@
+name: cognac_v_1_0
+channels:
+  - bioconda
+  - conda-forge
+  - default
+dependencies:
+  - cd-hit
+  - mafft
+  - r-base
+  - r-tidyverse
+  - r-devtools

@@ -1,0 +1,13 @@
+#!/bin/sh
+#SBATCH --job-name=MERLIN_index_cfreundii_IQTREE
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,FAIL,END,REQUEUE
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=10 --mem=60g --time=2:00:00
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/cognac/scripts/cfreundii/MERLIN_cfreundii_index_cases_IQTREE2_slurm.out 
+
+## Note: Chang the mail-user, account, and SBATCH mem/time requirements as you see fit
+iqtree -s /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/cfreundii/MERLIN_cfreundii_index_cases_SNP_Sites.fa -T AUTO -nstop 200 -pre /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/cfreundii/MERLIN_cfreundii_index_cases
+

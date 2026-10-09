@@ -1,0 +1,181 @@
+---
+title: "Setup cognac for index subjects"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(knitr)
+knitr::opts_knit$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/') 
+knitr::opts_chunk$set(root.dir='~/Desktop/gl_merlin/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/') 
+```
+
+# Environment
+
+```{r}
+library(tidyverse)
+```
+
+# Load data
+```{r}
+df <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")
+
+species <- df$Species %>% table %>% subset(.>1) %>% names(.)
+species_renamed <- str_split(species," ", simplify = T) 
+species_renamed[,1] <- species_renamed[,1] %>% substr(.,1,1) %>% stringr::str_to_lower()
+species_simple <- species_renamed %>% apply(.,1,paste0,collapse='')
+
+citrobacter_species <- df %>% subset(Genus %in% c("Citrobacter")) %>% .$genomic_id
+klebsiella_species <- df %>% subset(Genus %in% c("Klebsiella")) %>% .$genomic_id
+```
+
+# Create directory
+```{r}
+directory_names <- c(species_simple,"citrobacter",'klebsiella')
+directory_names_named_with_species_or_genus <- c(directory_names) %>% `names<-`(c(species,"Citrobacter","Klebsiella"))
+
+# Create directory
+for(i in directory_names){
+  print(i)
+  data_dir_name <- paste0("./data/cognac/",i)
+  if(dir.exists(data_dir_name) ==F){
+    dir.create(data_dir_name)
+  } else{
+    print("Data directory already exists")
+  }
+  scripts_dir_name <-  paste0("./scripts/cognac/scripts/",i)
+  if(dir.exists(scripts_dir_name) ==F){
+    dir.create(scripts_dir_name)
+  } else{
+    print("Scripts directory already exists")
+  } 
+}
+```
+
+# Create isolate list
+```{r}
+for(num in 1:length(directory_names_named_with_species_or_genus)){
+  i <- directory_names_named_with_species_or_genus[num]
+  print(i)
+  tax_group <- names(i)
+  directory_name <- i %>% `names<-`(NULL)
+  # Get isolates from dataset
+  if(tax_group %in% c("Klebsiella","Citrobacter")){
+    isolate_list <- df %>% subset(Genus == tax_group) %>% .$genomic_id
+  } else {
+    isolate_list <- df %>% subset(Species == tax_group) %>% .$genomic_id
+  }
+  
+ # Isolate list
+ isolate_path <- paste0("./scripts/cognac/scripts/",directory_name,"/",directory_name,"_isolate_list.RDS")
+ saveRDS(object = isolate_list,file =  isolate_path)
+ 
+ # Genomes
+ genome_path <- paste("/nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/assembly/illumina/prokka/",isolate_list,"/",isolate_list,".fna",sep = "")
+ saveRDS(object = genome_path,file =  paste0("./scripts/cognac/scripts/",directory_name,"/",directory_name,"_genomes_path.RDS")) 
+ 
+ # Gffs
+ genomes_gff_path <-   paste("/nfs/turbo/umms-esnitkin/Project_MERLIN/Sequence_data/assembly/illumina/prokka/",isolate_list,"/",isolate_list,".gff",sep="")
+ saveRDS(object = genomes_gff_path,file = paste0("./scripts/cognac/scripts/",directory_name,"/",directory_name,"_annotations_path.RDS"))  
+}
+```
+
+
+# Create model script
+```{bash}
+cd scripts/cognac/setup
+
+echo "
+# Cognac Run
+# Start Date: 07/02/25
+# Population: taxonomic_group isolates
+# Activate
+library(tidyverse)
+library(cognac)
+Sys.info()
+sessionInfo()
+set.seed(45)
+
+setwd('/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+
+outDir = '/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/taxonomic_group/'
+
+genomic_id = readRDS('./scripts/cognac/scripts/taxonomic_group/taxonomic_group_isolate_list.RDS')  
+fasta_files = readRDS('./scripts/cognac/scripts/taxonomic_group/taxonomic_group_genomes_path.RDS')
+gff_files =  readRDS('./scripts/cognac/scripts/taxonomic_group/taxonomic_group_annotations_path.RDS')
+
+# Run Conac requiring at least 500 genes are included in the alignment 
+cognac(
+  fastaFiles = fasta_files ,
+  featureFiles = gff_files,
+  outDir        = outDir,
+  minGeneNum    = 500,
+  maxMissGenes  = 0.05, 
+  njTree     = FALSE,
+  mapNtToAa = TRUE,
+  keepTempFiles = TRUE
+)
+ " > cognac_MERLIN_index_cases_model.R
+```
+
+# Modify this script
+```{r}
+for(group in directory_names){
+  R_script <- readr::read_lines('./scripts/cognac/setup/cognac_MERLIN_index_cases_model.R') 
+  # job-name
+  R_script <- gsub("taxonomic_group",group,R_script) 
+  # Write file
+  writeLines(text = R_script,con = paste0("./scripts/cognac/scripts/",group,"/cognac_",group,"_index_cases.R"))
+}
+``` 
+
+# Create cognac sh script
+
+```{bash}
+cd scripts/cognac/setup
+echo "#!/bin/sh
+# Job name
+#SBATCH --job-name=cognac_MERLIN_index_cases_taxonomic_group
+# User info
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,END
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1 
+#SBATCH --nodes=1  --ntasks=1 --cpus-per-task=8 --mem-per-cpu=6g --time=0:45:00
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/cognac/scripts/taxonomic_group/cognac_taxonomic_group_index_cases_slurm.out 
+
+R CMD BATCH --no-restore --no-save --quiet /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/cognac/scripts/taxonomic_group/cognac_taxonomic_group_index_cases.R /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/cognac/scripts/taxonomic_group/cognac_taxonomic_group_index_cases_R_console.out 
+
+" > cognac_MERLIN_index_cases_model.sbat
+```
+
+# Modify this script
+```{r}
+for(group in directory_names){
+  sbat_script <- readr::read_lines('./scripts/cognac/setup/cognac_MERLIN_index_cases_model.sbat') 
+  # job-name
+  sbat_script <- gsub("taxonomic_group",group,sbat_script) 
+  # Write file
+  writeLines(text = sbat_script,con = paste0("./scripts/cognac/scripts/",group,"/cognac_",group,"_index_cases.sbat"))
+}
+```
+
+# Write master batch script
+```{bash}
+cd scripts/cognac/setup
+
+cat << 'EOF' > run_cognac_scripts.sh
+#!/bin/sh
+
+for dir in /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/cognac/scripts/*; do
+  group=$(basename "$dir")
+  echo "$group"
+
+  script="${dir}/cognac_${group}_index_cases.sbat"
+  sbatch "$script"
+done
+EOF
+``` 

@@ -1,0 +1,401 @@
+IQ-TREE multicore version 2.4.0 for Linux x86 64-bit built Feb 12 2025
+Developed by Bui Quang Minh, Nguyen Lam Tung, Olga Chernomor, Heiko Schmidt,
+Dominik Schrempf, Michael Woodhams, Ly Trong Nhan, Thomas Wong
+
+Host:    gl3426.arc-ts.umich.edu (AVX512, FMA3, 186 GB RAM)
+Command: iqtree -s /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases_SNP_Sites.fa -T AUTO -B 5000 -nstop 200 -pre /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases
+Seed:    709527 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Thu Jul  2 15:09:29 2026
+Kernel:  AVX+FMA - auto-detect threads (10 CPU cores detected)
+
+Reading alignment file /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases_SNP_Sites.fa ... Fasta format detected
+Reading fasta file: done in 0.155153 secs using 69.3% CPU
+Alignment most likely contains DNA/RNA sequences
+Alignment has 69 sequences with 182710 columns, 27753 distinct patterns
+155599 parsimony-informative, 27111 singleton sites, 0 constant sites
+             Gap/Ambiguity  Composition  p-value
+Analyzing sequences: done in 0.00197586 secs using 933.3% CPU
+   1  MERLIN_150     0.04%    failed      0.00%
+   2  MERLIN_128     0.04%    failed      0.00%
+   3  MERLIN_193     0.08%    failed      0.84%
+   4  MERLIN_195     0.08%    failed      0.85%
+   5  MERLIN_115     0.08%    failed      0.83%
+   6  MERLIN_197     0.42%    failed      0.11%
+   7  MERLIN_121     1.91%    failed      0.00%
+   8  MERLIN_38      0.04%    failed      0.00%
+   9  MERLIN_79      0.04%    failed      0.00%
+  10  MERLIN_1       0.04%    failed      0.00%
+  11  MERLIN_196     0.04%    failed      0.00%
+  12  MERLIN_39      0.04%    failed      0.00%
+  13  MERLIN_78      0.04%    failed      0.00%
+  14  MERLIN_183     0.22%    failed      0.00%
+  15  MERLIN_194     0.07%    failed      0.01%
+  16  MERLIN_188     0.18%    failed      0.01%
+  17  MERLIN_70      0.12%    failed      0.01%
+  18  MERLIN_7       0.09%    failed      0.03%
+  19  MERLIN_25      0.09%    failed      0.03%
+  20  MERLIN_51      0.09%    failed      0.03%
+  21  MERLIN_24      0.08%    failed      0.01%
+  22  MERLIN_68      0.13%    failed      0.00%
+  23  MERLIN_21      0.08%    failed      0.00%
+  24  MERLIN_40      0.08%    failed      0.00%
+  25  MERLIN_91      0.08%    failed      0.00%
+  26  MERLIN_272     0.12%    failed      0.00%
+  27  MERLIN_268     0.08%    failed      0.00%
+  28  MERLIN_26      0.07%    failed      0.00%
+  29  MERLIN_73      0.11%    failed      0.01%
+  30  MERLIN_92      0.51%    failed      0.00%
+  31  MERLIN_72      0.12%    failed      0.01%
+  32  MERLIN_164     0.06%    failed      0.01%
+  33  MERLIN_159     0.06%    failed      0.01%
+  34  MERLIN_84      0.10%    failed      0.00%
+  35  MERLIN_130     0.07%    failed      0.00%
+  36  MERLIN_158     0.07%    failed      0.00%
+  37  MERLIN_157     0.07%    failed      0.00%
+  38  MERLIN_88      0.07%    failed      0.01%
+  39  MERLIN_145     0.07%    failed      0.01%
+  40  MERLIN_RE_3    0.07%    failed      0.01%
+  41  MERLIN_175     0.09%    failed      0.03%
+  42  MERLIN_213     0.09%    failed      0.03%
+  43  MERLIN_257     0.09%    failed      0.03%
+  44  MERLIN_117     0.09%    failed      0.00%
+  45  MERLIN_129     0.09%    failed      0.00%
+  46  MERLIN_192     0.08%    failed      0.80%
+  47  MERLIN_139     0.08%    failed      0.82%
+  48  MERLIN_182     0.14%    failed      0.00%
+  49  MERLIN_17      0.06%    failed      0.00%
+  50  MERLIN_114     0.06%    failed      0.00%
+  51  MERLIN_201     0.08%    failed      0.81%
+  52  MERLIN_200     0.06%    failed      0.00%
+  53  MERLIN_266     0.34%    failed      0.00%
+  54  MERLIN_225     0.24%    failed      0.69%
+  55  MERLIN_190     0.04%    failed      0.00%
+  56  MERLIN_191     0.09%    failed      0.00%
+  57  MERLIN_9       0.08%    failed      0.00%
+  58  MERLIN_10      0.08%    failed      0.00%
+  59  MERLIN_258     0.07%    failed      0.00%
+  60  MERLIN_64      0.06%    failed      0.01%
+  61  MERLIN_82      0.35%    failed      0.00%
+  62  MERLIN_267     0.11%    failed      0.00%
+  63  MERLIN_86      0.07%    failed      0.01%
+  64  MERLIN_108     0.59%    failed      0.09%
+  65  MERLIN_125     0.09%    failed      0.03%
+  66  MERLIN_167     0.44%    failed      0.00%
+  67  MERLIN_156     0.20%    failed      0.03%
+  68  MERLIN_227     0.15%    failed      0.00%
+  69  MERLIN_288     1.12%    failed      0.00%
+****  TOTAL          0.16%  69 sequences failed composition chi2 test (p-value<5%; df=3)
+NOTE: minimal branch length is reduced to 0.000000547315 for long alignment
+NOTE: MERLIN_1 is identical to MERLIN_38 but kept for subsequent analysis
+NOTE: MERLIN_51 is identical to MERLIN_25 but kept for subsequent analysis
+NOTE: MERLIN_40 is identical to MERLIN_21 but kept for subsequent analysis
+NOTE: MERLIN_157 is identical to MERLIN_158 but kept for subsequent analysis
+NOTE: MERLIN_10 is identical to MERLIN_9 but kept for subsequent analysis
+NOTE: 1 identical sequences (see below) will be ignored for subsequent analysis
+NOTE: MERLIN_91 (identical to MERLIN_21) is ignored but added at the end
+Alignment was printed to /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.uniqueseq.phy
+
+For your convenience alignment with unique sequences printed to /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.uniqueseq.phy
+
+
+Create initial parsimony tree by phylogenetic likelihood library (PLL)... 0.660 seconds
+Measuring multi-threading efficiency up to 10 CPU cores
+Increase to 10 rounds for branch lengths
+2 trees examined
+Threads: 1 / Time: 10.009 sec / Speedup: 1.000 / Efficiency: 100% / LogL: -5427122
+Threads: 2 / Time: 5.184 sec / Speedup: 1.931 / Efficiency: 97% / LogL: -5427122
+Threads: 3 / Time: 3.676 sec / Speedup: 2.723 / Efficiency: 91% / LogL: -5427122
+Threads: 4 / Time: 2.905 sec / Speedup: 3.445 / Efficiency: 86% / LogL: -5427122
+Threads: 5 / Time: 2.922 sec / Speedup: 3.425 / Efficiency: 69% / LogL: -5427122
+Threads: 6 / Time: 2.602 sec / Speedup: 3.847 / Efficiency: 64% / LogL: -5427122
+Threads: 7 / Time: 1.841 sec / Speedup: 5.438 / Efficiency: 78% / LogL: -5427122
+Threads: 8 / Time: 1.871 sec / Speedup: 5.351 / Efficiency: 67% / LogL: -5427122
+Threads: 9 / Time: 1.659 sec / Speedup: 6.031 / Efficiency: 67% / LogL: -5427122
+Threads: 10 / Time: 2.078 sec / Speedup: 4.817 / Efficiency: 48% / LogL: -5427122
+BEST NUMBER OF THREADS: 9
+
+Perform fast likelihood tree search using GTR+ASC+G model...
+Estimate model parameters (epsilon = 5.000)
+Perform nearest neighbor interchange...
+Estimate model parameters (epsilon = 1.000)
+1. Initial log-likelihood: -1558999.793
+Optimal log-likelihood: -1558998.240
+Rate parameters:  A-C: 0.89953  A-G: 5.95666  A-T: 1.45323  C-G: 0.40035  C-T: 5.29669  G-T: 1.00000
+Base frequencies:  A: 0.179  C: 0.323  G: 0.266  T: 0.232
+Gamma shape alpha: 1.251
+Parameters optimization took 1 rounds (0.335 sec)
+Time for fast ML tree search: 6.082 seconds
+
+NOTE: ModelFinder requires 1141 MB RAM!
+ModelFinder will test up to 484 DNA models (sample size: 182710 epsilon: 0.100) ...
+ No. Model         -LnL         df  AIC          AICc         BIC
+  1  GTR+F         1595381.009  141 3191044.018  3191044.238  3192470.326
+  2  GTR+F+ASC     1561755.084  141 3123792.167  3123792.387  3125218.475
+  3  GTR+F+G4      1595412.330  142 3191108.659  3191108.882  3192545.083
+  4  GTR+F+ASC+G4  1558987.481  142 3118258.962  3118259.184  3119695.385
+  5  GTR+F+R2      1595381.212  143 3191048.424  3191048.649  3192494.962
+  6  GTR+F+R3      1595381.185  145 3191052.371  3191052.602  3192519.141
+ 14  GTR+F+ASC+R2  1559093.659  143 3118473.319  3118473.544  3119919.857
+ 15  GTR+F+ASC+R3  1559083.594  145 3118457.188  3118457.420  3119923.958
+ 23  SYM           1601728.327  138 3203732.655  3203732.865  3205128.615
+ 24  SYM+ASC       1569206.331  138 3138688.662  3138688.873  3140084.623
+ 26  SYM+ASC+G4    1566018.614  139 3132315.228  3132315.441  3133721.304
+ 36  SYM+ASC+R2    1566008.554  140 3132297.108  3132297.324  3133713.300
++R3 reinitialized from +R2 with factor 0.500
+ 37  SYM+ASC+R3    1565880.473  142 3132044.946  3132045.169  3133481.369
+ 45  TVM+F         1595749.511  140 3191779.022  3191779.238  3193195.214
+ 46  TVM+F+ASC     1562006.849  140 3124293.699  3124293.915  3125709.890
+ 48  TVM+F+ASC+G4  1559203.182  141 3118688.363  3118688.583  3120114.671
+ 58  TVM+F+ASC+R2  1559203.820  142 3118691.641  3118691.863  3120128.064
+ 59  TVM+F+ASC+R3  1559181.898  144 3118651.795  3118652.024  3120108.450
+ 67  TVMe          1601911.812  137 3204097.625  3204097.832  3205483.470
+ 68  TVMe+ASC      1570070.957  137 3140415.913  3140416.120  3141801.758
+ 70  TVMe+ASC+G4   1567141.463  138 3134558.926  3134559.136  3135954.887
+ 80  TVMe+ASC+R2   1567101.540  139 3134481.080  3134481.293  3135887.156
+ 81  TVMe+ASC+R3   1567090.932  141 3134463.863  3134464.082  3135890.171
+ 89  TIM3+F        1597660.278  139 3195598.557  3195598.770  3197004.633
+ 90  TIM3+F+ASC    1564552.985  139 3129383.969  3129384.183  3130790.046
+ 92  TIM3+F+ASC+G4 1561861.560  140 3124003.120  3124003.337  3125419.312
+102  TIM3+F+ASC+R2 1561837.590  141 3123957.181  3123957.400  3125383.488
+103  TIM3+F+ASC+R3 1561819.727  143 3123925.454  3123925.679  3125371.993
+111  TIM3e         1602349.434  136 3204970.869  3204971.073  3206346.598
+112  TIM3e+ASC     1569631.652  136 3139535.304  3139535.509  3140911.034
+114  TIM3e+ASC+G4  1566441.456  137 3133156.912  3133157.119  3134542.757
+124  TIM3e+ASC+R2  1566423.107  138 3133122.214  3133122.424  3134518.175
+125  TIM3e+ASC+R3  1566406.137  140 3133092.275  3133092.491  3134508.466
+133  TIM2+F        1598884.764  139 3198047.527  3198047.741  3199453.604
+134  TIM2+F+ASC    1565839.292  139 3131956.583  3131956.797  3133362.659
+136  TIM2+F+ASC+G4 1563112.147  140 3126504.294  3126504.510  3127920.485
+146  TIM2+F+ASC+R2 1563084.762  141 3126451.523  3126451.743  3127877.831
+147  TIM2+F+ASC+R3 1563060.074  143 3126406.148  3126406.374  3127852.687
+155  TIM2e         1603793.340  136 3207858.679  3207858.883  3209234.408
+156  TIM2e+ASC     1570820.544  136 3141913.089  3141913.293  3143288.818
+158  TIM2e+ASC+G4  1567421.884  137 3135117.768  3135117.975  3136503.613
+168  TIM2e+ASC+R2  1567404.359  138 3135084.717  3135084.927  3136480.678
+169  TIM2e+ASC+R3  1567384.770  140 3135049.541  3135049.757  3136465.733
+177  TIM+F         1600016.758  139 3200311.517  3200311.730  3201717.593
+178  TIM+F+ASC     1567443.200  139 3135164.401  3135164.614  3136570.477
+180  TIM+F+ASC+G4  1564769.273  140 3129818.546  3129818.762  3131234.738
+190  TIM+F+ASC+R2  1564729.417  141 3129740.834  3129741.053  3131167.141
+191  TIM+F+ASC+R3  1564706.707  143 3129699.414  3129699.640  3131145.953
+199  TIMe          1603978.215  136 3208228.430  3208228.634  3209604.159
+200  TIMe+ASC      1570782.806  136 3141837.613  3141837.817  3143213.342
+202  TIMe+ASC+G4   1567313.136  137 3134900.271  3134900.478  3136286.116
+212  TIMe+ASC+R2   1567299.265  138 3134874.530  3134874.741  3136270.491
+213  TIMe+ASC+R3   1567269.949  140 3134819.897  3134820.114  3136236.089
+221  TPM3u+F       1598028.487  138 3196332.974  3196333.184  3197728.934
+222  TPM3u+F+ASC   1564812.627  138 3129901.254  3129901.464  3131297.214
+224  TPM3u+F+ASC+G4 1562073.543  139 3124425.087  3124425.300  3125831.163
+234  TPM3u+F+ASC+R2 1562057.440  140 3124394.881  3124395.097  3125811.073
+235  TPM3u+F+ASC+R3 1562006.353  142 3124296.706  3124296.929  3125733.129
+243  TPM3          1602689.989  135 3205649.979  3205650.180  3207015.592
+244  TPM3+ASC      1570641.250  135 3141552.500  3141552.701  3142918.114
+246  TPM3+ASC+G4   1567657.447  136 3135586.895  3135587.099  3136962.624
+256  TPM3+ASC+R2   1567614.073  137 3135502.146  3135502.353  3136887.991
+257  TPM3+ASC+R3   1567583.811  139 3135445.623  3135445.836  3136851.699
+265  TPM2u+F       1599255.007  138 3198786.015  3198786.225  3200181.975
+266  TPM2u+F+ASC   1566077.750  138 3132431.500  3132431.710  3133827.460
+268  TPM2u+F+ASC+G4 1563322.538  139 3126923.075  3126923.288  3128329.151
+278  TPM2u+F+ASC+R2 1563298.020  140 3126876.040  3126876.257  3128292.232
+279  TPM2u+F+ASC+R3 1563239.650  142 3126763.300  3126763.523  3128199.724
+287  TPM2          1604117.555  135 3208505.111  3208505.312  3209870.724
+288  TPM2+ASC      1571830.618  135 3143931.237  3143931.438  3145296.850
+290  TPM2+ASC+G4   1568722.039  136 3137716.079  3137716.283  3139091.808
+300  TPM2+ASC+R2   1568680.947  137 3137635.894  3137636.101  3139021.739
+301  TPM2+ASC+R3   1568637.914  139 3137553.827  3137554.040  3138959.903
+309  K3Pu+F        1600388.501  138 3201053.003  3201053.213  3202448.963
+310  K3Pu+F+ASC    1567690.940  138 3135657.880  3135658.090  3137053.840
+312  K3Pu+F+ASC+G4 1564977.750  139 3130233.501  3130233.714  3131639.577
+322  K3Pu+F+ASC+R2 1564944.090  140 3130168.181  3130168.397  3131584.372
+323  K3Pu+F+ASC+R3 1564888.897  142 3130061.793  3130062.015  3131498.216
+331  K3P           1604307.871  135 3208885.741  3208885.943  3210251.355
+332  K3P+ASC       1571800.614  135 3143871.228  3143871.429  3145236.842
+334  K3P+ASC+G4    1568593.524  136 3137459.049  3137459.253  3138834.778
+344  K3P+ASC+R2    1568556.337  137 3137386.674  3137386.881  3138772.518
+345  K3P+ASC+R3    1568502.683  139 3137283.366  3137283.579  3138689.442
+353  TN+F          1600862.943  138 3202001.886  3202002.096  3203397.846
+354  TN+F+ASC      1568343.893  138 3136963.786  3136963.996  3138359.747
+356  TN+F+ASC+G4   1565664.822  139 3131607.643  3131607.856  3133013.719
+366  TN+F+ASC+R2   1565618.622  140 3131517.244  3131517.460  3132933.435
+367  TN+F+ASC+R3   1565517.110  142 3131318.219  3131318.442  3132754.642
+375  TNe           1604321.432  135 3208912.865  3208913.066  3210278.478
+376  TNe+ASC       1571122.614  135 3142515.229  3142515.430  3143880.842
+378  TNe+ASC+G4    1567672.548  136 3135617.096  3135617.300  3136992.825
+388  TNe+ASC+R2    1567654.505  137 3135583.011  3135583.218  3136968.855
+389  TNe+ASC+R3    1567541.497  139 3135360.994  3135361.207  3136767.070
+397  HKY+F         1601211.359  137 3202696.718  3202696.925  3204082.563
+398  HKY+F+ASC     1568572.707  137 3137419.415  3137419.622  3138805.259
+400  HKY+F+ASC+G4  1565860.059  138 3131996.117  3131996.327  3133392.077
+410  HKY+F+ASC+R2  1565823.127  139 3131924.255  3131924.468  3133330.331
+411  HKY+F+ASC+R3  1565678.272  141 3131638.544  3131638.763  3133064.852
+419  K2P           1604648.975  134 3209565.951  3209566.149  3210921.448
+420  K2P+ASC       1572137.641  134 3144543.282  3144543.481  3145898.780
+422  K2P+ASC+G4    1568948.338  135 3138166.676  3138166.878  3139532.290
+432  K2P+ASC+R2    1568907.894  136 3138087.788  3138087.992  3139463.517
+433  K2P+ASC+R3    1568776.151  138 3137828.301  3137828.511  3139224.262
+441  F81+F         1726500.615  136 3453273.230  3453273.434  3454648.959
+442  F81+F+ASC     1691784.004  136 3383840.008  3383840.212  3385215.737
+444  F81+F+ASC+G4  1689728.257  137 3379730.514  3379730.721  3381116.358
+454  F81+F+ASC+R2  1689610.318  138 3379496.635  3379496.845  3380892.596
++R3 reinitialized from +R2 with factor 0.500
+455  F81+F+ASC+R3  1689609.717  140 3379499.434  3379499.650  3380915.626
+463  JC            1726124.622  133 3452515.243  3452515.439  3453860.625
+464  JC+ASC        1691133.017  133 3382532.035  3382532.230  3383877.417
+466  JC+ASC+G4     1688947.517  134 3378163.034  3378163.232  3379518.532
+476  JC+ASC+R2     1688821.160  135 3377912.321  3377912.522  3379277.934
+477  JC+ASC+R3     1688819.985  137 3377913.969  3377914.177  3379299.814
+Akaike Information Criterion:           GTR+F+ASC+G4
+Corrected Akaike Information Criterion: GTR+F+ASC+G4
+Bayesian Information Criterion:         GTR+F+ASC+G4
+Best-fit model: GTR+F+ASC+G4 chosen according to BIC
+
+All model information printed to /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.model.gz
+CPU time for ModelFinder: 7807.041 seconds (2h:10m:7s)
+Wall-clock time for ModelFinder: 906.307 seconds (0h:15m:6s)
+Generating 5000 samples for ultrafast bootstrap (seed: 709527)...
+
+NOTE: 774 MB RAM (0 GB) is required!
+Estimate model parameters (epsilon = 0.100)
+1. Initial log-likelihood: -1692845.284
+2. Current log-likelihood: -1586954.401
+3. Current log-likelihood: -1559101.118
+4. Current log-likelihood: -1559028.007
+5. Current log-likelihood: -1559024.712
+6. Current log-likelihood: -1559021.717
+7. Current log-likelihood: -1559018.791
+8. Current log-likelihood: -1559015.978
+9. Current log-likelihood: -1559013.267
+10. Current log-likelihood: -1559010.680
+11. Current log-likelihood: -1559008.250
+12. Current log-likelihood: -1559005.966
+13. Current log-likelihood: -1559003.727
+14. Current log-likelihood: -1559001.768
+15. Current log-likelihood: -1558999.994
+16. Current log-likelihood: -1558998.396
+17. Current log-likelihood: -1558996.949
+18. Current log-likelihood: -1558995.658
+19. Current log-likelihood: -1558994.513
+20. Current log-likelihood: -1558993.501
+21. Current log-likelihood: -1558992.725
+22. Current log-likelihood: -1558992.022
+23. Current log-likelihood: -1558991.420
+24. Current log-likelihood: -1558990.858
+25. Current log-likelihood: -1558990.393
+26. Current log-likelihood: -1558989.999
+27. Current log-likelihood: -1558989.653
+28. Current log-likelihood: -1558989.364
+29. Current log-likelihood: -1558989.108
+30. Current log-likelihood: -1558988.735
+31. Current log-likelihood: -1558988.410
+32. Current log-likelihood: -1558988.308
+Optimal log-likelihood: -1558988.078
+Rate parameters:  A-C: 0.90120  A-G: 5.96880  A-T: 1.45698  C-G: 0.40176  C-T: 5.30728  G-T: 1.00000
+Base frequencies:  A: 0.179  C: 0.323  G: 0.266  T: 0.232
+Gamma shape alpha: 1.426
+Parameters optimization took 32 rounds (19.567 sec)
+Wrote distance file to... 
+Computing ML distances based on estimated model parameters...
+Calculating distance matrix: done in 0.0233904 secs using 912.5% CPU
+Computing ML distances took 0.026282 sec (of wall-clock time) 0.233556 sec (of CPU time)
+Setting up auxiliary I and S matrices: done in 0.0343145 secs using 429.1% CPU
+Computing RapidNJ tree took 1.908771 sec (of wall-clock time) 11.628362 sec (of CPU time)
+Log-likelihood of RapidNJ tree: -1559734.590
+--------------------------------------------------------------------
+|             INITIALIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Generating 98 parsimony trees... 74.918 second
+Computing log-likelihood of 98 initial trees ... 9.673 seconds
+Current best score: -1558988.078
+
+Do NNI search on 20 best initial trees
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 1: -1558987.967
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 3: -1558987.283
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 7: -1558986.807
+Iteration 10 / LogL: -1558986.987 / Time: 0h:17m:56s
+Iteration 20 / LogL: -1558986.987 / Time: 0h:18m:54s
+Finish initializing candidate tree set (17)
+Current best tree score: -1558986.807 / CPU time: 190.938
+Number of iterations: 20
+--------------------------------------------------------------------
+|               OPTIMIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Iteration 30 / LogL: -1558987.010 / Time: 0h:19m:28s (0h:26m:41s left)
+Iteration 40 / LogL: -1558987.788 / Time: 0h:19m:58s (0h:20m:50s left)
+Iteration 50 / LogL: -1558987.686 / Time: 0h:20m:29s (0h:17m:15s left)
+Log-likelihood cutoff on original alignment: -1559115.547
+Iteration 60 / LogL: -1558988.032 / Time: 0h:20m:58s (0h:14m:37s left)
+Iteration 70 / LogL: -1558987.444 / Time: 0h:21m:32s (0h:12m:45s left)
+Iteration 80 / LogL: -1558987.163 / Time: 0h:22m:4s (0h:11m:13s left)
+Iteration 90 / LogL: -1558987.851 / Time: 0h:22m:36s (0h:9m:51s left)
+Iteration 100 / LogL: -1558987.312 / Time: 0h:23m:10s (0h:8m:43s left)
+Log-likelihood cutoff on original alignment: -1559115.547
+NOTE: Bootstrap correlation coefficient of split occurrence frequencies: 0.999
+Iteration 110 / LogL: -1558988.247 / Time: 0h:23m:46s (0h:7m:42s left)
+Iteration 120 / LogL: -1558987.666 / Time: 0h:24m:17s (0h:6m:43s left)
+Iteration 130 / LogL: -1558988.204 / Time: 0h:24m:49s (0h:5m:48s left)
+Iteration 140 / LogL: -1559461.889 / Time: 0h:25m:16s (0h:4m:54s left)
+Iteration 150 / LogL: -1558987.888 / Time: 0h:25m:43s (0h:4m:3s left)
+Log-likelihood cutoff on original alignment: -1559115.547
+Iteration 160 / LogL: -1558987.334 / Time: 0h:26m:11s (0h:3m:16s left)
+Iteration 170 / LogL: -1558987.181 / Time: 0h:26m:39s (0h:2m:31s left)
+Iteration 180 / LogL: -1558986.878 / Time: 0h:27m:11s (0h:1m:49s left)
+Iteration 190 / LogL: -1558988.474 / Time: 0h:27m:42s (0h:1m:7s left)
+Iteration 200 / LogL: -1558987.702 / Time: 0h:28m:9s (0h:0m:27s left)
+Log-likelihood cutoff on original alignment: -1559115.547
+NOTE: Bootstrap correlation coefficient of split occurrence frequencies: 0.998
+TREE SEARCH COMPLETED AFTER 208 ITERATIONS / Time: 0h:28m:32s
+
+--------------------------------------------------------------------
+|                    FINALIZING TREE SEARCH                        |
+--------------------------------------------------------------------
+Performs final model parameters optimization
+Estimate model parameters (epsilon = 0.010)
+1. Initial log-likelihood: -1558986.807
+2. Current log-likelihood: -1558986.770
+3. Current log-likelihood: -1558986.717
+4. Current log-likelihood: -1558986.672
+5. Current log-likelihood: -1558986.636
+6. Current log-likelihood: -1558986.605
+7. Current log-likelihood: -1558986.581
+8. Current log-likelihood: -1558986.569
+9. Current log-likelihood: -1558986.541
+10. Current log-likelihood: -1558986.518
+11. Current log-likelihood: -1558986.502
+12. Current log-likelihood: -1558986.489
+Optimal log-likelihood: -1558986.480
+Rate parameters:  A-C: 0.90116  A-G: 5.96758  A-T: 1.45716  C-G: 0.40178  C-T: 5.30661  G-T: 1.00000
+Base frequencies:  A: 0.179  C: 0.323  G: 0.266  T: 0.232
+Gamma shape alpha: 1.473
+Parameters optimization took 12 rounds (4.923 sec)
+BEST SCORE FOUND : -1558986.480
+Creating bootstrap support values...
+Split supports printed to NEXUS file /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.splits.nex
+Total tree length: 1.295
+
+Total number of iterations: 208
+CPU time used for tree search: 6096.433 sec (1h:41m:36s)
+Wall-clock time used for tree search: 769.701 sec (0h:12m:49s)
+Total CPU time used: 14155.029 sec (3h:55m:55s)
+Total wall-clock time used: 1718.565 sec (0h:28m:38s)
+
+Computing bootstrap consensus tree...
+Reading input file /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.splits.nex...
+68 taxa and 215 splits.
+Consensus tree written to /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.contree
+Reading input trees file /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.contree
+Log-likelihood of consensus tree: -1558994.545
+
+Analysis results written to: 
+  IQ-TREE report:                /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.iqtree
+  Maximum-likelihood tree:       /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.treefile
+  Likelihood distances:          /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.mldist
+
+Ultrafast bootstrap approximation results written to:
+  Split support values:          /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.splits.nex
+  Consensus tree:                /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.contree
+  Screen log file:               /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/MERLIN_ecoli_index_cases.log
+
+Date and Time: Thu Jul  2 15:38:10 2026

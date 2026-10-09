@@ -1,0 +1,12 @@
+#!/bin/sh
+#SBATCH --job-name=cognac_SNP_sites_cfreundii
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,FAIL,END,REQUEUE
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=1 --mem=30g --time=0:05:00
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/cognac/scripts/cfreundii/MERLIN_cfreundii_index_cases_SNP_Sites_slurm.out 
+
+snp-sites /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/cfreundii/concatenated_gene_nt_alignment.fasta -o /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/cfreundii/MERLIN_cfreundii_index_cases_SNP_Sites.fa 
+

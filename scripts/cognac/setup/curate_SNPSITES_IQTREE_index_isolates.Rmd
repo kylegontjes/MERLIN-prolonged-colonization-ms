@@ -1,0 +1,160 @@
+---
+title: "setup_snpsites_and_IQtree_scripts"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+require(knitr)
+opts_knit$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA) 
+opts_chunk$set(echo = T,warning = FALSE, message = FALSE,error=F,comment=NA)
+opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+```
+
+# Environment
+
+```{r environment, echo=F, message=FALSE, include=F, results=F}
+#Packages
+packages <- c("tidyverse") 
+
+#Load Packages
+invisible(lapply(packages,library,character.only=T,quietly=T))
+
+# Print environment
+set.seed(45) 
+Sys.info()
+sessionInfo()
+```
+
+# Create SNPSites script
+```{bash}
+cd scripts/cognac/setup
+
+echo "#!/bin/sh
+#SBATCH --job-name=cognac_SNP_sites_taxonomic_group
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,FAIL,END,REQUEUE
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=1 --mem=30g --time=0:05:00
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/cognac/scripts/taxonomic_group/MERLIN_taxonomic_group_index_cases_SNP_Sites_slurm.out 
+
+snp-sites /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/taxonomic_group/concatenated_gene_nt_alignment.fasta -o /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/taxonomic_group/MERLIN_taxonomic_group_index_cases_SNP_Sites.fa 
+" > SNP_Sites_model_script.sbat
+```
+
+
+# Load data
+```{r}
+df <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS")
+
+species <- df$Species %>% table %>% subset(.>1) %>% names(.)
+species_renamed <- str_split(species," ", simplify = T) 
+species_renamed[,1] <- species_renamed[,1] %>% substr(.,1,1) %>% stringr::str_to_lower()
+species_simple <- species_renamed %>% apply(.,1,paste0,collapse='')
+
+citrobacter_species <- df %>% subset(Genus %in% c("Citrobacter")) %>% .$genomic_id
+klebsiella_species <- df %>% subset(Genus %in% c("Klebsiella")) %>% .$genomic_id
+directory_names <- c(species_simple,"citrobacter",'klebsiella')
+```
+ 
+# Modify this script
+      
+```{r} 
+for(group in directory_names){
+  SNP_Sites_script <- readr::read_lines('./scripts/cognac/setup/SNP_Sites_model_script.sbat') 
+  # job-name
+  SNP_Sites_script <- gsub("taxonomic_group",group,SNP_Sites_script) 
+  # Write file
+  writeLines(text = SNP_Sites_script,con = paste0("./scripts/cognac/scripts/",group,"/MERLIN_",group,"_index_cases_SNP_SITES.sbat"))
+}
+```
+
+# Write master batch script
+```{bash}
+cd scripts/cognac/setup
+
+cat << 'EOF' > run_SNP_Sites_scripts.sh
+
+#!/bin/sh
+
+for dir in /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/cognac/scripts/*; do
+  group=$(basename "$dir")
+  echo "$group"
+
+  script="${dir}/MERLIN_${group}_index_cases_SNP_SITES.sbat"
+  sbatch "$script"
+done
+
+EOF
+``` 
+
+
+
+# Create IQTree script
+
+```{bash}
+cd scripts/cognac/setup
+
+echo "#!/bin/sh
+#SBATCH --job-name=MERLIN_index_taxonomic_group_IQTREE
+#SBATCH --mail-user=kgontjes@umich.edu
+#SBATCH --mail-type=BEGIN,FAIL,END,REQUEUE
+#SBATCH --export=ALL
+#SBATCH --partition=standard
+#SBATCH --account=esnitkin1
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=10 --mem=60g --time=2:00:00
+#SBATCH --output=/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/cognac/scripts/taxonomic_group/MERLIN_taxonomic_group_index_cases_IQTREE2_slurm.out 
+
+## Note: Chang the mail-user, account, and SBATCH mem/time requirements as you see fit
+iqtree -s /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/taxonomic_group/MERLIN_taxonomic_group_index_cases_SNP_Sites.fa -T AUTO -B 5000 -nstop 200 -pre /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/taxonomic_group/MERLIN_taxonomic_group_index_cases
+" > IQTree_model_script.sbat
+```
+
+```{r} 
+drop_under_two <- directory_names %>% subset(.!= "cportucalensis")
+
+for(group in drop_under_two){
+  IQTREE_sbat <- readr::read_lines('./scripts/cognac/setup/IQTree_model_script.sbat') 
+  # job-name
+  IQTREE_sbat <- gsub("taxonomic_group",group,IQTREE_sbat) 
+  
+  ## Cfreundii had only 3 isolates, so not worth doing bootstrap
+  if(group == "cfreundii"){
+        IQTREE_sbat <- gsub("-B 5000 ","",IQTREE_sbat)
+  }
+  
+  # Write file
+  writeLines(text = IQTREE_sbat,con = paste0("./scripts/cognac/scripts/",group,"/MERLIN_",group,"_index_cases_IQTREE2.sbat"))
+}
+```  
+
+
+# Write master batch script
+```{bash}
+cd scripts/cognac/setup
+
+cat << 'EOF' > run_IQTREE2_scripts.sh
+
+#!/bin/sh
+
+for dir in /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/scripts/cognac/scripts/*; do
+  group=$(basename "$dir")
+  echo "$group"
+
+  script="${dir}/MERLIN_${group}_index_cases_IQTREE2.sbat" 
+  
+  if [ -f "$script" ]; then
+    echo "Submitting $script"
+    sbatch "$script"
+  else
+    echo "No script exists (likely due to no need to run the command)"
+  fi
+  
+done
+
+EOF
+``` 

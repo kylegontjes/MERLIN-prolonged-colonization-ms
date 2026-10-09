@@ -1,0 +1,139 @@
+> 
+> # Cognac Run
+> # Start Date: 07/02/25
+> # Population: ecoli isolates
+> # Activate
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(cognac)
+> Sys.info()
+                             sysname                              release 
+                             "Linux"     "4.18.0-553.123.1.el8_10.x86_64" 
+                             version                             nodename 
+"#1 SMP Mon May 4 13:45:48 EDT 2026"            "gl3177.arc-ts.umich.edu" 
+                             machine                                login 
+                            "x86_64"                            "unknown" 
+                                user                       effective_user 
+                          "kgontjes"                           "kgontjes" 
+> sessionInfo()
+R version 4.4.2 (2024-10-31)
+Platform: x86_64-conda-linux-gnu
+Running under: Red Hat Enterprise Linux 8.10 (Ootpa)
+
+Matrix products: default
+BLAS/LAPACK: /home/kgontjes/.conda/envs/cognac_v_1_0/lib/libopenblasp-r0.3.28.so;  LAPACK version 3.12.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: America/Detroit
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] cognac_1.0      lubridate_1.9.3 forcats_1.0.0   stringr_1.5.1  
+ [5] dplyr_1.1.4     purrr_1.0.2     readr_2.1.5     tidyr_1.3.1    
+ [9] tibble_3.2.1    ggplot2_3.5.1   tidyverse_2.0.0
+
+loaded via a namespace (and not attached):
+ [1] vctrs_0.6.5        cli_3.6.3          rlang_1.1.4        stringi_1.8.4     
+ [5] generics_0.1.3     RcppParallel_5.1.9 glue_1.8.0         colorspace_2.1-1  
+ [9] hms_1.1.3          scales_1.3.0       fansi_1.0.6        grid_4.4.2        
+[13] munsell_0.5.1      tzdb_0.4.0         lifecycle_1.0.4    compiler_4.4.2    
+[17] Rcpp_1.0.13-1      timechange_0.3.0   pkgconfig_2.0.3    R6_2.5.1          
+[21] tidyselect_1.2.1   utf8_1.2.4         pillar_1.9.0       magrittr_2.0.3    
+[25] tools_4.4.2        withr_3.0.2        gtable_0.3.6      
+> set.seed(45)
+> 
+> setwd('/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/')
+> 
+> outDir = '/nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/'
+> 
+> genomic_id = readRDS('./scripts/cognac/scripts/ecoli/ecoli_isolate_list.RDS')  
+> fasta_files = readRDS('./scripts/cognac/scripts/ecoli/ecoli_genomes_path.RDS')
+> gff_files =  readRDS('./scripts/cognac/scripts/ecoli/ecoli_annotations_path.RDS')
+> 
+> # Run Conac requiring at least 500 genes are included in the alignment 
+> cognac(
++   fastaFiles = fasta_files ,
++   featureFiles = gff_files,
++   outDir        = outDir,
++   minGeneNum    = 500,
++   maxMissGenes  = 0.05, 
++   njTree     = FALSE,
++   mapNtToAa = TRUE,
++   keepTempFiles = TRUE
++ )
+
+
+Creating concatenated gene alignment:
+  -- 69 genomes were input
+  -- Writing results to: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/
+  -- Running on: 8 cores
+
+Step 1: parsing the data on the input genomes
+  -- Parsed the data for 327445 coding genes
+  -- Finished in 0.06 minutes
+
+Step 2: finding orthologs with cd-hit
+  -- The genes were classified into 11132 clusters of orthologous genes
+  -- Continuing with 3621 genes present in at least 55 occurrences
+  -- Finished in 0.44 minutes
+
+Step 3: filtering for single copy genes
+  -- 163 multi-copy genes were identified
+  -- After filtering there are 3458 remaining genes
+  -- Finished in 0.01 minutes
+
+Step 4: selecting genes to include in the alignment
+  -- Identified 3051 core genes
+  -- Removing 290 perfectly conserved genes from the analysis
+  -- 2761 genes met the criteria to be included in the alignment
+  -- Finished in 0 minutes
+
+Step 5: aligning and concatenating orthologous genes
+  -- 10 genes without variation were removed
+  -- 2751 were included in the alignment
+  -- The total alignment length is 918547
+  -- Finished in 7.69 minutes
+
+Step 6: creating output files
+  -- Finished in 0.22 minutes
+
+Run complete
+  -- Amino acid alignment written to: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/concatenated_gene_aa_alignment.fasta 
+  -- Nucleotide alignment written to: /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/cognac/ecoli/concatenated_gene_nt_alignment.fasta 
+  -- Finished in 8.36 minutes
+
+
+<environment: 0x560dc3c7a948>
+Warning messages:
+1: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_sapply-1’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+2: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_sapply-2’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+3: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_sapply-3’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+4: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_sapply-4’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+5: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_sapply-5’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+6: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_sapply-6’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+7: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_sapply-7’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+8: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_sapply-8’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+>  
+> 
+> proc.time()
+   user  system elapsed 
+736.550 398.184 503.062 
