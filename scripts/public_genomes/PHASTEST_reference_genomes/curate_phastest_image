@@ -1,0 +1,52 @@
+# Steps to run phastest on GL
+## Date: 08/17/26
+## Name: Kyle Gontjes
+
+# Step 1: Curate directories
+homewd=/nfs/turbo/umms-kgontjes
+CONTAINER_DIR=$homewd/containers/
+mkdir -p $CONTAINER_DIR/images/ 
+
+# Step 2: Download the phastest docker directory
+## Download
+wget -O $CONTAINER_DIR/phastest-docker.zip https://phastest.ca/download_file/phastest-docker
+## Unzip
+unzip $CONTAINER_DIR/phastest-docker.zip "phastest/*" -d $CONTAINER_DIR
+## Remove
+rm $CONTAINER_DIR/phastest-docker.zip
+
+# Step 3: Download the phastest database and move to the DB folder in the phastest docker's app directory
+## Download
+wget -O $CONTAINER_DIR/docker-database.zip https://phastest.ca/download_file/docker-database
+## Unzip
+unzip $CONTAINER_DIR/docker-database.zip "DB/*" -d $CONTAINER_DIR/phastest/phastest-app-docker
+## Remove
+rm $CONTAINER_DIR/docker-database.zip
+
+# Step 4: Set up the singularity image from the docker
+module load singularity 
+singularity pull \
+  $CONTAINER_DIR/images/phastest.sif \
+   docker://wishartlab/phastest-docker-single
+
+# Step 5: Please make sure to provide full FASTA sequence filename present within phastest_inputs folder. (i.e. , $container_dir/containers/phastest/phastest_inputs)
+cp /nfs/turbo/umms-esnitkin/Project_MERLIN/Analysis/Household_transmission/MERLIN-prolonged-colonization-ms/data/public_genomes/sliquefaciens/chromosomes/GCA_048537415.1_GTA-SR02_genomic_chromosome.fna $CONTAINER_DIR/phastest/phastest_inputs
+
+# Step 6: Run example changing directory to your container_dir
+## Notes: 
+### 1. You can run phastest help to get helpful info on the 
+### 2. The 'deep' processing option can take a while to run :) I'd suggest 2h or so runtime, to be safe!
+### 3. My specs from successful run: 
+#SBATCH --cpus-per-task=6  
+#SBATCH --mem=16G  
+#SBATCH --time=04:00:00
+singularity run \
+   --hostname slurmctld \
+   --bind /nfs/turbo/umms-kgontjes/containers/phastest/phastest-app-docker/sub_programs/ncbi-blast-2.3.0+:/BLAST+ \
+   --bind /nfs/turbo/umms-kgontjes/containers/phastest/phastest-app-docker/sub_programs/ncbi-blast-2.3.0+:/root/BLAST+ \
+   --bind /nfs/turbo/umms-kgontjes/containers/phastest/phastest-app-docker:/phastest-app \
+   --bind /nfs/turbo/umms-kgontjes/containers/phastest/phastest-app-docker:/root/phastest-app \
+   --bind /nfs/turbo/umms-kgontjes/containers/phastest/phastest_inputs:/phastest_inputs \
+   --writable-tmpfs \
+   /nfs/turbo/umms-kgontjes/containers/images/phastest.sif \
+   phastest -i fasta -s GCA_048537415.1_GTA-SR02_genomic_chromosome.fna --yes -m deep

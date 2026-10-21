@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kyle Gontjes" />
 
-<meta name="date" content="2026-10-06" />
+<meta name="date" content="2026-10-19" />
 
 <title>Results Section 3: Discrimination of prolonged colonization using WGS</title>
 
@@ -577,7 +577,7 @@ display: none;
 <h1 class="title toc-ignore">Results Section 3: Discrimination of
 prolonged colonization using WGS</h1>
 <h4 class="author">Kyle Gontjes</h4>
-<h4 class="date">2026-10-06</h4>
+<h4 class="date">2026-10-19</h4>
 
 </div>
 
@@ -596,26 +596,26 @@ source(&quot;./lib/consistent_themes.R&quot;)
 # Print environment
 set.seed(45) 
 Sys.info()</code></pre>
-<pre><code>                                                                                                         sysname 
-                                                                                                        &quot;Darwin&quot; 
-                                                                                                         release 
-                                                                                                        &quot;25.6.0&quot; 
-                                                                                                         version 
-&quot;Darwin Kernel Version 25.6.0: Tue Aug 18 17:51:47 PDT 2026; root:xnu-12377.161.15.700.19~2/RELEASE_ARM64_T6050&quot; 
-                                                                                                        nodename 
-                                                                             &quot;mac-k76xf3g5yq.wifi.med.umich.edu&quot; 
-                                                                                                         machine 
-                                                                                                         &quot;arm64&quot; 
-                                                                                                           login 
-                                                                                                          &quot;root&quot; 
-                                                                                                            user 
-                                                                                                      &quot;kgontjes&quot; 
-                                                                                                  effective_user 
-                                                                                                      &quot;kgontjes&quot; </code></pre>
+<pre><code>                                                                                               sysname 
+                                                                                              &quot;Darwin&quot; 
+                                                                                               release 
+                                                                                              &quot;27.0.0&quot; 
+                                                                                               version 
+&quot;Darwin Kernel Version 27.0.0: Tue Aug 11 21:06:40 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T6050&quot; 
+                                                                                              nodename 
+                                                                   &quot;mac-k76xf3g5yq.wifi.med.umich.edu&quot; 
+                                                                                               machine 
+                                                                                               &quot;arm64&quot; 
+                                                                                                 login 
+                                                                                                &quot;root&quot; 
+                                                                                                  user 
+                                                                                            &quot;kgontjes&quot; 
+                                                                                        effective_user 
+                                                                                            &quot;kgontjes&quot; </code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.6.1 (2026-06-24)
 Platform: aarch64-apple-darwin23
-Running under: macOS Tahoe 26.7
+Running under: macOS Golden Gate 27.0.1
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
@@ -991,6 +991,30 @@ Strain + plasmid-linked ESCrE gene
 </tr>
 </tbody>
 </table>
+</div>
+<div id="persistence-data-by-snp-threshold" class="section level1">
+<h1>Persistence data by SNP threshold</h1>
+<pre><code># A tibble: 1 × 4
+  num_prolonged min_threshold max_threshold n_thresholds
+          &lt;dbl&gt;         &lt;int&gt;         &lt;int&gt;        &lt;int&gt;
+1            16            18            76           59</code></pre>
+<pre><code># A tibble: 3 × 3
+  threshold num_prolonged   run
+      &lt;int&gt;         &lt;dbl&gt; &lt;int&gt;
+1        18            16     7
+2        76            16     7
+3        77            17     8</code></pre>
+</div>
+<div id="clustering-pattern-similarity" class="section level1">
+<h1>Clustering pattern similarity</h1>
+<pre><code>                metric value min_threshold max_threshold n_thresholds
+1                  ARI     1            18            34           17
+2 pairwise_concordance     1            18            34           17</code></pre>
+<pre><code>  threshold       ARI pairwise_concordance isolates
+1        17 0.9775932            0.9991584       98
+2        18 1.0000000            1.0000000       98
+3        34 1.0000000            1.0000000       98
+4        35 0.9891471            0.9995792       98</code></pre>
 </div>
 
 

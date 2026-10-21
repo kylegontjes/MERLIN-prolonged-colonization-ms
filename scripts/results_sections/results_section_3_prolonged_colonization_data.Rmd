@@ -88,3 +88,96 @@ prolonged_melt$variable <- recode(prolonged_melt$variable,'index_at_1_and_or_2_W
 
 prolonged_melt %>% mutate(value = (value ==1)) %>% group_by(variable) %>% summarise(n=sum(value),prop=n/length(value)) %>% favorite_kable()
 ```
+
+# Persistence data by SNP threshold
+```{r}
+persistent_colonization_by_threshold <- readRDS("./data/persistent_colonization/threshold_sensitivity_strain_level/MERLIN_persistent_colonization_threshold_sensitivity_strain_level_public_references.RDS")
+
+household_w_index <- df_index %>% subset(visit==0) %>% .$household %>% sort
+
+prolonged_df <- persistent_colonization_by_threshold %>% group_by(threshold) %>% summarise(num_prolonged = sum(index_at_1_and_or_2))
+ 
+ref <- 18
+
+runs <- prolonged_df %>%
+  arrange(threshold) %>%
+  mutate(run = consecutive_id(num_prolonged))
+
+run_ref <- runs$run[runs$threshold == ref]
+
+plateau <- runs %>%
+  filter(run == run_ref) %>%
+  summarise(
+    num_prolonged = first(num_prolonged),
+    min_threshold = min(threshold),
+    max_threshold = max(threshold),
+    n_thresholds  = n()
+  )
+
+plateau
+
+runs %>% subset(threshold %in% c(18,plateau$max_threshold,plateau$max_threshold+1))
+```
+
+# Clustering pattern similarity
+```{r}
+clustering_across_thresholds_ST_preferred <- readRDS("./data/SNP_distances/SNP_cluster_assignments/MERLIN_SNP_cluster_assignments_public_references.RDS")
+
+similarity_dataset_index <- lapply(0:100, FUN = function(x) {
+    ref_col <- "Species_ST_cluster_18"
+    col_name <- paste0("Species_ST_cluster_", x)
+    
+    SNP_clustering <- clustering_across_thresholds_ST_preferred %>%
+        select(genomic_id, all_of(ref_col), all_of(col_name)) %>%
+        subset(genomic_id %in% df_index$genomic_id)
+    
+    ref_clusters <- SNP_clustering[[ref_col]]
+    threshold_clusters <- SNP_clustering[[col_name]]
+    
+    co_cluster_ref <- outer(ref_clusters, ref_clusters, "==")
+    co_cluster_threshold <- outer(threshold_clusters, threshold_clusters, "==")
+    pair_concordance <- mean((co_cluster_ref == co_cluster_threshold)[lower.tri(co_cluster_ref)])
+    
+    data.frame(
+        threshold            = x,
+        ARI                  = mclust::adjustedRandIndex(ref_clusters, threshold_clusters),
+        pairwise_concordance = pair_concordance,
+        isolates             = nrow(SNP_clustering)
+    )
+}) %>%
+    bind_rows()
+
+
+get_plateau <- function(df, metric, ref, digits = 10) {
+  runs <- df %>%
+    arrange(threshold) %>%
+    mutate(run = consecutive_id(round(.data[[metric]], digits)))
+
+  run_ref <- runs$run[runs$threshold == ref]
+
+  runs %>%
+    filter(run == run_ref) %>%
+    summarise(
+      metric        = metric,
+      value         = first(.data[[metric]]),
+      min_threshold = min(threshold),
+      max_threshold = max(threshold),
+      n_thresholds  = n()
+    )
+}
+
+plateaus <- bind_rows(
+  get_plateau(similarity_dataset_index, "ARI", ref),
+  get_plateau(similarity_dataset_index, "pairwise_concordance", ref)
+)
+
+plateaus
+
+# Rows at the reference, each plateau edge, and the first threshold past each edge
+edges <- unique(c(plateaus$min_threshold - 1, ref,
+                  plateaus$max_threshold, plateaus$max_threshold + 1))
+
+similarity_dataset_index %>%
+  filter(threshold %in% edges) %>%
+  arrange(threshold)
+```
