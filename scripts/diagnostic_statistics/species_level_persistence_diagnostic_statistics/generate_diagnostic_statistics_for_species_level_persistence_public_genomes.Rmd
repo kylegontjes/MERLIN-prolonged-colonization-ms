@@ -104,7 +104,7 @@ comparison_of_any_ESCRE_to_WGS_outcomes$outcome_rename <- recode(comparison_of_a
                                                                  'index_at_1_and_or_2_ESCrE_plasmidic_genes'= 'Plasmidic ESCrE gene',
                                                                  'index_at_1_and_or_2_ESCrE_plasmids'= 'ESCrE plasmid',
                                                                  'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes'='Strain + ESCrE gene',
-                                                                 'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_linked'='Same strain + plasmid-linked ESCrE gene') %>% factor(.,levels = c("Same sequence type", "Same strain", "Same strain + plasmid-linked ESCrE gene"))
+                                                                 'index_at_1_and_or_2_Species_ST_cluster_ESCrE_genes_plasmid_linked'='Same strain + plasmid-associated ESCrE gene') %>% factor(.,levels = c("Same sequence type", "Same strain", "Same strain + plasmid-associated ESCrE gene"))
 
 # Show data
 comparison_of_any_ESCRE_to_WGS_outcomes %>% favorite_kable()

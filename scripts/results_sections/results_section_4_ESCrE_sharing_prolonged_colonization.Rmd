@@ -16,7 +16,7 @@ opts_knit$set(root.dir='~/Desktop/gl_nfs/Project_MERLIN/Analysis/Household_trans
 
 ```{r environment, echo=T, message=FALSE, include=T, results=T}
 #Packages
-packages <- c("tidyverse",'kableExtra','tableone')
+packages <- c("tidyverse",'kableExtra','tableone','ggVennDiagram')
 
 #Load Packages
 invisible(lapply(packages,library,character.only=T,quietly=T))
@@ -36,6 +36,7 @@ sessionInfo()
 df_index <- readRDS("./data/dataset/MERLIN_cohort_index_cases_metadata_final.RDS") 
 prolonged_colonization_df <- readRDS("./data/persistent_colonization/persistent_colonization_episodes/MERLIN_persistent_colonization_index_patients_public_references.RDS")
 plasmid_data <- readRDS("./data/ESBL_plasmids/MERLIN_index_cohort_beta_lactam_location_data.RDS")
+mobtyper <- readRDS("./data/mobsuite/mobtyper.RDS") %>% subset(genomic_id %in% df_index$genomic_id)
 
 df_index <- left_join(df_index,plasmid_data)
 ```
@@ -47,15 +48,12 @@ paste0("Number of subjects with index specimens positive: ", length(ESCrE_index_
 paste0("Proportion of subjects with index specimens positive: ", length(ESCrE_index_positive_households) / 40)
 ```
 
-# Three case patients had episode of shraing ESBL plasmidic genes
+# Three case patients had episode of sharing of ESBL genes
 
 ```{r}
 paste0("Strain vs. ESCrE gene sharing")
-table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,prolonged_colonization_df$index_at_1_and_or_2_Species,dnn=c("Strain","Plasmidic ESCrE","Species-level"))  
-
-paste0("Strain vs. ESCrE gene sharing")
-table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,dnn=c("Strain","Plasmidic ESCrE"))  
-
+table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,prolonged_colonization_df$index_at_1_and_or_2_Species,dnn=c("Strain","ESCrE genes","Species-level"))  
+ 
 convert_tableone_into_df(dataset=prolonged_colonization_df,vars = "index_at_1_and_or_2_ESCrE_genes",strata= "index_at_1_and_or_2_Species_ST_cluster",factorVars = "index_at_1_and_or_2_ESCrE_genes",outcome_names = c("Not same strain","Same strain"))
 ```
 
@@ -63,18 +61,30 @@ convert_tableone_into_df(dataset=prolonged_colonization_df,vars = "index_at_1_an
 
 ```{r}
 paste0("Strain vs. Plasmid-linked ESCrE genes")
-table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware,dnn=c("Strain","Plasmid-linked ESCrE"))  
+table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_linked,dnn=c("Strain","Plasmid-linked ESCrE"))  
 
-paste0("ESCrE vs. Plasmid-linked ESCrE genes")
-table(prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_aware,dnn=c("ESCrE genes","Plasmid-linked ESCrE"))  
+paste0("ESCrE gene persistence vs. Plasmid-linked ESCrE genes")
+table(prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_linked,dnn=c("ESCrE genes","Plasmid-linked ESCrE"))  
 ```
 
-## Nine linked to plasmid
+## Eight linked to plasmid
+
+### One different strain cases
+```{r,results='asis'}
+plasmid_linked_ESCrE_diff_strain <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_linked==1 & index_at_1_and_or_2_Species_ST_cluster==0) %>% .$household
+
+lapply(plasmid_linked_ESCrE_diff_strain,FUN=function(x){
+  df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
+}) %>% lapply(.,favorite_kable)
+```
+
+
+### Seven same strain cases
 
 ```{r,results='asis'}
-plasmid_linked_ESCrE_ <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_aware==1) %>% .$household
+plasmid_linked_ESCrE_same_strain <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_aware==1 & index_at_1_and_or_2_Species_ST_cluster==1) %>% .$household
 
-lapply(plasmid_linked_ESCrE_,FUN=function(x){
+lapply(plasmid_linked_ESCrE_same_strain,FUN=function(x){
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
 }) %>% lapply(.,favorite_kable)
 ```
@@ -82,9 +92,9 @@ lapply(plasmid_linked_ESCrE_,FUN=function(x){
 ## Ten ESCrE sharing, but not linked to plasmid
 
 ```{r,results='asis'}
-not_plasmid_linked_ESCrE_ <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_aware==0) %>% .$household
+not_plasmid_linked_ESCrE <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_ESCrE_genes==1 & index_at_1_and_or_2_ESCrE_genes_plasmid_aware==0) %>% .$household
 
-lapply(not_plasmid_linked_ESCrE_,FUN=function(x){
+lapply(not_plasmid_linked_ESCrE,FUN=function(x){
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
 }) %>% lapply(.,favorite_kable)
 ```
@@ -110,12 +120,78 @@ lapply(same_ESCrE_species_not_same_strain_no_ESBL_sharing,FUN=function(x){
 ### Plasmid sharing:
 #### 1. 1H - Initial colonized with E. coli ST69 with blaCTX-M-15 and blaEC-8*. While blaEC-8 was found in subsequent chromosome of E. coli ST6321 strain, blaCTX-M-15 was found on a plasmid in every strain collected!!
 
-```{r,results='asis'}
-same_ESCrE_not_same_strain <- prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_genes==1) %>% .$household
+```{r,results='asis',fig.width=10,fig.height=10}
+table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_linked,dnn = c("Strain","ESCrE gene","Plasmid associated"))
+
+same_ESCrE_not_same_strain_df <-  prolonged_colonization_df %>% subset(index_at_1_and_or_2_Species_ST_cluster==0 & index_at_1_and_or_2_ESCrE_genes==1) 
+same_ESCrE_not_same_strain <- same_ESCrE_not_same_strain_df %>% .$household
 
 lapply(same_ESCrE_not_same_strain,FUN=function(x){
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
 }) %>% lapply(.,favorite_kable)
+
+# Plasmid sharing 
+venns <- lapply(same_ESCrE_not_same_strain, function(x) {
+    housedf <- df_index %>%
+        filter(household == x, !is.na(plasmids), plasmids != "") %>%
+        arrange(visit)
+    
+    # One set per strain (union of plasmid clusters across visits)
+    sets <- split(strsplit(housedf$plasmids, ";"), housedf$Species_ST_cluster) %>%
+        lapply(function(s) unique(unlist(s)))
+    visits <- tapply(housedf$visit, housedf$Species_ST_cluster,
+                     function(v) paste0("V", paste(sort(unique(v)), collapse = ",")))
+    names(sets) <- paste0(names(sets), " (", visits[names(sets)], ")")
+    
+    # Plasmids carrying an ESCrE beta-lactamase in this household
+    escre <- unique(unlist(strsplit(na.omit(housedf$ESCrE_plasmids), ";")))
+    
+    # Region geometry + the items in each region
+    vd <- process_data(Venn(sets))
+    regions <- venn_regionlabel(vd) %>%
+        mutate(label = vapply(item, function(i) {
+            if (length(i) == 0) return("")
+            i <- sort(i)
+            paste(ifelse(i %in% escre, paste0(i, "*"), i), collapse = "\n")
+        }, character(1)))
+    
+    ggplot() +
+        geom_polygon(data = venn_regionedge(vd),
+                     aes(X, Y, group = id, fill = count), show.legend = FALSE) +
+        geom_path(data = venn_setedge(vd), aes(X, Y, group = id), linewidth = 0.8) +
+        geom_text(data = venn_setlabel(vd), aes(X, Y, label = name), size = 3) +
+        geom_label(data = filter(regions, label != ""),
+                   aes(X, Y, label = label), size = 2.6, lineheight = 0.9,
+                   fill = "white", alpha = 0.85, label.size = 0) +
+        scale_fill_gradient(low = "grey95", high = "steelblue") +
+        scale_x_continuous(expand = expansion(mult = 0.25)) +
+        coord_equal() +
+        labs(title = x, caption = "* Plasmid cluster carrying an ESCrE β-lactamase") +
+        theme_void()
+})
+names(venns) <- same_ESCrE_not_same_strain
+venns
+
+# Replicon types of the gene containing isolates
+lapply(same_ESCrE_not_same_strain, FUN = function(x) {
+    df_index %>%
+        subset(household == x) %>%
+        select(household, genomic_id, Species_ST_cluster, visit, plasmids, bla_plasmids, ESCrE_plasmids) %>%
+        tidyr::separate_rows(plasmids, sep = ";") %>%
+        subset(!is.na(plasmids) & plasmids != "") %>%
+        rowwise() %>%
+        mutate(bla   = plasmids %in% strsplit(coalesce(bla_plasmids, ""), ";")[[1]],
+               ESCrE = plasmids %in% strsplit(coalesce(ESCrE_plasmids, ""), ";")[[1]]) %>%
+        ungroup() %>%
+        group_by(plasmids) %>%
+        mutate(n_strains = n_distinct(Species_ST_cluster)) %>%
+        ungroup() %>%
+        left_join(mobtyper, by = c("genomic_id", "plasmids" = "primary_cluster_id")) %>%
+        select(household, genomic_id, Species_ST_cluster, visit, plasmids,secondary_cluster_id,mash_nearest_neighbor, n_strains, bla, ESCrE,
+               sequencing, size, num_contigs, rep_types, relaxase_types, mpf_type, predicted_mobility,
+               mash_neighbor_identification) %>%
+        arrange(desc(n_strains), plasmids, visit)
+}) %>% lapply(., favorite_kable)
 ```
 
 ## Restriction to plasmid linked helped distinguish between probable cases of plasmid sharing... 
@@ -126,3 +202,9 @@ lapply(same_ESCrE_plasmid_linked,FUN=function(x){
   df_index %>% subset(household==x) %>% select(household,genomic_id,Species_ST_cluster,visit,plasmids,bla_genes,ESCrE_genes,ESCrE_plasmidic_genes,  bla_chromosome_genes,ESCrE_chromosome_genes,ESCrE_plasmid_genes,bla_plasmids,ESCrE_plasmids) %>% arrange(visit)   
 }) %>% lapply(.,favorite_kable)
 ```
+
+# Conclusion: Increase in detection of ESCrE persistence when considering putative HGT
+```{r}
+table(prolonged_colonization_df$index_at_1_and_or_2_Species_ST_cluster,prolonged_colonization_df$index_at_1_and_or_2_ESCrE_genes_plasmid_linked,dnn=c("Strain","Plasmid-linked ESCrE"))  
+```
+
